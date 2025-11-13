@@ -1,8 +1,8 @@
 //////////////////////////////////////////////
 //                                          //
-//     Modified : 2025-06-23 14:25 2025v6   //
+//     Modified : 2025-11-13 14:25 2025v7   //
 //                                          //
-//      Version : 6                         //
+//      Version : 7.0                       //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -300,41 +300,8 @@ function init() {
     //ВВОД КАРТЫ - ДО
     frontol.addEventListener("addCard", "addCardBefore", true);
 
-    // Promo action
-    if (
-        (getClientUUID() == "A527335D-BE7A-4D52-AAE0-DAC465A0BB5C" ||
-            getClientUUID() == "72AF8681-AA9D-4FDB-B41F-D9E6C4025C92") &&
-        frontol.userValues.get("promoParticipation") == "1"
-    ) {
-        var dbRx = new RxDB();
-        logg("db started");
-        var connected = dbRx.connect();
-
-        if (!connected) {
-            showMessage("Соединение с базой настроек промо-акции не установлено!", Icon.Warning);
-        } else {
-            logg("db connected");
-            var promoRx = new RxPromo(dbRx);
-
-            promoRx.init(false);
-        }
-    }
-
-    // CashBox init
-    if (getClientUUID() === "29A1BC43-C747-4B97-ACD7-6F74CFC88BA1") {
-        /*try {
-            cashBox = new ActiveXObject("CashBox");
-            cashBoxItems = new ActiveXObject("TicketItems");
-        }
-        catch(e) {
-            showMessage(
-                "Ошибка инициализации компоненты для работы с CashBoxSystem!" + CR_MESSAGE + e.message + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE,
-                Icon.Error
-            );
-        } */
-    }
-
-    if (getClientUUID() == "4C70C190-EAD8-43A8-87DE-212899357830") JetQrPayInit();
+    // Проверка закрытии смены  -- sboboev
+    frontol.addEventListener("addPosition", "checkShiftReminder", false);
 
     // RX Card number form
     try {
@@ -359,10 +326,6 @@ function init() {
     JetQrPayInit();
     EMVCo_JetQrPayInit();
 	dcinit();
-
-    // sboboev+
-    frontol.addEventListener("addPosition", "checkShiftReminder", false);
-    // sboboev-
 }
 
 
@@ -488,6 +451,7 @@ FunctionsOfEventListeners: {
             }
         }
         //Параметры
+        // Используется для обмена заказов из 1С Битрикс
         vSet("FilePath", "\\\\10.101.42.107\\Rarus\\BitrixOrders\\");
         EO_AfterOpenDocument();
     }
@@ -495,53 +459,7 @@ FunctionsOfEventListeners: {
     //ЗАКРЫТИЕ ДОКУМЕНТА - ДО
     function beforeCloseDocument() {
         var doc = frontol.currentDocument;
-        // CashBox
-        if (getClientUUID() === "29A1BC43-C747-4B97-ACD7-6F74CFC88BA1") {
-            /*if (!cashBox) {
-                showMessage(
-                    "Компонента для работы с CashBoxSystem не была проинициализирована!" + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE,
-                    Icon.Error
-                );
-                cancelAct();
-            }
-            var sum = doc.sumWithDiscs;
-            var operatorName = frontol.currentUser.name;
-            var operatorCode = frontol.currentUser.code;
-            var barCode = doc.barcode;
-            var kkmPos = frontol.codeWorkplace;
-            var docNumber = doc.number;
 
-            switch (doc.type.operation) {
-                case 0: { // продажа
-                    if (!cashBoxSaleOperation(doc, operatorName, operatorCode, docNumber, barCode, kkmPos)) {
-                        cancelAct();
-                    }
-                    break;
-                }
-                case 1: { // возврат
-                    if (!cashBoxReturnOperation(doc, operatorName, operatorCode, docNumber, barCode, kkmPos)) {
-                        cancelAct();
-                    }
-                    break;
-                }
-                case 4: { // внесение
-                    doc.userValues.set("5", "1");
-
-                    if (!cashBoxDepositOperation(sum, operatorName, operatorCode, docNumber, barCode, kkmPos)) {
-                        cancelAct();
-                    }
-                    break;
-                }
-                case 5: { // выплата
-                    doc.userValues.set("6", "1");
-
-                    if (!cashBoxWithdrawalOperation(sum, operatorName, operatorCode, docNumber, barCode, kkmPos)) {
-                        cancelAct();
-                    }
-                    break;
-                }
-            }*/
-        }
         //если документ - продажа
         if (isSaleDocument(doc) && frontol.userValues.get("SumToCreateCard") != "") {
             requestCreateCard();
@@ -566,148 +484,14 @@ FunctionsOfEventListeners: {
             //GetFooter(doc);
         }
 
-        if (isSaleDocument(doc) && doc.payment.type.code == 104) {
-            FilePath = vGet("FilePath");
-            FileName = vGet("CurrentFile"); // + ".txt"
-
-            date = new Date();
-
-            strMonth = "0" + date.getMonth();
-            strMonth = strMonth.substr(strMonth.length - 2, 2);
-
-            strDate = "0" + date.getDate();
-            strDate = strDate.substr(strDate.length - 2, 2);
-
-            strHours = "0" + date.getHours();
-            strHours = strHours.substr(strHours.length - 2, 2);
-
-            strMinutes = "0" + date.getMinutes();
-            strMinutes = strMinutes.substr(strMinutes.length - 2, 2);
-
-            addFileName =
-                "_" +
-                frontol.codeWorkplace +
-                "_" +
-                frontol.sessionNumber +
-                "_" +
-                doc.number +
-                "_" +
-                date.getFullYear() +
-                "." +
-                strMonth +
-                "." +
-                strDate +
-                "_" +
-                strHours +
-                "." +
-                strMinutes;
-            fso = new ActiveXObject("Scripting.FileSystemObject");
-            file = fso.GetFile(FilePath + FileName + ".txt");
-            file.Move(FilePath + FileName + addFileName + ".txt");
-        }
-
         EO_BeforeCloseDocument();
 
-        if (isSaleDocument(doc)) {
-            //customActionForAshan
-            var customActionData = frontol.userValues.get(CUSTOM_ACTION_DATA);
-            if (customActionData) {
-                customActionData = JSON.parse(customActionData);
-                for (doc.position.index = 1; doc.position.index <= doc.position.count; doc.position.index++) {
-                    if (doc.position.ware.mark in customActionData) {
-                        var actionData = customActionData[doc.position.ware.mark];
-                        var isAvailable = actionData.sum <= doc.sumWithDiscs;
-                        if (isAvailable) {
-                            frontol.actions.showMessage(actionData.cashierMesage, Icon.Exclamation);
-                            doc.userValues.set("CustomActionMess", actionData.slipMessage);
-                        }
-                    }
-                }
-            }
-        }
-        /////////////////////////////////////////////////////////////////PROMO_DUBUG///////////////////////////////////////////////////////////////
-        if (
-            isSaleDocument(doc) && // продажа
-            (getClientUUID() == "A527335D-BE7A-4D52-AAE0-DAC465A0BB5C" ||
-                getClientUUID() == "72AF8681-AA9D-4FDB-B41F-D9E6C4025C92") && // клиент
-            frontol.userValues.get("promoParticipation") == "1" && // касса-участник
-            Number(frontol.userValues.get("promoShopCode")) > 0 &&
-            !doc.userValues.get("isPromoAdded") //debug
-        ) {
-            var dbRx = new RxDB();
-            var connected = dbRx.connect();
-
-            if (!connected) {
-                showMessage("Соединение с базой настроек промо-акции не установлено!", Icon.Warning);
-            } else {
-                var promoRx = new RxPromo(dbRx);
-
-                promoRx.init(true);
-
-                if (frontol.userValues.get("promoCounters") != "") {
-                    // непустая переменная счётчиков промоакции
-                    var arrChequeDate = doc.dateOpen.split(".");
-                    //showMessage(doc.dateOpen)
-                    var srtChequeDate = "20" + arrChequeDate[2] + "-" + arrChequeDate[1] + "-" + arrChequeDate[0];
-                    var strChequeSum = doc.totalSum.toString();
-
-                    strChequeSum = strChequeSum.replace(",", ".");
-
-                    var cheque = {
-                        Number: doc.number,
-                        Date: srtChequeDate,
-                        Time: doc.timeOpen,
-                        Sum: strChequeSum
-                    };
-
-                    var promoCounters = promoRx.getCounters();
-
-                    if (promoCounters) {
-                        for (var i = 0; i < promoCounters.length; i++) {
-                            var promoCounter = promoCounters[i];
-
-                            if (promoCounter.minChequeSum <= doc.totalSum) {
-                                // сумма чека хватает для участия в промоакции
-                                var cashBoxCode = frontol.codeWorkplace.toString();
-                                var shopCode = frontol.userValues.get("promoShopCode");
-                                var counter = promoRx.saveTransaction(cheque, shopCode, cashBoxCode, promoCounter);
-
-                                if (counter === false || isNaN(counter)) {
-                                    showMessage(
-                                        "Невозможно записать данные о чеке в базу данных промоакции!",
-                                        Icon.Warning
-                                    );
-                                }
-                                // else if (!isNaN(counter) && counter % promoCounter.value == 0) {
-                                //     showMessage("На вашей кассе " + cashBoxCode + " - победитель, номер чека " + cheque.Number);
-                                //     doc.userValues.set(PROMO_TEXT_KEY, PROMO_TEXT_VALUE)
-                                // }
-                                else if (!isNaN(counter)) {
-                                    //debug
-                                    doc.userValues.set("isPromoAdded", "1");
-                                    if (counter % promoCounter.value == 0) {
-                                        showMessage(
-                                            "На вашей кассе " +
-                                                cashBoxCode +
-                                                " - победитель, номер чека " +
-                                                cheque.Number
-                                        );
-                                        doc.userValues.set(PROMO_TEXT_KEY, PROMO_TEXT_VALUE);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //Технология групп +
         getJson2();
         StatusKKM();
         var doc = frontol.currentDocument;
         //show(doc.type.operation)
-        if (doc.type.operation == 4) {
+        if (isVnesenieDocument(doc)) {
             var FRadress = frontol.userValues.get("fiscalipadres");
             var options = {
                 formCode: "ADD_CASH",
@@ -726,7 +510,7 @@ FunctionsOfEventListeners: {
             OpenDraw();
         }
 
-        if (doc.type.operation == 5) {
+        if (doc.type.operation == 5) { // изъятие/выплата
             var FRadress = frontol.userValues.get("fiscalipadres");
             var options = {
                 formCode: "REMOVE_CASH",
@@ -746,7 +530,7 @@ FunctionsOfEventListeners: {
         }
 
         //
-        if (doc.type.operation == "0" || doc.type.operation == "1") {
+        if (isSaleDocument(doc) || isReturnDocument(doc)) {
             //Окно печати
             ManualPrintOptionsButton();
 
@@ -790,44 +574,6 @@ FunctionsOfEventListeners: {
     //ЗАКРЫТИЕ ДОКУМЕНТА - ПОСЛЕ
     function afterCloseDocument() {
         var doc = frontol.currentDocument;
-        // CashBox
-        if (getClientUUID() === "29A1BC43-C747-4B97-ACD7-6F74CFC88BA1") {
-            /*if (!cashBox) {
-                showMessage(
-                    "Компонента для работы с CashBoxSystem не была проинициализирована!" + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE,
-                    Icon.Error
-                );
-                cancelAct();
-            }
-            var sum = doc.sumWithDiscs;
-            var operatorName = frontol.currentUser.name;
-            var operatorCode = frontol.currentUser.code;
-            var barCode = doc.barcode;
-            var kkmPos = frontol.codeWorkplace;
-            var docNumber = doc.number;
-
-            switch (doc.type.code) {
-                case 6: {
-                    if (doc.userValues.get("6") !== "1") {
-                        if (!cashBoxWithdrawalOperation(sum, operatorName, operatorCode, docNumber, barCode, kkmPos)) {
-                            cancelAct();
-                        }
-                    }
-                    break;
-                }
-                case 5: {
-                    if (doc.userValues.get("5") !== "1") {
-                        if (!cashBoxDepositOperation(sum, operatorName, operatorCode, docNumber, barCode, kkmPos)) {
-                            cancelAct();
-                        }
-                    }
-                    break;
-                }
-            }
-            doc.userValues.remove("6");
-            doc.userValues.remove("5");*/
-        }
-
         if (frontol.userValues.get("SecondMonitor") == "1" && rxF2SM !== null && isSaleDocument(doc)) {
             rxF2SM.deleteCheque();
         }
@@ -904,67 +650,9 @@ FunctionsOfEventListeners: {
                 saveDocumentAfterClosing(stringToSend, 2);
             }
         }
-        // для продаж и касс-участников промоакции
-        ///////////////////////////////////////////////////////////////////////PROMO_DUBUG/////////////////////////////////////////////////////////////
-        /***if (
-            isSaleDocument(doc) && // продажа
-            (getClientUUID() == "A527335D-BE7A-4D52-AAE0-DAC465A0BB5C" || getClientUUID() == "72AF8681-AA9D-4FDB-B41F-D9E6C4025C92") && // клиент
-            frontol.userValues.get("promoParticipation") == "1" && // касса-участник
-            Number(frontol.userValues.get("promoShopCode")) > 0
-        ) {
-            var dbRx = new RxDB();
-            var connected = dbRx.connect();
-
-            if (!connected) {
-                showMessage("Соединение с базой настроек промо-акции не установлено!", Icon.Warning);
-            }
-            else {
-                var promoRx = new RxPromo(dbRx);
-
-                promoRx.init(true);
-
-                if (frontol.userValues.get("promoCounters") != "") { // непустая переменная счётчиков промоакции
-                    var arrChequeDate = doc.dateClose.split(".");
-                    var srtChequeDate = "20" + arrChequeDate[2] + "-" + arrChequeDate[1] + "-" + arrChequeDate[0];
-                    var strChequeSum = doc.totalSum.toString();
-
-                    strChequeSum = strChequeSum.replace(",", ".");
-
-                    var cheque = {
-                        Number: doc.number,
-                        Date: srtChequeDate,
-                        Time: doc.timeClose,
-                        Sum: strChequeSum
-                    };
-
-                    var promoCounters = promoRx.getCounters();
-
-                    if (promoCounters) {
-                        for (var i = 0; i < promoCounters.length; i++) {
-                            var promoCounter = promoCounters[i];
-
-                            if (promoCounter.minChequeSum <= doc.totalSum) { // сумма чека хватает для участия в промоакции
-                                var cashBoxCode = frontol.codeWorkplace.toString();
-                                var shopCode = frontol.userValues.get("promoShopCode");
-                                var counter = promoRx.saveTransaction(cheque, shopCode, cashBoxCode, promoCounter);
-
-                                if (counter === false || isNaN(counter)) {
-                                    showMessage("Невозможно записать данные о чеке в базу данных промоакции!", Icon.Warning);
-                                }
-                                else if (!isNaN(counter) && counter % promoCounter.value == 0) {
-                                    showMessage("На вашей кассе " + cashBoxCode + " - победитель, номер чека " + cheque.Number);
-                                    doc.userValues.set(PROMO_TEXT_KEY, PROMO_TEXT_VALUE)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }***/
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
-    // ОТМЕНА РЕГМСТРАЦИИ КАРТЫ
+    // ОТМЕНА РЕГИСТРАЦИИ КАРТЫ
     function cancelCardRegister(cardNumber) {
         var currentDocument = null;
         //проверим, что текущий документ существует
@@ -1149,15 +837,6 @@ FunctionsOfEventListeners: {
         if (isReturnDocument(doc)) {
             CheckEnterPayment(payment, 2);
         }
-
-        //Если Тип оплаты Хумо QR Code
-        if (getClientUUID() == "4C70C190-EAD8-43A8-87DE-212899357830" && payment.type.code == 5) {
-            HumoQRPaymentOrder(false);
-        }
-        //Если Тип оплаты Хумо QR Code
-        if (payment.type.code == 105) HumoQRPaymentOrder(false);
-
-        if (payment.type.code === 106) CBTPreparePayment();
 
         EO_BeforeAddPayment(payment);
     }
@@ -1441,71 +1120,6 @@ FunctionsOfEventListeners: {
             frontol.currentDocument.userValues.get("FirstCardNumber") != ""
         ) {
             showError("Введены карты другого типа!");
-        }
-
-        var InputCard = Card.value;
-
-        if (InputCard.substring(0, 4) == "3F32") {
-            // это заказ покупателя
-            if (frontol.currentDocument.quantityPositions > 0) {
-                showError("Нельзя ввести заказ покупателя в чек с товарами");
-            }
-
-            var FilePath = vGet("FilePath");
-            var FileName = FilePath + InputCard + ".txt";
-
-            var fso = new ActiveXObject("Scripting.FileSystemObject");
-            var file;
-
-            try {
-                var file = fso.OpenTextFile(FileName, 1, 0);
-            } catch (err) {
-                showError("Файл " + FileName + " с заказом не найден");
-            }
-
-            var FirstLine = 1;
-            var OrderPayment = 0;
-            var Sum = 0;
-            // заполним чек позициями
-            while (!file.AtEndOfStream) {
-                var line = file.ReadLine();
-
-                if (FirstLine == 1) {
-                    line = line.slice(3); // в первой строки первые 2 символа "битые"
-
-                    if (line == "payment") OrderPayment = 1;
-                }
-
-                if (FirstLine == 0) {
-                    var pos1 = line.indexOf(";");
-                    var Mark = line.slice(0, pos1);
-                    var line2 = line.slice(pos1 + 1);
-
-                    var pos1 = line2.indexOf(";");
-                    var Quant = +line2.slice(0, pos1);
-                    var line2 = line2.slice(pos1 + 1);
-
-                    var pos1 = line2.indexOf(";");
-                    //var Price = +line2.slice(0,pos1);
-                    var SumPos = +line2.slice(0, pos1);
-
-                    //SM(Mark+"/"+Quant+"/"+Price);
-                    frontol.currentDocument.addPosition("Mark", Mark, 0, Quant, SumPos, true);
-
-                    //var Sum = Sum + (Quant * Price);
-                    var Sum = Sum + SumPos;
-                }
-
-                FirstLine = 0;
-            }
-
-            // введем вид оплаты, если заказ оплачен
-            if (OrderPayment == 1) frontol.currentDocument.addPayment(104, Sum);
-
-            file.Close();
-            vSet("CurrentFile", InputCard);
-
-            //cancelAct(); // отменим ввод этой карты
         }
     }
 }
@@ -1889,7 +1503,7 @@ MainFunctions: {
     }
     //ФОРМИРОВАНИЕ ОТСЫЛАЕМЫХ ДАННЫХ ПРИ ВОЗВРАТЕ ПОСЛЕ ПРОБИТИЯ ЧЕКА
     /* doc - документ
-       функция возвращает строку с данными*/
+    функция возвращает строку с данными*/
     function getReturnDataAfterClosing(doc, useBonusCardOnly, baseDocumentUserValues) {
         if (useBonusCardOnly == undefined) useBonusCardOnly = false;
 
@@ -2116,7 +1730,7 @@ MainFunctions: {
     }
     //ПЕРЕДАЧА ДАННЫХ ДОКУМЕНТА ПОСЛЕ ПРОБИТИЯ ЧЕКА
     /* stringToSend - строка с данными для отправки
-       documentType - тип документа (1 - продажа, 2 - возврат на основании)*/
+    documentType - тип документа (1 - продажа, 2 - возврат на основании)*/
     function sendDocumentAfterClosing(stringToSend, documentType) {
         var doc = frontol.currentDocument;
         //если документ уже помечен к откладыванию, вызываем соответствующую функцию и завершаемся без ошибки
@@ -2289,7 +1903,7 @@ MainFunctions: {
 
     //ОТЛОЖИТЬ ДАННЫЕ ДОКУМЕНТА
     /* stringToDelay - строка для откладывания
-       documentType - тип документа (1 - продажа, 2 - возврат)*/
+    documentType - тип документа (1 - продажа, 2 - возврат)*/
     function DelayDocument(stringToDelay, documentType) {
         try {
             var fDelay, fsoDelay;
@@ -2505,7 +2119,7 @@ MainFunctions: {
     }
     //ПРОВЕРКА ПРИ ВВОДЕ ПЛАТЕЖА
     /* payment - вводимый платеж
-       documentType - тип документа (1 - продажа, 2 - возврат)*/
+    documentType - тип документа (1 - продажа, 2 - возврат)*/
     function CheckEnterPayment(payment, documentType) {
         var processingPaymentTypeCodes = [];
 
@@ -2666,7 +2280,7 @@ MainFunctions: {
 
     //ПРОВЕРКА ПРИ УДАЛЕНИИ ПЛАТЕЖА
     /* payment - вводимый платеж
-       documentType - тип документа (1 - продажа)*/
+    documentType - тип документа (1 - продажа)*/
     function CheckDeletePayment(payment, documentType) {
         //если документ - продажа
         if (documentType == 1) {
@@ -2865,7 +2479,7 @@ MainFunctions: {
     }
     //ПОЛУЧЕНИЕ ДАННЫХ ДОКУМЕНТА ДЛЯ РЕГИСТРАЦИИ КАРТЫ
     /* doc - документ
-       функция возвращает массив с данными*/
+    функция возвращает массив с данными*/
     function GetRegisterDetailDtos(doc) {
         var registerDetailDtos = [];
         var numberInArray = 0;
@@ -9831,596 +9445,6 @@ function manualInputTare() {
     }
 }
 
-// Set promo params
-function manualSetPromoActionParams() {
-    var choice;
-
-    do {
-        var promoServer = frontol.userValues.get("promoServer");
-        var promoDatabase = frontol.userValues.get("promoDatabase");
-        var promoShopCode = frontol.userValues.get("promoShopCode");
-        var promoParticipation = frontol.userValues.get("promoParticipation");
-
-        var server = {
-            title: "Сервер" + (promoServer ? "->" + promoServer : ""),
-            value: "promoServer"
-        };
-
-        var database = {
-            title: "База данных" + (promoDatabase ? "->" + promoDatabase : ""),
-            value: "promoDatabase"
-        };
-
-        var shopCode = {
-            title: "Номер магазина" + (promoShopCode ? "->" + promoShopCode : ""),
-            value: "promoShopCode"
-        };
-
-        var participation = {
-            title: "Касса участвует в акциях->" + (promoParticipation == "1" ? "Да " : "Нет"),
-            value: "promoParticipation"
-        };
-
-        choice = frontol.actions.selectString(
-            "Параметры промоакций",
-            server.title + "\n" + database.title + "\n" + shopCode.title + "\n" + participation.title,
-            server.value + "\n" + database.value + "\n" + shopCode.value + "\n" + participation.value
-        );
-
-        switch (choice) {
-            case "promoServer":
-                var result = frontol.actions.inputString(server.title, promoServer);
-                if (result) frontol.userValues.set("promoServer", result.trim());
-                break;
-            case "promoDatabase":
-                var result = frontol.actions.inputString(database.title, promoDatabase);
-                if (result) frontol.userValues.set("promoDatabase", result.trim());
-                break;
-            case "promoShopCode":
-                var result = frontol.actions.inputString(shopCode.title, promoShopCode);
-                if (result) frontol.userValues.set("promoShopCode", result.trim());
-                break;
-            case "promoParticipation":
-                if (promoParticipation == "1") {
-                    frontol.userValues.set("promoParticipation", "0");
-                } else {
-                    frontol.userValues.set("promoParticipation", "1");
-                }
-                break;
-        }
-    } while (choice != null);
-}
-
-// Promo action for Auchan D
-function RxPromo(db) {
-    this.COUNTER_TEMPLATE = "PROMO_COUNTER_";
-
-    this.reset = function reset() {
-        frontol.userValues.remove("promoCounters");
-        frontol.userValues.remove("promoParticipation");
-    };
-
-    this.init = function init(silent) {
-        logg("init started");
-        if (typeof silent == "undefined" || typeof silent != "boolean") {
-            silent = false;
-        }
-
-        var cashBoxCode = frontol.codeWorkplace.toString();
-        logg("cashBoxCode = " + cashBoxCode);
-        var foundCashBox = this.findCashBox(cashBoxCode);
-        logg("foundCashBox = " + foundCashBox);
-
-        if (foundCashBox) {
-            frontol.userValues.set("promoParticipation", "1"); // флаг участия кассы в промоакции
-
-            var counters = this.getParams(); // получем параметры промоакции
-            var currentDate = getDateToString();
-
-            this.deleteOldCounters(currentDate); // удаляем старые счётчики
-
-            var promoInfoString = "";
-            var countersString = "";
-
-            if (counters.length > 0) {
-                promoInfoString = "Эта касса с номером " + cashBoxCode + " участвует в промо-акциях!\n";
-            }
-
-            for (var i = 0; i < counters.length; i++) {
-                var counter = counters[i];
-
-                if (counter) {
-                    if (countersString) countersString += ";";
-
-                    var counterName = this.COUNTER_TEMPLATE + currentDate + "_" + counter.code;
-                    var existingCounter = this.checkCounter(counterName, true);
-
-                    if (!existingCounter) {
-                        this.createCounter(counterName); // создаем счётчик для сегодняшней даты если его нет
-                    }
-
-                    countersString +=
-                        counter.code + "&" + counterName + "&" + counter.value + "&" + counter.minChequeSum;
-
-                    promoInfoString += "- Каждый " + counter.value + "-й чек - победитель!\n";
-
-                    if (counter.minChequeSum > 0) {
-                        promoInfoString +=
-                            "Минимальная сумма чека для участия в акции - " + promoParams.MinChequeSum + "\n";
-                    }
-                } else {
-                    this.reset();
-                }
-            }
-
-            if (promoInfoString && !silent) showMessage(promoInfoString);
-
-            frontol.userValues.set("promoCounters", countersString);
-        } else {
-            this.reset();
-        }
-    };
-    // возвращает массив счетчиков с параметрами
-    this.getCounters = function getCounters() {
-        var countersString = frontol.userValues.get("promoCounters");
-
-        if (countersString) {
-            var countersArray = countersString.split(";");
-            var counters = [];
-
-            for (var i = 0; i < countersArray.length; i++) {
-                var counterString = countersArray[i];
-
-                if (counterString) {
-                    var counterArray = counterString.split("&");
-
-                    if (counterArray.length >= 4) {
-                        var counter = {
-                            code: counterArray[0],
-                            name: counterArray[1],
-                            value: counterArray[2],
-                            minChequeSum: counterArray[3]
-                        };
-                        counters.push(counter);
-                    }
-                }
-            }
-            if (counters.length > 0) return counters;
-        }
-
-        return false;
-    };
-    // учавствует ли касса в промоакции
-    this.findCashBox = function foundCashBox(cashBoxCode) {
-        var result = db.query(
-            "select * from cashboxes where cashbox_code=" +
-                cashBoxCode +
-                " and shop_code=" +
-                frontol.userValues.get("promoShopCode")
-        );
-
-        if (result) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-    // получить параметры промоакции
-    this.getParams = function getParams() {
-        logg("getParams started");
-        var counters = [];
-        var result = db.query("select * from counters where shop_code=" + frontol.userValues.get("promoShopCode"));
-
-        logg("getParams result = {}", result);
-
-        if (result) {
-            for (var i = 0; i < result.length; i++) {
-                var record = [];
-                var fields = result[i].split("&");
-
-                for (var j = 0; j < fields.length; j++) {
-                    var field = fields[j].split(":");
-
-                    record[field[0]] = field[1];
-                }
-
-                if (
-                    "CODE" in record &&
-                    "SHOP_CODE" in record &&
-                    "COUNTER_VALUE" in record &&
-                    "MIN_CHEQUE_SUM" in record
-                ) {
-                    var counterParams = {
-                        code: record.CODE,
-                        shopCode: record.SHOP_CODE,
-                        value: record.COUNTER_VALUE,
-                        minChequeSum: record.MIN_CHEQUE_SUM
-                    };
-
-                    counters.push(counterParams);
-                }
-            }
-            return counters;
-        } else {
-            return false;
-        }
-    };
-    // получить следующее значение счётчика
-    this.getCounterNextValue = function getCounterNextValue(counterName) {
-        var result = db.query("select next value for " + counterName + " from rdb$database");
-
-        if (result) {
-            for (var i = 0; i < result.length; i++) {
-                var record = [];
-                var fields = result[i].split("&");
-
-                for (var j = 0; j < fields.length; j++) {
-                    var field = fields[j].split(":");
-
-                    record[field[0]] = field[1];
-                }
-                if ("GEN_ID" in record) return record.GEN_ID;
-            }
-        } else {
-            return false;
-        }
-    };
-    // получить текущее значение счётчика
-    this.getCounterValue = function getCounterValue(counterName) {
-        var result = db.query("select gen_id(" + counterName + ", 0) from rdb$database");
-
-        if (result) {
-            for (var i = 0; i < result.length; i++) {
-                var record = [];
-                var fields = result[i].split("&");
-
-                for (var j = 0; j < fields.length; j++) {
-                    var field = fields[j].split(":");
-
-                    record[field[0]] = field[1];
-                }
-                if ("GEN_ID" in record) return record.GEN_ID;
-            }
-        } else {
-            return false;
-        }
-    };
-    // записать чековую транзакцию
-    this.saveTransaction = function saveTransaction(cheque, shopCode, cashBoxCode, counter) {
-        //showMessage("Данные сохраняются")//debug
-        var queryString =
-            "insert into transactions values (" +
-            shopCode +
-            ", " +
-            cashBoxCode +
-            ", " +
-            "'" +
-            cheque.Date +
-            "', " +
-            "'" +
-            cheque.Time +
-            "', " +
-            cheque.Number +
-            ", " +
-            cheque.Sum +
-            ", " +
-            counter.code +
-            ", " +
-            "next value for " +
-            counter.name +
-            ") returning counter_value";
-        var result = db.query(queryString);
-
-        if (result) {
-            for (var i = 0; i < result.length; i++) {
-                var record = [];
-                var fields = result[i].split("&");
-
-                for (var j = 0; j < fields.length; j++) {
-                    var field = fields[j].split(":");
-
-                    record[field[0]] = field[1];
-                }
-
-                if ("COUNTER_VALUE" in record) return record.COUNTER_VALUE;
-            }
-        } else {
-            return false;
-        }
-    };
-    // создать счетчик
-    this.createCounter = function createCounter(counterName) {
-        var result = db.query("create generator " + counterName);
-
-        if (result) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-    // проверка существования счётчика
-    this.checkCounter = function checkCounter(counterName) {
-        var queryString = "select gen_id(" + counterName + ", 0) from rdb$database";
-        var result = db.query(queryString, true);
-
-        if (result) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-    // удалить старые счётчики
-    this.deleteOldCounters = function deleteOldCounters(currentDate) {
-        var queryString =
-            "SELECT rdb$generator_name FROM rdb$generators " +
-            "WHERE rdb$generator_name LIKE '" +
-            this.COUNTER_TEMPLATE +
-            "%' AND " +
-            "NOT rdb$generator_name LIKE '" +
-            this.COUNTER_TEMPLATE +
-            currentDate +
-            "%'";
-
-        var generators = db.query(queryString);
-
-        if (generators) {
-            for (var i = 0; i < generators.length; i++) {
-                var record = [];
-                var fields = generators[i].split("&");
-
-                for (var j = 0; j < fields.length; j++) {
-                    var field = fields[j].split(":");
-
-                    record[field[0]] = field[1];
-                }
-
-                if ("RDB$GENERATOR_NAME" in record) {
-                    var result = this.deleteCounter(record.RDB$GENERATOR_NAME);
-
-                    if (!result) return false;
-                }
-            }
-            return true;
-        } else {
-            return false;
-        }
-    };
-
-    this.deleteCounter = function deleteCounter(counterName) {
-        var result = db.query("drop generator " + counterName);
-
-        if (result) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-}
-
-function RxDB() {
-    var connectionObject = {
-        Driver: "Firebird/InterBase(r) driver",
-        Host: frontol.userValues.get("promoServer"),
-        DbName: frontol.userValues.get("promoDatabase"),
-        User: "SYSDBA",
-        Password: "masterkey",
-        CharSet: "WIN1251"
-    };
-
-    var connection = null;
-    var connectionString = "";
-    var isConnected = false;
-    var adStateClosed = 0; // The object is closed
-    // соединение с базой данных
-    this.connect = function connect() {
-        connection = new ActiveXObject("ADODB.Connection");
-
-        connectionString =
-            "driver=" +
-            connectionObject.Driver +
-            ";" +
-            "dbname=" +
-            connectionObject.Host +
-            ":" +
-            connectionObject.DbName +
-            ";" +
-            "uid=" +
-            connectionObject.User +
-            ";" +
-            "pwd=" +
-            connectionObject.Password +
-            ";" +
-            "charset=" +
-            connectionObject.CharSet +
-            ";" +
-            "auto_commit=true;auto_commit_level=0x1000;";
-
-        connection.ConnectionString = connectionString;
-        connection.CommandTimeout = 60;
-        connection.ConnectionTimeout = 30;
-
-        try {
-            connection.Open(connection.ConnectionString);
-            isConnected = true;
-        } catch (e) {
-            showMessage(
-                "Database connection error: [" +
-                    e.number +
-                    "], " +
-                    e.message +
-                    "\n" +
-                    "Connection string: " +
-                    connectionString,
-                Icon.Warning
-            );
-            isConnected = false;
-        }
-
-        return isConnected;
-    };
-    // выполнить запрос кроме select
-    this.execute = function execute(queryString, silent) {
-        if (!isConnected) return false;
-
-        if (typeof silent == "undefined" || typeof silent != "boolean") {
-            silent = false;
-        }
-
-        try {
-            connection.Execute(queryString);
-
-            var errCount = connection.Errors.Count;
-
-            if (errCount !== 0) {
-                //write the errors
-                for (var i = 0; i < errCount; i++) {
-                    var err = connection.Errors.Item(i);
-
-                    if (!silent) showMessage(err, Icon.Warning);
-                }
-                // clean out any existing errors
-                connection.Errors.Clear();
-
-                return false;
-            }
-
-            return true;
-        } catch (e) {
-            if (!silent) {
-                showMessage(
-                    "Execution error of query '" + queryString + "': [" + e.number + "], " + e.message,
-                    Icon.Error
-                );
-            }
-
-            return false;
-        }
-    };
-    //----------------------------------------------------------------------------------------------------------
-    // выполнить запрос
-    this.query = function query(queryString, silent) {
-        var recordSet = null;
-        var result = [];
-
-        if (!isConnected) return false;
-
-        if (typeof silent == "undefined" || typeof silent != "boolean") {
-            silent = false;
-        }
-
-        try {
-            recordSet = new ActiveXObject("ADODB.Recordset");
-            recordSet.Open(queryString, connection); // 3 - adOpenStatic, 1 - adLockReadOnly
-        } catch (e) {
-            if (!silent) {
-                showMessage(
-                    "Query execution error: [" + e.number + "],\n" + e.message + ",\nquery: " + queryString,
-                    Icon.Warning
-                );
-            }
-            return false;
-        }
-
-        var errCount = connection.Errors.Count;
-
-        if (errCount !== 0) {
-            //write the errors
-            for (var i = 0; i < errCount; i++) {
-                var err = connection.Errors.Item(i);
-
-                if (!silent) showMessage(err, Icon.Warning);
-            }
-            // clean out any existing errors
-            connection.Errors.Clear();
-            return false;
-        }
-        // запрос выполнился успешно, но ничеге не вернул
-        if (recordSet.State == 0) return true;
-
-        if (recordSet.EOF && recordSet.BOF) return false;
-
-        try {
-            while (!recordSet.EOF) {
-                var fieldString = "";
-
-                for (var i = 0; i < recordSet.Fields.Count; i++) {
-                    var fieldName = recordSet.Fields.Item(i).Name.toString();
-                    var fieldValue = recordSet.Fields.Item(i).Value.toString();
-
-                    i > 0
-                        ? (fieldString += "&" + fieldName + ":" + fieldValue)
-                        : (fieldString += fieldName + ":" + fieldValue);
-                }
-
-                result.push(fieldString);
-                recordSet.MoveNext();
-            }
-            return result;
-        } catch (e) {
-            if (!silent) {
-                showMessage("Getting query '" + queryString + "' result error : [" + e.number + "], " + e.message);
-            }
-            return false;
-        }
-    };
-    //----------------------------------------------------------------------------------------------------------
-    // выполнить запрос select
-    this.select = function select(queryString, silent) {
-        var recordSet = null;
-        var result = [];
-
-        if (typeof silent == "undefined" || typeof silent != "boolean") {
-            silent = false;
-        }
-
-        if (!isConnected) return false;
-
-        try {
-            recordSet = new ActiveXObject("ADODB.Recordset");
-
-            recordSet.Open(queryString, connection);
-        } catch (e) {
-            if (!silent) {
-                showMessage(
-                    "Execution error of query '" + queryString + "': [" + e.number + "], " + e.message,
-                    Icon.Warning
-                );
-            }
-            return false;
-        }
-
-        if (recordSet.EOF && recordSet.BOF) return false;
-
-        try {
-            recordSet.MoveFirst();
-
-            while (!recordSet.EOF) {
-                var fieldString = "";
-
-                for (var i = 0; i < recordSet.Fields.Count; i++) {
-                    var fieldName = recordSet.Fields.Item(i).Name;
-                    var fieldValue = recordSet.Fields.Item(i).Value;
-
-                    i > 0
-                        ? (fieldString += "&" + fieldName + ":" + fieldValue)
-                        : (fieldString += fieldName + ":" + fieldValue);
-                }
-
-                result.push(fieldString);
-                recordSet.MoveNext();
-            }
-            return result;
-        } catch (e) {
-            if (!silent) {
-                showMessage(
-                    "Getting query '" + queryString + "' result error : [" + e.number + "], " + e.message,
-                    Icon.Warning
-                );
-            }
-            return false;
-        }
-    };
-}
 // МАРКЕТИНГОВЫЕ ПРОГРАММЫ
 function RxMarketPrograms() {
     var POSITION_MARKET_PROGRAM_IDS_VALUE_NAME = "PositionMarketProgramIds";
@@ -11256,6 +10280,10 @@ function isReturnDocument(doc) {
 
     return false;
 }
+// документ-внесение
+function isVnesenieDocument(doc) {
+    return doc.type.operation === 4;
+}
 
 function isExcisableWare(ware) {
     if (ware.type == 1 || ware.type == 4 || ware.type == 2) return true;
@@ -11528,17 +10556,17 @@ function JetQrBeforeAddPayment(frontolPayment) {
                     frontol.currentDocument.addPayment(result.FrontolBankCode, result.AmountArrived, null);
                     frontol.currentDocument.userValues.set(result.InvoiceId, result.InvoiceId);
                 } else {
-                    show("Дублирующий платеж! Этот платеж уже есть в списке.");
+                    showMessage("Дублирующий платеж! Этот платеж уже есть в списке.", Icon.Warning);
                 }
             } else {
-                show("Ошибка платежа! Не произведен платеж!");
+                showMessage("Ошибка платежа! Не произведен платеж!", Icon.Error);
             }
 
             JetQrPay.Dispose();
             JetQrPay = null;
         }
 
-        frontol.actions.cancel();
+        cancelAct();
     }
 }
 
