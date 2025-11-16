@@ -1,0 +1,25 @@
+meta {
+  name: ZAKRITIE SMENI (SETTLE)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{url}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "task": "settle",
+    "data": {
+      "amount": 0.5,
+      "tagRRN": "763142346974"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+}

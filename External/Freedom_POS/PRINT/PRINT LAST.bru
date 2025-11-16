@@ -1,0 +1,29 @@
+meta {
+  name: PRINT LAST
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "task": "print",
+    "data": {
+      "actionCode": "1"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  Напечатать обычный чек самой последней транзакции.
+  Если операционный день закрыт, и после не было транзакций, то ничего не напечатается. 
+}
