@@ -587,7 +587,6 @@ FunctionsOfEventListeners: {
 		getJson2();
 		StatusKKM();
 		var doc = frontol.currentDocument;
-		//show(doc.type.operation)
 		if (isVnesenieDocument(doc)) {
 			var FRadress = frontol.userValues.get('fiscalipadres');
 			var options = {
@@ -662,7 +661,6 @@ FunctionsOfEventListeners: {
 					}
 
 					var stringToSend = GiveDocumentToString(doc, PrintOption);
-					//show(stringToSend);
 					var FRadress = frontol.userValues.get('fiscalipadres');
 					var result = sendtofiscal(
 						FRadress,
@@ -1078,7 +1076,7 @@ FunctionsOfEventListeners: {
 		//Технология Групп +
 		if (IsFRfromTG()) {
 			if (IsSessionOpen()) {
-				show('Смена открыта в ККМ');
+				showMessage('Смена открыта в ККМ', Icon.Exclamation);
 			} else {
 				var options = {
 					formCode: 'OPEN_SHIFT',
@@ -12606,10 +12604,6 @@ function JetQrPayInit() {
 	);
 }
 
-function show(message) {
-	frontol.actions.showMessage(message);
-}
-
 var JET_QR = 200;
 var ALIF_QR = 201;
 var ALIF_SALOM = 202;
@@ -12772,9 +12766,10 @@ function AlifShowAdminUI() {
 
 	var isAdminUser = IsAdminUser();
 	if (!isAdminUser) {
-		show(
+		showMessage(
 			'У вас нет доступа к административному интерфейсу ПС Алиф Капитал',
-		);
+			Icon.Exclamation
+		)
 		return;
 	}
 
@@ -12815,12 +12810,16 @@ function AlifShowAdminUI() {
 						result.InvoiceId,
 					);
 				} else
-					show('Дублирующий платеж! Этот платеж уже есть в списке.');
+					showMessage(
+						'Дублирующий платеж! Этот платеж уже есть в списке.',
+						Icon.Exclamation
+					)
 			}
 		} else {
-			show(
+			showMessage(
 				'Ошибка! Нельзя добавлять платеж предназначенный для другого документа!',
-			);
+				Icon.Error
+			)
 		}
 	}
 
@@ -12857,13 +12856,14 @@ function IsAdminUser() {
 			}
 		}
 	} catch (e) {
-		show(
+		showMessage(
 			'Query execution error: [' +
 				e.number +
 				'],\n' +
 				e.message +
 				',\nquery: ' +
 				queryString,
+				Icon.Error
 		);
 	}
 	return isAdmin;
@@ -13876,7 +13876,7 @@ function ManualPrintOptionsButton() {
 function $ManualButton() {
 	// if (AdminUser !== frontol.currentUser.code && HeadCashier !== frontol.currentUser.code) {
 	if (!isMenuAccessAvailable()) {
-		show('У вас нет доступа к административному интерфейсу.');
+		showMessage('У вас нет доступа к административному интерфейсу.', Icon.Exclamation);
 		return;
 	}
 	var printLastDoc = 'Печать последнего фискального документа';
@@ -14215,7 +14215,7 @@ function $ManualButton() {
 					'xreport',
 					stringToSend,
 				);
-				show(result.message);
+				showMessage(result.message);
 
 				break;
 			}
@@ -14234,7 +14234,7 @@ function $ManualButton() {
 					'zreport',
 					stringToSend,
 				);
-				show(result.message);
+				showMessage(result.message);
 
 				break;
 			}
@@ -14291,8 +14291,6 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 		}
 	}
 
-	//show(stringToSend)
-
 	// Проверка ready state
 	if (request.readyState != 4) {
 		frontol.actions.showMessage('Нет ответа или связи с ККМ', Icon.Error);
@@ -14308,7 +14306,6 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 		if (comand == 'closeShift') {
 			frontol.userValues.set('IsSessionOn', '0');
 		}
-		//show(request.responseText) //Надоубрать
 		var ObjectJSON = JSON.parse(request.responseText);
 
 		return ObjectJSON;
@@ -14363,13 +14360,10 @@ function JSONParse(jsonString) {
 		}
 		//sboboev-
 
-		//show("keyValue "+keyValue)
 		//получаем ключ
 		var key = keyValue[0].replace(/"/g, '').replace(/ /g, '');
-		//show("key "+key)
 		//получаем значение
 		var value = keyValue[1].replace(/"/g, '').replace(/ /g, '');
-		//show("value "+value)
 		//запихаем в объект
 		obj[key] = value;
 	}
@@ -14542,7 +14536,6 @@ function GiveDocumentToString(doc, PrintOption) {
 		doc.payment.index++
 	) {
 		if (doc.payment.sumInBaseCurrency > 0) {
-			// show(doc.payment.type.code)
 			if (doc.payment.type.code == 1) {
 				cashamount = cashamount + doc.payment.sumInPaymentCurrency;
 			} else {
@@ -14557,7 +14550,6 @@ function GiveDocumentToString(doc, PrintOption) {
 	} else {
 		AmountChangeCash = 0;
 	}
-	//show(AmountChangeCash);
 	cashamount = cashamount - AmountChangeCash;
 
 	if (nocashamount > 0) {
@@ -14840,7 +14832,6 @@ function OpenDraw() {
 	var stringToSend = options;
 	var FRadress = frontol.userValues.get('fiscalipadres');
 	var result = sendtofiscal(FRadress, 'openDrawer', stringToSend);
-	// show(result)
 	if (result.rc == 'SUCCESS') {
 		return result.rc;
 	} else if (result.rc !== 'SUCCESS') {
@@ -15054,7 +15045,6 @@ function StatusKKM() {
 	var FRadress = frontol.userValues.get('fiscalipadres');
 	var result = sendtofiscal(FRadress, 'deviceStatus', stringToSend);
 	// frontol.actions.showMessage(result.data.onlineStatus);
-	// show(result)
 	if (result.rc == 'SUCCESS') {
 		if (result.data.onlineStatus == true) {
 		} else {
