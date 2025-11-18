@@ -2503,7 +2503,7 @@ MainFunctions: {
 			'POST',
 			stringToSend,
 			'calculate_return',
-			2, // документ-возврат
+			2 // документ-возврат
 		);
 
 		if (result.success) {
@@ -3486,7 +3486,7 @@ MainFunctions: {
 						getClientUUID() ==
 							'ADA00981-1CE1-41B0-A6AD-7AAD516EAD31'
 							? '0'
-							: residueToPay, // по умолчанию - сумма доступных для списания бонусов, в случае исключения - 0
+							: residueToPay // по умолчанию - сумма доступных для списания бонусов, в случае исключения - 0
 					);
 
 					if (bonusPay == null) {
@@ -4134,7 +4134,7 @@ MainFunctions: {
 						'&' +
 						percent +
 						'&' +
-						sum, // for ProcV2
+						sum // for ProcV2
 				);
 			} catch (e) {
 				showMessage(
