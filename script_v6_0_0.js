@@ -13924,7 +13924,14 @@ function $ManualButton() {
 
 		var freedomBnkTerminalIpAddTitle =
 			'1. Установить ip адресс для терминала FreedomBank';
-		if (getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS) == '') {
+		var freedomBankTerminalIpAdd = getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS)
+
+		//TODO. DELETE
+		showMessage('VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS ' + VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS)
+		showMessage('VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = ' + freedomBankTerminalIpAdd)
+
+
+		if (isEmptyValue(freedomBankTerminalIpAdd)) {
 			freedomBnkTerminalIpAddTitle += ' (Не указан)';
 		}
 
@@ -13933,56 +13940,64 @@ function $ManualButton() {
 			'Константы',
 
 			'---------- Параметры ФР Технология Групп ----------\n' +
-				fiscalipadresString +
-				'\n' +
-				isfiscalTGString +
-				'\n' +
-				isWriteLogString +
-				'\n' +
+				fiscalipadresString + '\n'
+				+
+				isfiscalTGString + '\n'
+				+
+				isWriteLogString + '\n' 
+				+
 				'\n' +
 				'-----Параметры по COM порт-----\n' +
-				comPort +
-				'\n' +
-				comPortEnabled +
-				'\n' +
+				comPort + '\n'
+				+
+				comPortEnabled + '\n'
+				+
 				'\n' +
 				'---------- Отчеты ФР TP809 ---------------\n' +
-				TGXString +
+				TGXString + '\n'
+				+
+				TGZString + '\n'
+				+
+				printLastDoc + '\n'
+				+
+				printLastDocByFDNum + '\n'
+				+
 				'\n' +
-				TGZString +
-				'\n' +
-				printLastDoc +
-				'\n' +
-				printLastDocByFDNum +
-				'\n' +
-				'\n' +
-				SessionValString +
-				'\n' +
+				SessionValString + '\n'
+				+
 				'\n' +
 				'---------- Прочее ---------------\n' +
 				freedomBnkTerminalIpAddTitle,
 
-			'\n' +
-				'fiscalipadres\n' +
-				'isfiscalTG\n' +
-				'isWriteLog\n' +
+				'\n' +
+				'fiscalipadres' + '\n'
+				+
+				'isfiscalTG' + '\n'
+				+
+				'isWriteLog' + '\n'
+				+
 				'\n' +
 				'\n' +
-				'comPort\n' +
-				'comPortEnabled\n' +
+				'comPort' + '\n'
+				+
+				'comPortEnabled' + '\n'
+				+
 				'\n' +
 				'\n' +
-				'TGX\n' +
-				'TGZ\n' +
-				'printLastDoc\n' +
-				'printLastDocByFDNum\n' +
+				'TGX' + '\n'
+				+
+				'TGZ' + '\n'
+				+
+				'printLastDoc' + '\n'
+				+
+				'printLastDocByFDNum' + '\n'
+				+
+				'\n' +
+				'IsSessionOn' + '\n'
+				+
 				'\n' +
 				'\n' +
-				'IsSessionOn\n' +
-				'\n' +
-				'\n' +
-				'freedomBankTerminalIpAdd\n' +
-				'\n'
+				'freedomBankTerminalIpAdd' + '\n'
 		);
 
 		if (st == null || st == '') return;
