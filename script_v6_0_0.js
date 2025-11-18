@@ -271,7 +271,7 @@ function checkShiftReminder() {
 	if (hours === 23 && minutes >= 50 && minutes <= 59) {
 		frontol.actions.showMessage(
 			'Закройте смену! Через 10 минут ККМ будет заблокирована!',
-			Icon.Warning,
+			Icon.Warning
 		);
 	}
 }
@@ -372,7 +372,7 @@ function init() {
 	frontol.addEventListener(
 		'addManualDiscount',
 		'addManualDiscountAfter',
-		false,
+		false
 	);
 
 	//ВВОД КАРТЫ - ДО
@@ -395,7 +395,7 @@ function init() {
 					e.message +
 					CR_MESSAGE +
 					CONTACT_YOUR_TECHNICIAN_MESSAGE,
-				Icon.Error,
+				Icon.Error
 			);
 		}
 	}
@@ -493,7 +493,7 @@ FunctionsOfEventListeners: {
 					ffdVersion: 'VER_1',
 					shouldPrintSlip: true,
 					cashier: frontol.currentUser.name,
-					kktVersion: '1',
+					kktVersion: '1'
 				};
 
 				var stringToSend = JSONStringify(options);
@@ -505,7 +505,7 @@ FunctionsOfEventListeners: {
 					frontol.userValues.set('IsSessionOn', '0');
 					frontol.actions.showMessage(
 						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
-						Icon.Error,
+						Icon.Error
 					);
 					cancelAct();
 					return;
@@ -573,7 +573,7 @@ FunctionsOfEventListeners: {
 
 				if (
 					frontol.userValues.get(
-						GET_ALL_CHECKS_FROM_CASH_VALUE_NAME,
+						GET_ALL_CHECKS_FROM_CASH_VALUE_NAME
 					) == '1'
 				) {
 					saveDocumentAfterClosing(stringToSend, 1);
@@ -593,7 +593,7 @@ FunctionsOfEventListeners: {
 			var options = {
 				formCode: 'ADD_CASH',
 				shouldPrintSlip: true,
-				addAmount: Number(doc.totalSum * 100),
+				addAmount: Number(doc.totalSum * 100)
 			};
 			var stringToSend = JSONStringify(options);
 			var result = sendtofiscal(FRadress, 'addCash', stringToSend);
@@ -601,7 +601,7 @@ FunctionsOfEventListeners: {
 				var error = getErrorOFD(result.rc);
 				frontol.actions.showMessage(
 					'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
-					Icon.Error,
+					Icon.Error
 				);
 				//break;
 				cancelAct();
@@ -616,7 +616,7 @@ FunctionsOfEventListeners: {
 			var options = {
 				formCode: 'REMOVE_CASH',
 				shouldPrintSlip: true,
-				removeAmount: Number(doc.totalSum * 100),
+				removeAmount: Number(doc.totalSum * 100)
 			};
 			var stringToSend = JSONStringify(options);
 			var result = sendtofiscal(FRadress, 'removeCash', stringToSend);
@@ -624,7 +624,7 @@ FunctionsOfEventListeners: {
 				var error = getErrorOFD(result.rc);
 				frontol.actions.showMessage(
 					'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
-					Icon.Error,
+					Icon.Error
 				);
 				//break;
 				cancelAct();
@@ -642,13 +642,13 @@ FunctionsOfEventListeners: {
 				if (IsSessionOpen()) {
 					// Значение параметры вариантов печати чека
 					var PrintWithoutSending = frontol.userValues.get(
-						'PrintWithoutSending',
+						'PrintWithoutSending'
 					);
 					var PrintWithSendingToPhone = frontol.userValues.get(
-						'PrintWithSendingToPhone',
+						'PrintWithSendingToPhone'
 					);
 					var PrintWithSendingToMail = frontol.userValues.get(
-						'PrintWithSendingToMail',
+						'PrintWithSendingToMail'
 					);
 					var PrintOption = '';
 
@@ -666,7 +666,7 @@ FunctionsOfEventListeners: {
 					var result = sendtofiscal(
 						FRadress,
 						'formReceipt',
-						stringToSend,
+						stringToSend
 					);
 					if (result.rc !== 'SUCCESS') {
 						var error = getErrorOFD(result.rc);
@@ -675,7 +675,7 @@ FunctionsOfEventListeners: {
 								CR_MESSAGE +
 								' -> ' +
 								error,
-							Icon.Error,
+							Icon.Error
 						);
 						//break;
 						cancelAct();
@@ -708,7 +708,7 @@ FunctionsOfEventListeners: {
 		}
 
 		var sumToCreateCoupon = Number(
-			frontol.userValues.get('SumToCreateCoupon'),
+			frontol.userValues.get('SumToCreateCoupon')
 		);
 		var stringToSend = '';
 		// автокупоны
@@ -741,7 +741,7 @@ FunctionsOfEventListeners: {
 
 				if (
 					frontol.userValues.get(
-						GET_ALL_CHECKS_FROM_CASH_VALUE_NAME,
+						GET_ALL_CHECKS_FROM_CASH_VALUE_NAME
 					) == '1'
 				) {
 					saveDocumentAfterClosing(stringToSend, 1);
@@ -769,22 +769,22 @@ FunctionsOfEventListeners: {
 				getClientUUID() === '29A1BC43-C747-4B97-ACD7-6F74CFC88BA1'
 			) {
 				var baseDocUserValuesString = doc.userValues.get(
-					'BaseDocumentUserValues',
+					'BaseDocumentUserValues'
 				);
 
 				if (baseDocUserValuesString) {
 					baseDocUserValuesString = base64_decode(
-						baseDocUserValuesString,
+						baseDocUserValuesString
 					);
 
 					var baseDocumentUserValues = deserializingDocumentUserValue(
-						baseDocUserValuesString,
+						baseDocUserValuesString
 					);
 
 					stringToSend = getReturnDataAfterClosing(
 						doc,
 						false,
-						baseDocumentUserValues,
+						baseDocumentUserValues
 					);
 
 					if (
@@ -822,7 +822,7 @@ FunctionsOfEventListeners: {
 		if (!isSaleDocument(currentDocument)) {
 			showMessage(
 				OPERATION_AVAILABLE_IN_SALE_DOCUMENT_ONLY_MESSAGE,
-				Icon.Error,
+				Icon.Error
 			);
 			return;
 		}
@@ -857,21 +857,21 @@ FunctionsOfEventListeners: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		//формируем строку для отправки
 		var stringToSend = JSON.stringify({
 			LicenseGuid: license,
 			AccessTokenGuid: accessToken,
-			CardCode: cardNumber,
+			CardCode: cardNumber
 		});
 
 		result = sendHttpRequest(
 			processingServerAddress + '/BonusWebApi/api/processing/cancel',
 			'POST',
 			stringToSend,
-			'register_cancel',
+			'register_cancel'
 		);
 
 		if (result.success) {
@@ -882,7 +882,7 @@ FunctionsOfEventListeners: {
 				'Регистрация в процессинге успешно отменена!' +
 					CR_MESSAGE +
 					'Номер: ' +
-					cardNumber,
+					cardNumber
 			);
 		} else {
 			showMessage(result.message, Icon.Error);
@@ -963,14 +963,14 @@ FunctionsOfEventListeners: {
 					var result = {
 						success: false,
 						message: '',
-						data: '',
+						data: ''
 					};
 
 					//формируем строку для отправки
 					var stringToSend = JSON.stringify({
 						LicenseGuid: license,
 						AccessTokenGuid: accessToken,
-						CardCode: cardBoxNumbersArray[i],
+						CardCode: cardBoxNumbersArray[i]
 					});
 
 					result = sendHttpRequest(
@@ -978,7 +978,7 @@ FunctionsOfEventListeners: {
 							'/BonusWebApi/api/processing/cancel',
 						'POST',
 						stringToSend,
-						'register_cancel',
+						'register_cancel'
 					);
 
 					if (result.success) {
@@ -993,7 +993,7 @@ FunctionsOfEventListeners: {
 						showMessage(
 							'Регистрация в процессинге успешно отменена!\n' +
 								'Номер: ' +
-								cardNumber,
+								cardNumber
 						);
 					} else {
 						showMessage(result.message, Icon.Error);
@@ -1084,7 +1084,7 @@ FunctionsOfEventListeners: {
 					ffdVersion: 'VER_1',
 					shouldPrintSlip: true,
 					cashier: frontol.currentUser.name,
-					kktVersion: '1',
+					kktVersion: '1'
 				};
 
 				var stringToSend = JSONStringify(options);
@@ -1095,7 +1095,7 @@ FunctionsOfEventListeners: {
 					var error = getErrorOFD(result.rc);
 					frontol.actions.showMessage(
 						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
-						Icon.Error,
+						Icon.Error
 					);
 					//break;
 					cancelAct();
@@ -1150,7 +1150,7 @@ FunctionsOfEventListeners: {
 					ffdVersion: 'VER_1',
 					shouldPrintSlip: true,
 					cashier: frontol.currentUser.name,
-					kktVersion: '1',
+					kktVersion: '1'
 				};
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
@@ -1160,7 +1160,7 @@ FunctionsOfEventListeners: {
 					var error = getErrorOFD(result.rc);
 					frontol.actions.showMessage(
 						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
-						Icon.Error,
+						Icon.Error
 					);
 					cancelAct();
 					return;
@@ -1222,14 +1222,14 @@ FunctionsOfEventListeners: {
 			}
 
 			var posId = shelfLifeDiscounts.getWareWithoutDiscountPostionId(
-				pos.ware.code,
+				pos.ware.code
 			);
 
 			if (posId > -1) {
 				shelfLifeDiscounts.addWareToPosition(
 					pos.ware.code,
 					pos.quantity,
-					posId,
+					posId
 				);
 				cancelAct();
 			}
@@ -1266,7 +1266,7 @@ FunctionsOfEventListeners: {
 
 			var shelfLifeDiscount = shelfLifeDiscounts.getDiscount(
 				pos.ware.code,
-				pos.id,
+				pos.id
 			);
 			var textMessage = '';
 
@@ -1365,19 +1365,19 @@ MainFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		//формируем строку для отправки
 		var stringToSend = JSON.stringify({
-			LicenseGuid: license,
+			LicenseGuid: license
 		});
 
 		result = sendHttpRequest(
 			processingServerAddress + '/BonusWebApi/api/processing/cashparams',
 			'POST',
 			stringToSend,
-			'cashparams',
+			'cashparams'
 		);
 
 		if (result.success) {
@@ -1391,7 +1391,7 @@ MainFunctions: {
 						].Name.toString().trim(),
 						result.data.CashParamResponseDtos[
 							i
-						].Value.toString().trim(),
+						].Value.toString().trim()
 					);
 				}
 			}
@@ -1506,13 +1506,13 @@ MainFunctions: {
 					SumBase: Number(cardArray[2]).round(2),
 					SumDiscounted: Number(cardArray[3]).round(2),
 					Discount: Number(discount).round(2),
-					Percent: Number(cardArray[5]).round(2),
+					Percent: Number(cardArray[5]).round(2)
 				};
 
 				// ProcV2, передаем BonusDiscount
 				if (cardArray.length > 6) {
 					tDocumentDiscountDtos[i].BonusDiscount = Number(
-						cardArray[6],
+						cardArray[6]
 					).round(2);
 				}
 			}
@@ -1524,12 +1524,12 @@ MainFunctions: {
 				SumBase: doc.sum,
 				SumDiscounted: doc.totalSum,
 				Discount: doc.totalSumDiscount,
-				Percent: doc.totalPercentDiscount,
+				Percent: doc.totalPercentDiscount
 			};
 		}
 		// автокупоны
 		var sumToCreateCoupon = Number(
-			frontol.userValues.get('SumToCreateCoupon'),
+			frontol.userValues.get('SumToCreateCoupon')
 		);
 
 		if (
@@ -1543,7 +1543,7 @@ MainFunctions: {
 				SumBase: doc.sum,
 				SumDiscounted: doc.totalSum,
 				Discount: doc.totalSumDiscount,
-				Percent: doc.totalPercentDiscount,
+				Percent: doc.totalPercentDiscount
 			};
 		}
 
@@ -1552,7 +1552,7 @@ MainFunctions: {
 		var numberInArray = 0;
 
 		var bonusDiscountPositions = doc.userValues.get(
-			'BonusDiscountPositions',
+			'BonusDiscountPositions'
 		);
 		var bonusDiscountPositionsArray = [];
 
@@ -1577,12 +1577,12 @@ MainFunctions: {
 						: doc.position.ware.mark),
 				Quantity: Number(doc.position.quantity).round(3),
 				TotalPrice: Number(doc.position.sum).round(2),
-				TotalPriceDiscounted: Number(doc.position.totalSum).round(2),
+				TotalPriceDiscounted: Number(doc.position.totalSum).round(2)
 			};
 
 			var marketPrograms = new RxMarketPrograms();
 			var marketProgram = marketPrograms.getPositionMarketProgram(
-				doc.position.id,
+				doc.position.id
 			);
 
 			if (
@@ -1591,7 +1591,7 @@ MainFunctions: {
 				!isNaN(parseInt(marketProgram[1], 10))
 			) {
 				tDocumentDetailDtos[numberInArray].MarketProgramId = Number(
-					marketProgram[1],
+					marketProgram[1]
 				);
 				tDocumentDetailDtos[numberInArray].MarketProgramIsForced =
 					marketProgram[2] == '1' ? true : false;
@@ -1606,12 +1606,12 @@ MainFunctions: {
 
 			cardBoxSpecialDetailDto = getCardBoxSpecialDetailDto(
 				doc,
-				doc.position.index,
+				doc.position.index
 			);
 
 			if (cardBoxSpecialDetailDto) {
 				tDocumentDetailDtos[numberInArray].SpecialPrice = Number(
-					cardBoxSpecialDetailDto.SpecialPrice,
+					cardBoxSpecialDetailDto.SpecialPrice
 				);
 				tDocumentDetailDtos[numberInArray].SpecialPriceQuantity =
 					Number(cardBoxSpecialDetailDto.SpecialPriceQuantity);
@@ -1627,10 +1627,10 @@ MainFunctions: {
 
 					if (bonusDiscountPositionArray.length >= 2) {
 						var positionIndex = Number(
-							bonusDiscountPositionArray[0],
+							bonusDiscountPositionArray[0]
 						);
 						var positionSpendBonuses = Number(
-							bonusDiscountPositionArray[1],
+							bonusDiscountPositionArray[1]
 						).round(2);
 
 						if (positionIndex == doc.position.index) {
@@ -1640,8 +1640,8 @@ MainFunctions: {
 							if (
 								Number(
 									frontol.userValues.get(
-										BONUS_PAYMENT_CODE_NAME,
-									),
+										BONUS_PAYMENT_CODE_NAME
+									)
 								) > 0
 							) {
 								tDocumentDetailDtos[
@@ -1649,7 +1649,7 @@ MainFunctions: {
 								].TotalPriceDiscounted = Number(
 									tDocumentDetailDtos[numberInArray]
 										.TotalPriceDiscounted -
-										positionSpendBonuses,
+										positionSpendBonuses
 								).round(2);
 							}
 
@@ -1677,7 +1677,7 @@ MainFunctions: {
 			TotalSum: Number(doc.sum).round(2),
 			TotalSumDiscounted: Number(doc.sum - totalDiscount).round(2),
 			DocumentDiscountDtos: tDocumentDiscountDtos,
-			DocumentDetailDtos: tDocumentDetailDtos,
+			DocumentDetailDtos: tDocumentDetailDtos
 		};
 
 		if (getClientUUID() == '4C70C190-EAD8-43A8-87DE-212899357830') {
@@ -1709,7 +1709,7 @@ MainFunctions: {
 				var payment = {
 					PaymentFormCode: doc.payment.type.code,
 					PaymentMethod: doc.payment.type.operation === 0 ? 1 : 2, // 1 - наличные, 2 - всё останое
-					Sum: Number(doc.payment.sumInBaseCurrency).round(2),
+					Sum: Number(doc.payment.sumInBaseCurrency).round(2)
 				};
 				var foundPaymentCodeIndex = -1;
 				// ищем вид оплаты с таким же кодом
@@ -1744,7 +1744,7 @@ MainFunctions: {
 			payment.index = payment.count;
 			documentPayment = {
 				code: payment.type.code,
-				method: 0,
+				method: 0
 			};
 
 			for (
@@ -1769,7 +1769,7 @@ MainFunctions: {
 	// ПОЛУЧИТЬ СВОЙСТВА ТОВАРА
 	function getCardBoxSpecialDetailDto(doc, positionId) {
 		var cardBoxSpecialDetailDtos = doc.userValues.get(
-			'cardBoxSpecialDetailDtos',
+			'cardBoxSpecialDetailDtos'
 		);
 
 		if (cardBoxSpecialDetailDtos.length > 0) {
@@ -1794,7 +1794,7 @@ MainFunctions: {
 								cardBoxSpecialDetailDtoArray[2];
 						} catch (e) {
 							showMessage(
-								'Ошибка получения специальных параметров товара!',
+								'Ошибка получения специальных параметров товара!'
 							);
 						}
 
@@ -1813,7 +1813,7 @@ MainFunctions: {
 	function getReturnDataAfterClosing(
 		doc,
 		useBonusCardOnly,
-		baseDocumentUserValues,
+		baseDocumentUserValues
 	) {
 		if (useBonusCardOnly == undefined) useBonusCardOnly = false;
 
@@ -1909,7 +1909,7 @@ MainFunctions: {
 			cardBoxDocDiscDtos = baseDocumentUserValues.cardBoxDocDiscDtos;
 		} else {
 			cardBoxAccountTypes = doc.baseDocument.userValues.get(
-				'cardBoxAccountTypes',
+				'cardBoxAccountTypes'
 			);
 			cardBoxDocDiscDtos =
 				doc.baseDocument.userValues.get('cardBoxDocDiscDtos');
@@ -2001,7 +2001,7 @@ MainFunctions: {
 							? doc.position.ware.code.toString()
 							: doc.position.ware.mark),
 					Quantity: Number(doc.position.quantity).round(3),
-					TotalPrice: Number(doc.position.sum).round(2),
+					TotalPrice: Number(doc.position.sum).round(2)
 				};
 			}
 		}
@@ -2025,7 +2025,7 @@ MainFunctions: {
 					: frontol.codeWorkplace.toString(),
 			TotalSum: Number(doc.totalSum).round(2),
 			ReturnDiscountDtos: tReturnDiscountDtos,
-			ReturnDetailDtos: tReturnDetailDtos,
+			ReturnDetailDtos: tReturnDetailDtos
 		};
 
 		if (getClientUUID() == '4C70C190-EAD8-43A8-87DE-212899357830') {
@@ -2060,7 +2060,7 @@ MainFunctions: {
 						e.name +
 						'\n' +
 						e.message,
-					Icon.Error,
+					Icon.Error
 				);
 				throw e;
 			}
@@ -2074,7 +2074,7 @@ MainFunctions: {
 					'_' +
 					dateTimeNow +
 					'.log',
-				true,
+				true
 			);
 			file.WriteLine(stringToSend);
 
@@ -2085,7 +2085,7 @@ MainFunctions: {
 					e.name +
 					'\n' +
 					e.message,
-				Icon.Error,
+				Icon.Error
 			);
 		}
 	}
@@ -2110,7 +2110,7 @@ MainFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		result = sendHttpRequest(
@@ -2121,7 +2121,7 @@ MainFunctions: {
 			stringToSend,
 			documentType == 1 ? 'sale' : 'return',
 			documentType,
-			true,
+			true
 		);
 
 		if (result.success) {
@@ -2142,27 +2142,27 @@ MainFunctions: {
 					) {
 						printCardCodes = AddPrintString(
 							printCardCodes,
-							result.data.SaleDiscountResponseDtos[i].CardCode,
+							result.data.SaleDiscountResponseDtos[i].CardCode
 						);
 						printAddBonuses = AddPrintString(
 							printAddBonuses,
 							Number(
 								result.data.SaleDiscountResponseDtos[i]
-									.AddBonus,
-							).round(2),
+									.AddBonus
+							).round(2)
 						);
 						printRemoveBonuses = AddPrintString(
 							printRemoveBonuses,
 							Number(
 								result.data.SaleDiscountResponseDtos[i]
-									.RemoveBonus,
-							).round(2),
+									.RemoveBonus
+							).round(2)
 						);
 						printBalances = AddPrintString(
 							printBalances,
 							Number(
-								result.data.SaleDiscountResponseDtos[i].Balance,
-							).round(2),
+								result.data.SaleDiscountResponseDtos[i].Balance
+							).round(2)
 						);
 
 						if (
@@ -2173,7 +2173,7 @@ MainFunctions: {
 							printClientStatuses = AddPrintString(
 								printClientStatuses,
 								result.data.SaleDiscountResponseDtos[i]
-									.ClientStatus,
+									.ClientStatus
 							);
 						}
 
@@ -2182,7 +2182,7 @@ MainFunctions: {
 								doc,
 								result.data.SaleDiscountResponseDtos[i]
 									.CardCode,
-								result.data.Footer,
+								result.data.Footer
 							);
 						}
 
@@ -2201,7 +2201,7 @@ MainFunctions: {
 									result.data.SaleDiscountResponseDtos[i]
 										.CardCode,
 									result.data.FooterArray[j],
-									j.toString(),
+									j.toString()
 								);
 							}
 						}
@@ -2211,12 +2211,12 @@ MainFunctions: {
 					doc.userValues.set('PrintAddBonuses', printAddBonuses);
 					doc.userValues.set(
 						'PrintRemoveBonuses',
-						printRemoveBonuses,
+						printRemoveBonuses
 					);
 					doc.userValues.set('PrintBalances', printBalances);
 					doc.userValues.set(
 						'PrintClientStatuses',
-						printClientStatuses,
+						printClientStatuses
 					);
 				}
 
@@ -2272,7 +2272,7 @@ MainFunctions: {
 					if (clientChipInfoStrings.length > 0) {
 						doc.userValues.set(
 							clientChipInfoValueName,
-							clientChipInfoStrings,
+							clientChipInfoStrings
 						);
 					}
 				}
@@ -2306,7 +2306,7 @@ MainFunctions: {
 						if (lotteryTicketCodes)
 							doc.userValues.set(
 								'lotteryTicketCodes',
-								lotteryTicketCodes,
+								lotteryTicketCodes
 							);
 					}
 				}
@@ -2336,7 +2336,7 @@ MainFunctions: {
 						e.name +
 						'\n' +
 						e.message,
-					Icon.Error,
+					Icon.Error
 				);
 				throw e;
 			}
@@ -2345,13 +2345,13 @@ MainFunctions: {
 				fDelay = fsoDelay.OpenTextFile(
 					pathDelayedFolder + '\\sale.log',
 					8,
-					true,
+					true
 				);
 			} else if (documentType == 2) {
 				fDelay = fsoDelay.OpenTextFile(
 					pathDelayedFolder + '\\return.log',
 					8,
-					true,
+					true
 				);
 			}
 			fDelay.WriteLine(stringToDelay);
@@ -2362,7 +2362,7 @@ MainFunctions: {
 					e.name +
 					'\n' +
 					e.message,
-				Icon.Error,
+				Icon.Error
 			);
 		}
 	}
@@ -2391,10 +2391,10 @@ MainFunctions: {
 						Number(saleDiscountResponseDtos[i].AddBonus).round(2) +
 						', списано: ' +
 						Number(saleDiscountResponseDtos[i].RemoveBonus).round(
-							2,
+							2
 						) +
 						'. Баланс: ' +
-						Number(saleDiscountResponseDtos[i].Balance).round(2),
+						Number(saleDiscountResponseDtos[i].Balance).round(2)
 				);
 			}
 		}
@@ -2407,7 +2407,7 @@ MainFunctions: {
 			var clientChipInfoValueName = 'clientChipInfo';
 
 			messageArray.push(
-				'Информация об участии в маркетинговых программах:',
+				'Информация об участии в маркетинговых программах:'
 			);
 
 			frontol.currentDocument.userValues.remove(clientChipInfoValueName);
@@ -2436,7 +2436,7 @@ MainFunctions: {
 								  ', '
 								: '') +
 							'баланс ' +
-							clientChipInfo.Balance,
+							clientChipInfo.Balance
 					);
 				}
 			}
@@ -2449,7 +2449,7 @@ MainFunctions: {
 
 		if (frontol.userValues.get('ShowCardsMovesTimeout') != '') {
 			var timeout = Number(
-				frontol.userValues.get('ShowCardsMovesTimeout'),
+				frontol.userValues.get('ShowCardsMovesTimeout')
 			);
 
 			showMessage(message, Icon.Information, timeout);
@@ -2494,7 +2494,7 @@ MainFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		result = sendHttpRequest(
@@ -2533,7 +2533,7 @@ MainFunctions: {
 			showMessage(
 				'Система рассчета бонусов для частичного возврата временно недоступна, попробуйте позже.\n' +
 					result.message,
-				Icon.Error,
+				Icon.Error
 			);
 		}
 		return false;
@@ -2552,7 +2552,7 @@ MainFunctions: {
 		for (var i = 0; i < processingPaymentTypeNames.length; i++) {
 			var processingPaymentTypeName = processingPaymentTypeNames[i];
 			var processingPaymentTypeCode = Number(
-				frontol.userValues.get(processingPaymentTypeName),
+				frontol.userValues.get(processingPaymentTypeName)
 			);
 
 			if (processingPaymentTypeCode > 0) {
@@ -2595,7 +2595,7 @@ MainFunctions: {
 		for (var i = 0; i < processingPaymentTypeNames.length; i++) {
 			var processingPaymentTypeName = processingPaymentTypeNames[i];
 			var processingPaymentTypeCode = Number(
-				frontol.userValues.get(processingPaymentTypeName),
+				frontol.userValues.get(processingPaymentTypeName)
 			);
 
 			if (processingPaymentTypeCode > 0) {
@@ -2620,7 +2620,7 @@ MainFunctions: {
 				//если добавляется процессинговый платеж
 				if (IsInArray(payment.type.code, processingPaymentTypeCodes)) {
 					showError(
-						'Ввод процессинговых платежей возможен только при возврате на основании!',
+						'Ввод процессинговых платежей возможен только при возврате на основании!'
 					);
 				}
 			}
@@ -2636,7 +2636,7 @@ MainFunctions: {
 					!isDocHaveProcPaymentsOnly
 				) {
 					showError(
-						'Ввод процессинговых оплат возможен только автоматически!',
+						'Ввод процессинговых оплат возможен только автоматически!'
 					);
 				}
 				// закомментировал запрет дублирования вида оплат т.к. непонятно зачем это было сделано
@@ -2657,7 +2657,7 @@ MainFunctions: {
 					if (
 						IsInArray(
 							baseDocument.payment.type.code,
-							processingPaymentTypeCodes,
+							processingPaymentTypeCodes
 						)
 					) {
 						procPaymentBaseDocumentEntered +=
@@ -2683,7 +2683,7 @@ MainFunctions: {
 						if (
 							baseDocument.payment.type.code ==
 							Number(
-								frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+								frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 							)
 						) {
 							// частичный возврат бонусов
@@ -2721,7 +2721,7 @@ MainFunctions: {
 							code: baseDocument.payment.type.code,
 							currentExists: false,
 							currentSum: 0,
-							parentSum: parentSum,
+							parentSum: parentSum
 						};
 
 						for (
@@ -2780,7 +2780,7 @@ MainFunctions: {
 							currentDocument.addPayment(
 								currentPayment.code,
 								paymentSum,
-								null,
+								null
 							);
 							needToPaySum -= paymentSum;
 						}
@@ -2803,7 +2803,7 @@ MainFunctions: {
 					Number(frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)) ||
 				payment.type.code ==
 					Number(
-						frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME),
+						frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME)
 					) ||
 				payment.type.code ==
 					Number(frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME)) ||
@@ -2824,7 +2824,7 @@ MainFunctions: {
 					}
 				} else {
 					showError(
-						'Сторно процессинговых платежей вручную запрещено!',
+						'Сторно процессинговых платежей вручную запрещено!'
 					);
 				}
 			}
@@ -2836,7 +2836,7 @@ MainFunctions: {
 	function DeleteAllProc(doc) {
 		if (IsExtraEnabled('ExtraTaxKyrgyzstan')) {
 			var IsDecreasedPricesForTax = doc.userValues.get(
-				'IsDecreasedPricesForTax',
+				'IsDecreasedPricesForTax'
 			);
 		}
 
@@ -2852,7 +2852,7 @@ MainFunctions: {
 					Number(frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)) ||
 				doc.payment.type.code ==
 					Number(
-						frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME),
+						frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME)
 					) ||
 				doc.payment.type.code ==
 					Number(frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME)) ||
@@ -2878,7 +2878,7 @@ MainFunctions: {
 			) {
 				doc.userValues.set(
 					'IsDecreasedPricesForTax',
-					IsDecreasedPricesForTax,
+					IsDecreasedPricesForTax
 				);
 			}
 		}
@@ -2956,21 +2956,21 @@ MainFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		//формируем запрос для отправки отложенных
 		var stringToSend = JSON.stringify({
 			LicenseGuid: license,
 			DocumentDtos: tDocumentDtos,
-			ReturnDtos: tReturnDtos,
+			ReturnDtos: tReturnDtos
 		});
 
 		result = sendHttpRequest(
 			processingServerAddress + '/BonusWebApi/api/processing/delay',
 			'POST',
 			stringToSend,
-			'delay',
+			'delay'
 		);
 
 		if (result.success) {
@@ -2996,7 +2996,7 @@ MainFunctions: {
 	// содержит ли позиция Фронтольные скидки
 	function hasPositionFrontolDiscounts(pos) {
 		var rxMarketingActionCode = frontol.userValues.get(
-			'MarketingActionCode',
+			'MarketingActionCode'
 		);
 
 		if (rxMarketingActionCode) {
@@ -3074,7 +3074,7 @@ MainFunctions: {
 					TotalPrice: Number(doc.position.totalSum).round(2),
 					PositionId: doc.position.id,
 					Properties: GetPositionProperties(doc.position),
-					Quantity: doc.position.quantity,
+					Quantity: doc.position.quantity
 				};
 				numberInArray++;
 			}
@@ -3123,13 +3123,13 @@ MainFunctions: {
 					'К документу применены внутренние скидки,\nрасчет скидок программы лояльности ' +
 						RX_LOYALTY_NAME +
 						' невозможен',
-					Icon.Warning,
+					Icon.Warning
 				);
 			} else {
 				showMessage(
 					'Отсутствуют товарные позиции\nдля расчета скидок программы лояльности ' +
 						RX_LOYALTY_NAME,
-					Icon.Warning,
+					Icon.Warning
 				);
 			}
 		}
@@ -3141,7 +3141,7 @@ MainFunctions: {
 			CardRegisterDateTime: getISODateTimeToString(':', ' '),
 			IsAdditionalCard: isAdditionalCard,
 			AllowFullBonusPay: false,
-			RegisterDetailDtos: tRegisterDetailDtos,
+			RegisterDetailDtos: tRegisterDetailDtos
 		};
 
 		if (cardNumber) {
@@ -3158,7 +3158,7 @@ MainFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		//формируем строку для отправки
@@ -3179,7 +3179,7 @@ MainFunctions: {
 				(cardNumber ? 'register' : 'registerByPhone'),
 			'POST',
 			stringToSend,
-			cardNumber ? 'register' : 'register_by_phone',
+			cardNumber ? 'register' : 'register_by_phone'
 		);
 
 		if (result.success) {
@@ -3204,12 +3204,12 @@ MainFunctions: {
 					frontol.userValues.set('AccessToken', newToken);
 				} catch (e) {
 					showError(
-						'Не удалось записать полученный токен авторизации!\nОбратитесь к администратору!',
+						'Не удалось записать полученный токен авторизации!\nОбратитесь к администратору!'
 					);
 				}
 			} else {
 				showError(
-					'Не удалось получить токен авторизации!\nОбратитесь к администратору!',
+					'Не удалось получить токен авторизации!\nОбратитесь к администратору!'
 				);
 			}
 
@@ -3327,7 +3327,7 @@ MainFunctions: {
 				var marketPrograms = new RxMarketPrograms();
 				responseRegJSON = marketPrograms.register(
 					responseRegJSON,
-					phoneNumber,
+					phoneNumber
 				);
 			} else {
 				var marketPrograms = new RxMarketPrograms();
@@ -3390,7 +3390,7 @@ MainFunctions: {
 					0,
 					0,
 					responseRegJSON,
-					frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+					frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 				);
 				if (!silent) showMessage(CARD_ACCUMULATION_ONLY_MESSAGE);
 			}
@@ -3401,20 +3401,20 @@ MainFunctions: {
 					0,
 					0,
 					responseRegJSON,
-					frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+					frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 				);
 
 				if (responseRegJSON.BonusBalance > 0) {
 					showMessage(
 						'Списание средств невозможно для этого документа',
-						Icon.Warning,
+						Icon.Warning
 					);
 				} else {
 					showMessage(
 						INSUFFICIENT_FUNDS +
 							CR_MESSAGE +
 							CARD_ACCUMULATION_ONLY_MESSAGE,
-						Icon.Warning,
+						Icon.Warning
 					);
 				}
 			} else if (
@@ -3427,15 +3427,15 @@ MainFunctions: {
 					0,
 					0,
 					responseRegJSON,
-					frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+					frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 				);
 				showMessage(
-					'Номер телефона введен не через мобильное приложение, бонусы можно только копить',
+					'Номер телефона введен не через мобильное приложение, бонусы можно только копить'
 				);
 			} else if (
 				doc.userValues.get('RegisteredByPhone') == '1' &&
 				frontol.userValues.get(
-					'ProhibitSpendBonusByPhoneRegistration',
+					'ProhibitSpendBonusByPhoneRegistration'
 				) == '1'
 			) {
 				AddProcPaymentCard(
@@ -3443,12 +3443,12 @@ MainFunctions: {
 					0,
 					0,
 					responseRegJSON,
-					frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+					frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 				);
 				showMessage(
 					'Регистрация осуществлялась по номеру телефона,' +
 						CR_MESSAGE +
-						'бонусы можно только копить',
+						'бонусы можно только копить'
 				);
 				doc.userValues.remove('RegisteredByPhone');
 			}
@@ -3515,7 +3515,7 @@ MainFunctions: {
 								Number(responseRegJSON.Balance) +
 								' меньше, чем ' +
 								bonusPay,
-							Icon.Error,
+							Icon.Error
 						);
 						continue;
 					}
@@ -3537,7 +3537,7 @@ MainFunctions: {
 				) {
 					var smsPrice = sendConfirmCodeAndSaleSms(
 						cardNumber,
-						phoneNumber,
+						phoneNumber
 					);
 
 					if (smsPrice === false) {
@@ -3562,7 +3562,7 @@ MainFunctions: {
 						0,
 						0,
 						responseRegJSON,
-						frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+						frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 					);
 				}
 				//если флаг - истина, отрабатываем ввод платежа
@@ -3573,7 +3573,7 @@ MainFunctions: {
 							0,
 							bonusPay,
 							responseRegJSON,
-							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 						);
 						return;
 					}
@@ -3586,13 +3586,13 @@ MainFunctions: {
 							0,
 							bonusPay,
 							responseRegJSON,
-							'discount',
+							'discount'
 						);
 						return;
 					}
 					showMessage(
 						'Не заданы тип оплаты или ставка! Карта не была введена!',
-						Icon.Error,
+						Icon.Error
 					);
 				}
 			}
@@ -3604,7 +3604,7 @@ MainFunctions: {
 					AddProcDiscountCard(cardNumber, 0, responseRegJSON);
 				} else {
 					showError(
-						'В документ уже введены карты.\nДисконтная карта вводится первой!',
+						'В документ уже введены карты.\nДисконтная карта вводится первой!'
 					);
 				}
 			} else {
@@ -3619,7 +3619,7 @@ MainFunctions: {
 			if (responseRegJSON.AccumulateOnly == true) {
 				showMessage(
 					'Купон ' + cardNumber + ' недоступн для списания средств!',
-					Icon.Error,
+					Icon.Error
 				);
 			}
 			//если у карты нулевой баланс
@@ -3628,7 +3628,7 @@ MainFunctions: {
 					'Купон ' +
 						cardNumber +
 						' уже был использован или имеет нулевой баланс!',
-					Icon.Error,
+					Icon.Error
 				);
 			}
 			//если есть, что списать
@@ -3657,7 +3657,7 @@ MainFunctions: {
 				}
 
 				var changeFromCoupon = Number(
-					responseRegJSON.Balance - residueToPay,
+					responseRegJSON.Balance - residueToPay
 				).round(2);
 
 				if (changeFromCoupon < 0) {
@@ -3671,7 +3671,7 @@ MainFunctions: {
 						0,
 						finalCouponSum,
 						responseRegJSON,
-						frontol.userValues.get(COUPON_PAYMENT_CODE_NAME),
+						frontol.userValues.get(COUPON_PAYMENT_CODE_NAME)
 					);
 					doc.userValues.set('ChangeFromCoupon', changeFromCoupon);
 					return;
@@ -3683,7 +3683,7 @@ MainFunctions: {
 						0,
 						finalCouponSum,
 						responseRegJSON,
-						'discount',
+						'discount'
 					);
 					doc.userValues.set('ChangeFromCoupon', changeFromCoupon);
 					return;
@@ -3694,7 +3694,7 @@ MainFunctions: {
 						'Купон ' +
 						cardNumber +
 						' не был введён!',
-					Icon.Error,
+					Icon.Error
 				);
 			}
 		}
@@ -3719,7 +3719,7 @@ MainFunctions: {
 					AddProcDiscountCard(cardNumber, 1);
 				} else {
 					showError(
-						'В документ уже введены карты.\nДисконтная карта вводится первой!',
+						'В документ уже введены карты.\nДисконтная карта вводится первой!'
 					);
 				}
 			}
@@ -3746,7 +3746,7 @@ MainFunctions: {
 						AddProcDiscountCard(cardNumber, 1);
 					} else {
 						showError(
-							'В документ уже введены карты.\nДисконтная карта вводится первой!',
+							'В документ уже введены карты.\nДисконтная карта вводится первой!'
 						);
 					}
 				} else {
@@ -3756,14 +3756,14 @@ MainFunctions: {
 				if (
 					showMessage(
 						'Вводится дисконтная карта?',
-						Button.YesNo + Icon.Question,
+						Button.YesNo + Icon.Question
 					) == DialogResult.Yes
 				) {
 					if (doc.userValues.get('FirstCardNumber') == '') {
 						AddProcDiscountCard(cardNumber, 1);
 					} else {
 						showError(
-							'В документ уже введены карты.\nДисконтная карта вводится первой!',
+							'В документ уже введены карты.\nДисконтная карта вводится первой!'
 						);
 					}
 				} else {
@@ -3800,7 +3800,7 @@ MainFunctions: {
 		delayFlag,
 		sum,
 		serverResponse,
-		paymentType,
+		paymentType
 	) {
 		var doc = frontol.currentDocument;
 		var accountTypeId = serverResponse.AccountTypeId;
@@ -3907,15 +3907,15 @@ MainFunctions: {
 				if (
 					doc.payment.type.code ==
 						Number(
-							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 						) ||
 					doc.payment.type.code ==
 						Number(
-							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME)
 						) ||
 					doc.payment.type.code ==
 						Number(
-							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME)
 						) ||
 					doc.payment.type.code ==
 						Number(frontol.userValues.get(COUPON_PAYMENT_CODE_NAME))
@@ -3930,7 +3930,7 @@ MainFunctions: {
 			if (serverResponse.AccumulateOnly != true) {
 				AddNewItemToCardBox(
 					'cardBoxAvailables',
-					serverResponse.Balance,
+					serverResponse.Balance
 				);
 
 				if (accountTypeId == 1) {
@@ -3940,7 +3940,7 @@ MainFunctions: {
 						frontol.userValues.get('BonusRatePositionsCode') !=
 							'' || // бонусы как скидка по позициям
 						Number(
-							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 						) > 0 // бонусы как оплата
 					) {
 						if (
@@ -3951,32 +3951,32 @@ MainFunctions: {
 								'BonusDiscount',
 								'' +
 									(Number(
-										doc.userValues.get('BonusDiscount'),
+										doc.userValues.get('BonusDiscount')
 									) +
-										sum),
+										sum)
 							);
 						} else {
 							// абсолютная бонусная скидка по позициям
 							if (
 								frontol.userValues.get(
-									'BonusRatePositionsCode',
+									'BonusRatePositionsCode'
 								) != '' || // бонусы как скидка по позициям
 								Number(
 									frontol.userValues.get(
-										BONUS_PAYMENT_CODE_NAME,
-									),
+										BONUS_PAYMENT_CODE_NAME
+									)
 								) == paymentType // бонусы как оплата
 							) {
 								makeStringPositionBonusDiscount(
 									serverResponse.Balance,
 									sum,
 									serverResponse.RegisterDetailResponseDtos,
-									'BonusDiscountPositions',
+									'BonusDiscountPositions'
 								);
 							} else {
 								MakeStringPositionDiscount(
 									sum,
-									'BonusDiscount',
+									'BonusDiscount'
 								);
 							}
 						}
@@ -3990,7 +3990,7 @@ MainFunctions: {
 							'CouponDiscount',
 							'' +
 								(Number(doc.userValues.get('CouponDiscount')) +
-									sum),
+									sum)
 						);
 					} else {
 						MakeStringPositionDiscount(sum, 'CouponDiscount');
@@ -4005,7 +4005,7 @@ MainFunctions: {
 						// "" + для того, чтобы точка не превратилась в запятую
 						doc.userValues.set(
 							'BonusDiscount',
-							'' + Number(doc.userValues.get('BonusDiscount')),
+							'' + Number(doc.userValues.get('BonusDiscount'))
 						);
 					} else {
 						MakeStringPositionDiscount(0, 'BonusDiscount');
@@ -4017,7 +4017,7 @@ MainFunctions: {
 						//""+ для того, чтобы точка не превратилась в запятую
 						doc.userValues.set(
 							'CouponDiscount',
-							'' + Number(doc.userValues.get('CouponDiscount')),
+							'' + Number(doc.userValues.get('CouponDiscount'))
 						);
 					} else {
 						MakeStringPositionDiscount(0, 'CouponDiscount');
@@ -4034,7 +4034,7 @@ MainFunctions: {
 			if ('RegisterDetailResponseDtos' in serverResponse) {
 				addCardBoxSpecialDetailDtos(
 					serverResponse.RegisterDetailResponseDtos,
-					accountTypeId,
+					accountTypeId
 				);
 			}
 
@@ -4083,7 +4083,7 @@ MainFunctions: {
 
 			if (sumBase > 0) {
 				percent = Number(
-					((sum + specialPriceDiscount) * 100) / sumBase,
+					((sum + specialPriceDiscount) * 100) / sumBase
 				).round(2);
 			}
 
@@ -4100,7 +4100,7 @@ MainFunctions: {
 								if (
 									showMessage(
 										'Остаток будет оплачиваться кредитом?',
-										Button.YesNo + Icon.Question,
+										Button.YesNo + Icon.Question
 									) == DialogResult.Yes
 								) {
 									doc.userValues.set('NeedCalc', '1');
@@ -4115,7 +4115,7 @@ MainFunctions: {
 								e.name +
 								'\n' +
 								e.message,
-							Icon.Error,
+							Icon.Error
 						);
 					}
 					doc.addPayment(Number(paymentType), sum);
@@ -4143,7 +4143,7 @@ MainFunctions: {
 						e.name +
 						'\n' +
 						e.message,
-					Icon.Error,
+					Icon.Error
 				);
 			}
 		}
@@ -4172,12 +4172,12 @@ MainFunctions: {
 						(accountTypeId == 1 &&
 							doc.discountDoc.marketingEvent.code ==
 								Number(
-									frontol.userValues.get('BonusRateCode'),
+									frontol.userValues.get('BonusRateCode')
 								)) ||
 						(accountTypeId == 4 &&
 							doc.discountDoc.marketingEvent.code ==
 								Number(
-									frontol.userValues.get('CouponRateCode'),
+									frontol.userValues.get('CouponRateCode')
 								))
 					) {
 						discount += doc.discountDoc.sum;
@@ -4204,23 +4204,23 @@ MainFunctions: {
 										.code ==
 										Number(
 											frontol.userValues.get(
-												'BonusRateCode',
-											),
+												'BonusRateCode'
+											)
 										) ||
 										doc.position.discountPos.marketingEvent
 											.code ==
 											Number(
 												frontol.userValues.get(
-													'BonusRatePositionsCode',
-												),
+													'BonusRatePositionsCode'
+												)
 											))) ||
 								(accountTypeId == 4 &&
 									doc.position.discountPos.marketingEvent
 										.code ==
 										Number(
 											frontol.userValues.get(
-												'CouponRateCode',
-											),
+												'CouponRateCode'
+											)
 										))
 							) {
 								discount += doc.position.discountPos.sum;
@@ -4262,7 +4262,7 @@ MainFunctions: {
 			//cardBoxAccountTypes - номера типов карт
 			AddNewItemToCardBox(
 				'cardBoxAccountTypes',
-				serverResponse.AccountTypeId,
+				serverResponse.AccountTypeId
 			);
 
 			//cardBoxTypes - типы карт
@@ -4314,7 +4314,7 @@ MainFunctions: {
 			if (serverResponse.AccumulateOnly != true) {
 				AddNewItemToCardBox(
 					'cardBoxAvailables',
-					serverResponse.Balance,
+					serverResponse.Balance
 				);
 
 				if (serverResponse.UsePercent == true) {
@@ -4325,7 +4325,7 @@ MainFunctions: {
 					//doc.userValues.set("Discount", "" + serverResponse.Balance);
 				}
 				setStringPositionDiscounts(
-					serverResponse.RegisterDetailResponseDtos,
+					serverResponse.RegisterDetailResponseDtos
 				);
 			} else {
 				AddNewItemToCardBox('cardBoxAvailables', 0);
@@ -4371,7 +4371,7 @@ MainFunctions: {
 					'&' +
 					discount +
 					'&' +
-					percent,
+					percent
 			);
 
 			//добавляем информацию в поле с номером дисконтной карты
@@ -4402,8 +4402,8 @@ MainFunctions: {
 					Number(
 						frontol.userValues
 							.get('DefaultDiscountValue')
-							.replace(',', '.'),
-					),
+							.replace(',', '.')
+					)
 				);
 				//doc.userValues.set("Discount", doc.userValues.get("Discount").replace(",","."));
 				//doc.userValues.set("Discount", Number(doc.userValues.get("DiscountPositions").replace(",",".")));
@@ -4452,7 +4452,7 @@ MainFunctions: {
 					'&' +
 					discount +
 					'&' +
-					percent,
+					percent
 			);
 
 			//добавляем информацию в поле с номером дисконтной карты
@@ -4505,7 +4505,7 @@ MainFunctions: {
 					Number(frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)) ||
 				doc.payment.type.code ==
 					Number(
-						frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME),
+						frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME)
 					) ||
 				doc.payment.type.code ==
 					Number(frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME)) ||
@@ -4528,7 +4528,7 @@ MainFunctions: {
 				'&' +
 				'0' +
 				'&' +
-				'0',
+				'0'
 		);
 
 		if (IsExtraEnabled('ExtraTaxKyrgyzstan')) {
@@ -4597,7 +4597,7 @@ MainFunctions: {
 		//получаем номер карты
 		var cardNumber = frontol.actions.inputString(
 			INPUT_CARD_CODE_MESSAGE,
-			'',
+			''
 		);
 
 		if (!cardNumber) showError(CARD_CODE_EMPTY_MESSAGE);
@@ -4607,20 +4607,20 @@ MainFunctions: {
 		//формируем строку для отправки
 		var stringToSend = JSON.stringify({
 			LicenseGuid: license,
-			CardCode: cardNumber,
+			CardCode: cardNumber
 		});
 
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		result = sendHttpRequest(
 			processingServerAddress + '/BonusWebApi/api/processing/info',
 			'POST',
 			stringToSend,
-			'info',
+			'info'
 		);
 
 		if (result.success) {
@@ -4709,7 +4709,7 @@ MainFunctions: {
 				result.data.ClientChipInfo.length > 0
 			) {
 				messageArray.push(
-					'Информация об участии в маркетинговых программах:',
+					'Информация об участии в маркетинговых программах:'
 				);
 
 				for (var i = 0; i < result.data.ClientChipInfo.length; i++) {
@@ -4736,7 +4736,7 @@ MainFunctions: {
 									  ', '
 									: '') +
 								'баланс ' +
-								clientChipInfo.Balance,
+								clientChipInfo.Balance
 						);
 					}
 				}
@@ -4940,7 +4940,7 @@ MainFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		//формируем строку для отправки
@@ -4949,14 +4949,14 @@ MainFunctions: {
 			AccessTokenGuid: token,
 			DateTimeNow: dateTimeNow,
 			SumTotal: Number(sumTotal).round(2),
-			SumDiscounted: Number(sumDiscounted).round(2),
+			SumDiscounted: Number(sumDiscounted).round(2)
 		});
 
 		result = sendHttpRequest(
 			processingServerAddress + '/BonusWebApi/api/processing/GetCoupons',
 			'POST',
 			stringToSend,
-			'coupon_get',
+			'coupon_get'
 		);
 
 		if (result.success) {
@@ -4965,31 +4965,31 @@ MainFunctions: {
 					if (i != 0) {
 						doc.userValues.set(
 							'PrintNewCardHeaders',
-							doc.userValues.get('PrintNewCardHeaders') + '&&',
+							doc.userValues.get('PrintNewCardHeaders') + '&&'
 						);
 						doc.userValues.set(
 							'PrintNewCardCodes',
-							doc.userValues.get('PrintNewCardCodes') + '&&',
+							doc.userValues.get('PrintNewCardCodes') + '&&'
 						);
 						doc.userValues.set(
 							'PrintNewCardFooters',
-							doc.userValues.get('PrintNewCardFooters') + '&&',
+							doc.userValues.get('PrintNewCardFooters') + '&&'
 						);
 					}
 					doc.userValues.set(
 						'PrintNewCardHeaders',
 						doc.userValues.get('PrintNewCardHeaders') +
-							result.data[i].Header,
+							result.data[i].Header
 					);
 					doc.userValues.set(
 						'PrintNewCardCodes',
 						doc.userValues.get('PrintNewCardCodes') +
-							result.data[i].CardCode,
+							result.data[i].CardCode
 					);
 					doc.userValues.set(
 						'PrintNewCardFooters',
 						doc.userValues.get('PrintNewCardFooters') +
-							result.data[i].Footer,
+							result.data[i].Footer
 					);
 				}
 			} catch (e) {
@@ -5131,7 +5131,7 @@ MainFunctions: {
 			frontol.currentDocument.baseDocument.number != ''
 		) {
 			var forbiddenPaymentsString = frontol.userValues.get(
-				'ForbidReturnWithPayments',
+				'ForbidReturnWithPayments'
 			);
 			var forbiddenPaymentsArray = forbiddenPaymentsString.split(',');
 
@@ -5150,7 +5150,7 @@ MainFunctions: {
 							'Возвраты на основании документа с платежом ' +
 								frontol.currentDocument.baseDocument.payment
 									.type.text +
-								' запрещены!',
+								' запрещены!'
 						);
 					}
 				}
@@ -5188,7 +5188,7 @@ MainFunctions: {
 
 		var newValue = frontol.actions.inputString(
 			headerString,
-			frontol.userValues.get(param),
+			frontol.userValues.get(param)
 		);
 
 		if (newValue == null) return false;
@@ -5222,7 +5222,7 @@ MainFunctions: {
 				discountSum -= obj.Disc;
 				obj.Disc += GetSumRatePositionFromUserValue(
 					doc.position,
-					userValue,
+					userValue
 				);
 				arrResiduePos.push(obj);
 			}
@@ -5280,7 +5280,7 @@ MainFunctions: {
 						Number(frontol.userValues.get('CombineDiscounts')) == 1
 					) {
 						discountPositionArray[dto.PositionId] += Number(
-							dto.Discount,
+							dto.Discount
 						);
 					} else {
 						// назначаем новую скидку если она больше предыдущей
@@ -5289,13 +5289,13 @@ MainFunctions: {
 							Number(dto.Discount)
 						) {
 							discountPositionArray[dto.PositionId] = Number(
-								dto.Discount,
+								dto.Discount
 							);
 						}
 					}
 				} else {
 					discountPositionArray[dto.PositionId] = Number(
-						dto.Discount,
+						dto.Discount
 					);
 				}
 			}
@@ -5317,7 +5317,7 @@ MainFunctions: {
 			if (stringDiscountPositions)
 				doc.userValues.set(
 					'DiscountPositions',
-					stringDiscountPositions,
+					stringDiscountPositions
 				);
 		}
 	}
@@ -5331,7 +5331,7 @@ MainFunctions: {
 		balance,
 		sum,
 		registerDetailResponseDtos,
-		userValue,
+		userValue
 	) {
 		if (
 			!(balance > 0) ||
@@ -5371,7 +5371,7 @@ MainFunctions: {
 
 				var position = {
 					id: registerDetailResponseDtos[i].PositionId,
-					discount: registerDetailResponseDtos[i].Discount,
+					discount: registerDetailResponseDtos[i].Discount
 				};
 
 				position.spentBonusDiscount =
@@ -5405,13 +5405,13 @@ MainFunctions: {
 			if (stringBonusDiscount != '') {
 				frontol.currentDocument.userValues.set(
 					userValue,
-					stringBonusDiscount,
+					stringBonusDiscount
 				);
 			}
 		} catch (e) {
 			showMessage(
 				'Error of setting ' + userValue + ' value\n' + e.message,
-				Icon.Error,
+				Icon.Error
 			);
 			return;
 		}
@@ -5459,7 +5459,7 @@ MainFunctions: {
 			) {
 				// устанавливаем параметры спеццены
 				var cardBoxSpecialDetailDtos = doc.userValues.get(
-					'cardBoxSpecialDetailDtos',
+					'cardBoxSpecialDetailDtos'
 				);
 
 				if (cardBoxSpecialDetailDtos.length > 0) {
@@ -5475,7 +5475,7 @@ MainFunctions: {
 
 				doc.userValues.set(
 					'cardBoxSpecialDetailDtos',
-					cardBoxSpecialDetailDtos,
+					cardBoxSpecialDetailDtos
 				);
 
 				// устанавлеваем скидку если карта бонусная
@@ -5485,11 +5485,11 @@ MainFunctions: {
 						// если установлен флаг "Объединять скидки"
 						if (
 							Number(
-								frontol.userValues.get('CombineDiscounts'),
+								frontol.userValues.get('CombineDiscounts')
 							) == 1
 						) {
 							discountPositionArray[dto.PositionId] += Number(
-								dto.Discount,
+								dto.Discount
 							);
 						} else {
 							// назначаем новую скидку если она больше предыдущей
@@ -5498,13 +5498,13 @@ MainFunctions: {
 								Number(dto.Discount)
 							) {
 								discountPositionArray[dto.PositionId] = Number(
-									dto.Discount,
+									dto.Discount
 								);
 							}
 						}
 					} else {
 						discountPositionArray[dto.PositionId] = Number(
-							dto.Discount,
+							dto.Discount
 						);
 					}
 				}
@@ -5526,7 +5526,7 @@ MainFunctions: {
 			if (stringDiscountPositions)
 				doc.userValues.set(
 					'DiscountPositions',
-					stringDiscountPositions,
+					stringDiscountPositions
 				);
 		}
 	}
@@ -5575,7 +5575,7 @@ MainFunctions: {
 		if (frontol.userValues.get('RemoveCardNumberRegex') != '') {
 			var removeRegex = new RegExp(
 				frontol.userValues.get('RemoveCardNumberRegex'),
-				'g',
+				'g'
 			);
 			cardNumber = cardNumber.replace(removeRegex, '');
 		}
@@ -5635,7 +5635,7 @@ MainFunctions: {
 					e.name +
 					'\n' +
 					e.message,
-				Icon.Error,
+				Icon.Error
 			);
 		}
 		doc.userValues.remove('NeedGetFooter');
@@ -5660,7 +5660,7 @@ MainFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		var cardCode = doc.userValues.get('FirstCardNumber');
@@ -5668,14 +5668,14 @@ MainFunctions: {
 		//формируем строку для отправки
 		var stringToSend = JSON.stringify({
 			LicenseGUID: license,
-			CardCode: cardCode,
+			CardCode: cardCode
 		});
 
 		result = sendHttpRequest(
 			processingServerAddress + '/BonusWebApi/api/processing/GetFooter',
 			'POST',
 			stringToSend,
-			'footer_get',
+			'footer_get'
 		);
 
 		if (result.success) {
@@ -5716,7 +5716,7 @@ MainFunctions: {
 	function checkPrefixCard(cardNumber) {
 		var result = {
 			success: true,
-			message: '',
+			message: ''
 		};
 
 		if (frontol.userValues.get('CardPrefix') != '') {
@@ -5746,7 +5746,7 @@ MainFunctions: {
 	function checkRangeCard(cardNumber) {
 		var result = {
 			success: true,
-			message: '',
+			message: ''
 		};
 
 		//проверяем начало диапазона
@@ -5781,7 +5781,7 @@ function inputReceiptDocumentInformation(doc) {
 
 	var receiptDocument = {
 		number: '',
-		date: '',
+		date: ''
 	};
 
 	var count = 0;
@@ -5789,7 +5789,7 @@ function inputReceiptDocumentInformation(doc) {
 	while (!receiptDocument.number && count < MAX_COUNT) {
 		receiptDocument.number = frontol.actions.inputString(
 			'Введите номер приходного документа',
-			'',
+			''
 		);
 
 		if (typeof receiptDocument.number === 'string') {
@@ -5807,7 +5807,7 @@ function inputReceiptDocumentInformation(doc) {
 			'Не введен номер приходного документа!' +
 				'\nВвод документа "' +
 				doc.type.name +
-				'" отменен!',
+				'" отменен!'
 		);
 	}
 
@@ -5816,13 +5816,13 @@ function inputReceiptDocumentInformation(doc) {
 	while (!checkDate(receiptDocument.date) && count < MAX_COUNT) {
 		receiptDocument.date = frontol.actions.inputString(
 			'Введите дату приходного документа\nв формате ДД.ММ.ГГГГ',
-			receiptDocument.date ? receiptDocument.date : '',
+			receiptDocument.date ? receiptDocument.date : ''
 		);
 
 		if (!checkDate(receiptDocument.date)) {
 			showMessage(
 				'Введено пустное значение\nлибо дата указана некорректно!',
-				Icon.Warning,
+				Icon.Warning
 			);
 			count++;
 		}
@@ -5833,7 +5833,7 @@ function inputReceiptDocumentInformation(doc) {
 			'Не введена дата приходного документа\nлибо она указана некорректно!' +
 				'\nВвод документа "' +
 				doc.type.name +
-				'" отменен!',
+				'" отменен!'
 		);
 	}
 
@@ -5892,7 +5892,7 @@ function copyShelfLifeDiscountsFile() {
 				e.name +
 				': ' +
 				e.message,
-			Icon.Error,
+			Icon.Error
 		);
 		return false;
 	}
@@ -5921,7 +5921,7 @@ function copyShelfLifeDiscountsFile() {
 				e.name +
 				': ' +
 				e.message,
-			Icon.Error,
+			Icon.Error
 		);
 		return false;
 	}
@@ -5937,7 +5937,7 @@ function copyShelfLifeDiscountsFile() {
 				e.name +
 				': ' +
 				e.message,
-			Icon.Error,
+			Icon.Error
 		);
 		return false;
 	}
@@ -5954,7 +5954,7 @@ function copyShelfLifeDiscountsFile() {
 					e.name +
 					': ' +
 					e.message,
-				Icon.Error,
+				Icon.Error
 			);
 			return false;
 		}
@@ -5971,7 +5971,7 @@ function copyShelfLifeDiscountsFile() {
 				e.name +
 				': ' +
 				e.message,
-			Icon.Error,
+			Icon.Error
 		);
 		return false;
 	}
@@ -5993,7 +5993,7 @@ function copyShelfLifeDiscountsFile() {
 			isDebugMode()
 				? flagWindowStyleNormalWithFocus
 				: flagWindowStyleHidden,
-			true,
+			true
 		);
 
 		if (resultCode) {
@@ -6005,7 +6005,7 @@ function copyShelfLifeDiscountsFile() {
 					CR_MESSAGE +
 					'Код ошибки ' +
 					resultCode,
-				Icon.Error,
+				Icon.Error
 			);
 		}
 	} catch (e) {
@@ -6015,7 +6015,7 @@ function copyShelfLifeDiscountsFile() {
 				e.name +
 				': ' +
 				e.message,
-			Icon.Error,
+			Icon.Error
 		);
 		return false;
 	}
@@ -6037,7 +6037,7 @@ function RxShelfLifeDiscounts(doc) {
 		discountCode: '',
 		type: 0,
 		hasAlcoStamp: 0,
-		fracSale: 0,
+		fracSale: 0
 	};
 
 	this.clearLastAddedWare = function clearLastAddedWare() {
@@ -6073,7 +6073,7 @@ function RxShelfLifeDiscounts(doc) {
 								discountCode: arrShelfLifeDiscount[0],
 								wareCode: arrShelfLifeDiscount[1],
 								discount: arrShelfLifeDiscount[2],
-								id: arrShelfLifeDiscount[3],
+								id: arrShelfLifeDiscount[3]
 							};
 							if (
 								position.wareCode == wareCode &&
@@ -6091,7 +6091,7 @@ function RxShelfLifeDiscounts(doc) {
 	// возвращает размер скидки товара с артикулом wareMark по коду discountCode
 	this.getWareDiscountByCode = function getWareDiscountByCode(
 		wareId,
-		discountCode,
+		discountCode
 	) {
 		return getBarcodeDiscount(wareId, discountCode);
 	};
@@ -6164,7 +6164,7 @@ function RxShelfLifeDiscounts(doc) {
 			var obj = {
 				barcode: arr[0],
 				discount: Number(arr[1].replace(',', '.')),
-				wareId: withoutWareId ? '' : arr[2].toString(),
+				wareId: withoutWareId ? '' : arr[2].toString()
 			};
 			barcodeDiscounts.push(obj);
 		}
@@ -6197,7 +6197,7 @@ function RxShelfLifeDiscounts(doc) {
 					e.name +
 					': ' +
 					e.message,
-				Icon.Error,
+				Icon.Error
 			);
 		} finally {
 			try {
@@ -6210,18 +6210,18 @@ function RxShelfLifeDiscounts(doc) {
 	this.manualAddDiscount = function manualAddDiscount() {
 		if (doc.type.operation !== 0) {
 			showError(
-				'Скидку по сроку годности можно добавлять только в документ-продажа.',
+				'Скидку по сроку годности можно добавлять только в документ-продажа.'
 			);
 		}
 		if (lastAddedWare.type !== 0) {
 			showError(
-				'Скидка по сроку годности не распространяется на алкогольную и табачную продукцию.',
+				'Скидка по сроку годности не распространяется на алкогольную и табачную продукцию.'
 			);
 		}
 		if (lastAddedWare.code == 0) {
 			showError(
 				'Перед вводом скидки по сроку годности должен быть добавлен товар.\n' +
-					'Добавьте товар, затем отсканируйте штрих-код скидки.',
+					'Добавьте товар, затем отсканируйте штрих-код скидки.'
 			);
 		}
 
@@ -6232,13 +6232,13 @@ function RxShelfLifeDiscounts(doc) {
 			(quantity > 1 || (quantity == 0 && lastAddedWare.prevQuantity > 1))
 		) {
 			showError(
-				'Применение скидки по сроку годности возможно только на одну единицу товара!',
+				'Применение скидки по сроку годности возможно только на одну единицу товара!'
 			);
 		}
 
 		var discountCode = frontol.actions.inputString(
 			'Отсканируйте штрих-код скидки по сроку годности',
-			'',
+			''
 		);
 
 		if (!discountCode) {
@@ -6250,19 +6250,19 @@ function RxShelfLifeDiscounts(doc) {
 		if (withoutWareId) {
 			lastAddedWare.discount = this.getWareDiscountByCode(
 				'',
-				lastAddedWare.discountCode,
+				lastAddedWare.discountCode
 			); // without ware mark
 		} else {
 			lastAddedWare.discount = this.getWareDiscountByCode(
 				isCodeWareId() ? lastAddedWare.code : lastAddedWare.mark,
-				lastAddedWare.discountCode,
+				lastAddedWare.discountCode
 			);
 		}
 
 		if (lastAddedWare.discount > 0) {
 			var foundPositionId = getWareWithDiscountPositionId(
 				lastAddedWare.code,
-				lastAddedWare.discountCode,
+				lastAddedWare.discountCode
 			);
 
 			if (foundPositionId > -1) {
@@ -6271,7 +6271,7 @@ function RxShelfLifeDiscounts(doc) {
 						lastAddedWare.code,
 						quantity,
 						lastAddedWare.positionId,
-						foundPositionId,
+						foundPositionId
 					);
 				} else {
 					this.addLastAddedWareDiscount();
@@ -6289,7 +6289,7 @@ function RxShelfLifeDiscounts(doc) {
 						null,
 						quantity,
 						null,
-						false,
+						false
 					);
 					//doc.addPosition("Code", lastAddedWare.code, discountedPrice, quantity, null, false);
 
@@ -6299,7 +6299,7 @@ function RxShelfLifeDiscounts(doc) {
 
 					var lastAddedPositionId = getLastAddedWarePostionId(
 						lastAddedWare.code,
-						lastAddedWare.positionId,
+						lastAddedWare.positionId
 					); // id последней добавленной позиции
 
 					var prevPositionId = lastAddedWare.positionId; // сохраняем номер позиции
@@ -6327,7 +6327,7 @@ function RxShelfLifeDiscounts(doc) {
 						lastAddedWare.code +
 						' нет скидки по сроку годности с кодом ' +
 						lastAddedWare.discountCode +
-						'!',
+						'!'
 				);
 			} else {
 				showError(
@@ -6335,7 +6335,7 @@ function RxShelfLifeDiscounts(doc) {
 						lastAddedWare.mark +
 						' нет скидки по сроку годности с кодом ' +
 						lastAddedWare.discountCode +
-						'!',
+						'!'
 				);
 			}
 		}
@@ -6352,7 +6352,7 @@ function RxShelfLifeDiscounts(doc) {
 			positions.index = index;
 			positions.setSpecialPrice(
 				(lastAddedWare.price * (100 - lastAddedWare.discount)) / 100,
-				0,
+				0
 			);
 			addDiscountToUserValues();
 			return true;
@@ -6392,7 +6392,7 @@ function RxShelfLifeDiscounts(doc) {
 								discountCode: arrShelfLifeDiscount[0],
 								wareCode: arrShelfLifeDiscount[1],
 								discount: arrShelfLifeDiscount[2],
-								id: arrShelfLifeDiscount[3],
+								id: arrShelfLifeDiscount[3]
 							};
 
 							if (position.id == lastAddedWare.positionId) {
@@ -6429,7 +6429,7 @@ function RxShelfLifeDiscounts(doc) {
 				}
 				doc.userValues.set(
 					SHELF_LIFE_DISCOUNTS,
-					newStrShelfLifeDiscounts,
+					newStrShelfLifeDiscounts
 				);
 				return true;
 			}
@@ -6437,7 +6437,7 @@ function RxShelfLifeDiscounts(doc) {
 			// переменная пуста, просто добавляем новое значение
 			doc.userValues.set(
 				SHELF_LIFE_DISCOUNTS,
-				strLastAddedWareDiscountPosition,
+				strLastAddedWareDiscountPosition
 			);
 			return true;
 		}
@@ -6463,7 +6463,7 @@ function RxShelfLifeDiscounts(doc) {
 								discountCode: arrShelfLifeDiscount[0],
 								wareCode: arrShelfLifeDiscount[1],
 								discount: arrShelfLifeDiscount[2],
-								id: arrShelfLifeDiscount[3],
+								id: arrShelfLifeDiscount[3]
 							};
 							if (
 								position.wareCode == wareCode &&
@@ -6481,7 +6481,7 @@ function RxShelfLifeDiscounts(doc) {
 	// возвращает id добавленной позиции товара wareCode
 	this.getLastAddedWarePostionId = function getLastAddedWarePostionId(
 		wareCode,
-		existsPositionId,
+		existsPositionId
 	) {
 		for (
 			positions.index = 1;
@@ -6523,7 +6523,7 @@ function RxShelfLifeDiscounts(doc) {
 	// возвращает id позиции по коду товара wareCode и коду скидки discountCode
 	this.getWareWithDiscountPositionId = function getWareWithDiscountPositionId(
 		wareCode,
-		discountCode,
+		discountCode
 	) {
 		var strShelfLifeDiscounts = doc.userValues.get(SHELF_LIFE_DISCOUNTS);
 
@@ -6543,7 +6543,7 @@ function RxShelfLifeDiscounts(doc) {
 								discountCode: arrShelfLifeDiscount[0],
 								wareCode: arrShelfLifeDiscount[1],
 								discount: arrShelfLifeDiscount[2],
-								id: arrShelfLifeDiscount[3],
+								id: arrShelfLifeDiscount[3]
 							};
 
 							if (
@@ -6563,7 +6563,7 @@ function RxShelfLifeDiscounts(doc) {
 	this.addWareToPosition = function addWareToPosition(
 		wareCode,
 		quantity,
-		positionId,
+		positionId
 	) {
 		if (doc.type.operation === 0) {
 			// продажа
@@ -6590,17 +6590,17 @@ function RxShelfLifeDiscounts(doc) {
 		wareCode,
 		quantity,
 		fromPositionId,
-		toPositionId,
+		toPositionId
 	) {
 		var fromPosition = {
 			index: getPositionIndexById(fromPositionId),
 			wareCode: 0,
-			quantity: 0,
+			quantity: 0
 		};
 		var toPosition = {
 			index: getPositionIndexById(toPositionId),
 			wareCode: 0,
-			quantity: 0,
+			quantity: 0
 		};
 
 		if (fromPosition.index > -1 && toPosition.index > -1) {
@@ -6669,7 +6669,7 @@ HelpFunctions: {
 				return (
 					p1 + p2.replace(/\d/g, '*') + p3 + p4.replace(/\d/g, '*')
 				);
-			},
+			}
 		);
 	}
 	// создаёт указанный полный путь
@@ -7234,7 +7234,7 @@ ManualFunctions: {
 				if (oldLength != documentValueArray.length) {
 					currentDocument.userValues.set(
 						valueName,
-						documentValueArray.join(';'),
+						documentValueArray.join(';')
 					);
 				}
 			}
@@ -7255,7 +7255,7 @@ ManualFunctions: {
 
 			var cardNumber = frontol.actions.inputString(
 				INPUT_CARD_CODE_MESSAGE,
-				'',
+				''
 			);
 
 			if (!cardNumber) {
@@ -7308,7 +7308,7 @@ ManualFunctions: {
 			var result = {
 				success: false,
 				message: '',
-				data: '',
+				data: ''
 			};
 
 			var registerDetailDtos = GetRegisterDetailDtos(currentDocument);
@@ -7317,7 +7317,7 @@ ManualFunctions: {
 				LicenseGuid: license,
 				AccessTokenGuid: accessToken,
 				CardCodes: cardBoxNumberArray,
-				RegisterDetailDtos: registerDetailDtos,
+				RegisterDetailDtos: registerDetailDtos
 			});
 
 			result = sendHttpRequest(
@@ -7325,7 +7325,7 @@ ManualFunctions: {
 					'/BonusWebApi/api/processing/multiregister',
 				'POST',
 				stringToSend,
-				'multiregister',
+				'multiregister'
 			);
 
 			if (result.success) {
@@ -7341,7 +7341,7 @@ ManualFunctions: {
 						CARDS_WERE_NOT_USED_MESSAGE +
 							':' +
 							NEW_LINE_MESSAGE +
-							result.data.UnusedCards,
+							result.data.UnusedCards
 					);
 				}
 				// использованные карты
@@ -7357,7 +7357,7 @@ ManualFunctions: {
 						) {
 							addDocumentValue(
 								'cardBoxAccountIds',
-								usedCard.AccountId,
+								usedCard.AccountId
 							);
 						}
 
@@ -7367,7 +7367,7 @@ ManualFunctions: {
 						) {
 							addDocumentValue(
 								'cardBoxAccountTypes',
-								usedCard.AccountType,
+								usedCard.AccountType
 							);
 						}
 
@@ -7377,7 +7377,7 @@ ManualFunctions: {
 						) {
 							addDocumentValue(
 								'cardBoxBalances',
-								usedCard.Balance.toString(),
+								usedCard.Balance.toString()
 							);
 						}
 
@@ -7410,28 +7410,28 @@ ManualFunctions: {
 									var registerDetailsArray = [];
 
 									registerDetailsArray.push(
-										registerDetails.PositionId.toString(),
+										registerDetails.PositionId.toString()
 									);
 									registerDetailsArray.push(
-										registerDetails.Discount.toString(),
+										registerDetails.Discount.toString()
 									);
 									registerDetailsArray.push(
-										registerDetails.UsePercent,
+										registerDetails.UsePercent
 									);
 									registerDetailsArray.push(
-										registerDetails.SpecialPrice.toString(),
+										registerDetails.SpecialPrice.toString()
 									);
 									registerDetailsArray.push(
-										registerDetails.SpecialPriceQuantity.toString(),
+										registerDetails.SpecialPriceQuantity.toString()
 									);
 									registerDetailsArray.push(
-										registerDetails.EndPrice.toString(),
+										registerDetails.EndPrice.toString()
 									);
 
 									addDocumentValue(
 										currentDocument,
 										'cardBoxRegisterDetails',
-										registerDetailsArray.join('&'),
+										registerDetailsArray.join('&')
 									);
 								}
 							}
@@ -7461,7 +7461,7 @@ ManualFunctions: {
 						) {
 							addDocumentValue(
 								'PositionPrices',
-								position.PositionId + '&' + position.EndPrice,
+								position.PositionId + '&' + position.EndPrice
 							);
 						}
 					}
@@ -7494,14 +7494,14 @@ ManualFunctions: {
 		//проверим, что документ - продажа
 		if (!isSaleDocument(doc)) {
 			showError(
-				'Ввод процессинговой карты возможен только в документе продажи!',
+				'Ввод процессинговой карты возможен только в документе продажи!'
 			);
 		}
 
 		if (frontol.userValues.get('OnlyOneCard') == '1') {
 			if (doc.userValues.get('cardBoxNumbers') != '') {
 				showError(
-					'В документе уже введена карта или расчитаны скидки!',
+					'В документе уже введена карта или расчитаны скидки!'
 				);
 			}
 		}
@@ -7527,15 +7527,15 @@ ManualFunctions: {
 				!(
 					doc.payment.type.code ==
 						Number(
-							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 						) ||
 					doc.payment.type.code ==
 						Number(
-							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME)
 						) ||
 					doc.payment.type.code ==
 						Number(
-							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME)
 						) ||
 					doc.payment.type.code ==
 						Number(frontol.userValues.get(COUPON_PAYMENT_CODE_NAME))
@@ -7628,7 +7628,7 @@ ManualFunctions: {
 
 		// для специальных дисконтных карт выбор программы лояльности не показываем
 		var specialDiscountCardPrefix = frontol.userValues.get(
-			'SpecialDiscountCardPrefix',
+			'SpecialDiscountCardPrefix'
 		);
 		var patternSpecialDiscountCardPrefix =
 			'^' + specialDiscountCardPrefix + '[0-9]+$';
@@ -7644,7 +7644,7 @@ ManualFunctions: {
 				loyaltyProgram = frontol.actions.selectString(
 					'Выберите программу лояльности',
 					listLoyaltyPrograms.Names,
-					listLoyaltyPrograms.Ids,
+					listLoyaltyPrograms.Ids
 				);
 
 				if (!loyaltyProgram) {
@@ -7681,7 +7681,7 @@ ManualFunctions: {
 		//проверим, что документ - продажа
 		if (!isSaleDocument(frontol.currentDocument)) {
 			showError(
-				'Ввод процессинговой карты и расчет скидки возможны только в документе продажи!',
+				'Ввод процессинговой карты и расчет скидки возможны только в документе продажи!'
 			);
 		}
 
@@ -7709,15 +7709,15 @@ ManualFunctions: {
 				!(
 					frontol.currentDocument.payment.type.code ==
 						Number(
-							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 						) ||
 					frontol.currentDocument.payment.type.code ==
 						Number(
-							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME)
 						) ||
 					frontol.currentDocument.payment.type.code ==
 						Number(
-							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME)
 						) ||
 					frontol.currentDocument.payment.type.code ==
 						Number(frontol.userValues.get(COUPON_PAYMENT_CODE_NAME))
@@ -7786,7 +7786,7 @@ ManualFunctions: {
 			var itemCode = frontol.actions.selectString(
 				'Меню управления ССГ',
 				itemTitles,
-				itemCodes,
+				itemCodes
 			);
 
 			if (!itemCode) return;
@@ -7796,12 +7796,12 @@ ManualFunctions: {
 					if (isGlobalValueSet(SHELF_LIFE_DISCOUNTS_VALUE_NAME)) {
 						frontol.userValues.set(
 							SHELF_LIFE_DISCOUNTS_VALUE_NAME,
-							'0',
+							'0'
 						);
 					} else {
 						frontol.userValues.set(
 							SHELF_LIFE_DISCOUNTS_VALUE_NAME,
-							'1',
+							'1'
 						);
 
 						if (
@@ -7810,14 +7810,14 @@ ManualFunctions: {
 						) {
 							showMessage(
 								'Скидки по сроку годности включены!\n' +
-									'Для корректной работы документ необходимо открыть заново!',
+									'Для корректной работы документ необходимо открыть заново!'
 							);
 						}
 					}
 					break;
 				case 'path':
 					var shelfLifeDiscountsPath = frontol.userValues.get(
-						SHELF_LIFE_DISCOUNTS_PATH_VALUE_NAME,
+						SHELF_LIFE_DISCOUNTS_PATH_VALUE_NAME
 					);
 					var path = frontol.actions.inputString(
 						'Введите полный путь к файлу ССГ ' +
@@ -7827,13 +7827,13 @@ ManualFunctions: {
 							'В случае использования FTP укажите полный путь в следующем формате:' +
 							CR_MESSAGE +
 							'ftp://ИМЯ_ПОЛЬЗОВАТЕЛЯ:ПАРОЛЬ@FTP_СЕРВЕР/ПУТЬ_К_ФАЙЛУ/',
-						shelfLifeDiscountsPath,
+						shelfLifeDiscountsPath
 					);
 
 					if (path) {
 						frontol.userValues.set(
 							SHELF_LIFE_DISCOUNTS_PATH_VALUE_NAME,
-							path.trim(),
+							path.trim()
 						);
 
 						if (
@@ -7844,7 +7844,7 @@ ManualFunctions: {
 								'Путь к файлу ССГ ' +
 									SHELF_LIFE_DISCOUNTS_FILE +
 									' был изменён!\n' +
-									'Для применения изменений документ необходимо открыть заново!',
+									'Для применения изменений документ необходимо открыть заново!'
 							);
 						}
 						copyShelfLifeDiscountsFile();
@@ -7921,7 +7921,7 @@ ManualFunctions: {
 				'accessToken\n' +
 				'setRxLoyaltyDebugging\n' +
 				'setSecondMonitor\n' +
-				'showShelfLifeDiscountsMenu',
+				'showShelfLifeDiscountsMenu'
 		);
 
 		if (st == null || st == '') return;
@@ -7983,7 +7983,7 @@ ManualFunctions: {
 	function manualCouponActivation() {
 		var couponNumber = frontol.actions.inputString(
 			INPUT_CARD_CODE_MESSAGE,
-			'',
+			''
 		);
 
 		if (couponNumber) couponNumber = couponNumber.trim();
@@ -7996,14 +7996,14 @@ ManualFunctions: {
 
 		if (couponNumber.search(/^[0-9]*$/) === -1 || !couponNumber) {
 			showError(
-				'Ошибка ввода номера купона:\nНеобходимо указывать только цифры!',
+				'Ошибка ввода номера купона:\nНеобходимо указывать только цифры!'
 			);
 		}
 
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		var processingServerAddress = getServerAddress();
@@ -8021,7 +8021,7 @@ ManualFunctions: {
 		//формируем строку для отправки
 		var stringToSend = JSON.stringify({
 			LicenseGuid: license,
-			CardCode: couponNumber,
+			CardCode: couponNumber
 		});
 
 		result = sendHttpRequest(
@@ -8029,7 +8029,7 @@ ManualFunctions: {
 				'/BonusWebApi/api/processing/activateCoupon',
 			'POST',
 			stringToSend,
-			'coupon_activate',
+			'coupon_activate'
 		);
 
 		if (result.success) {
@@ -8039,7 +8039,7 @@ ManualFunctions: {
 					result.data.CardStatus +
 					'\n' +
 					'Баланс: ' +
-					result.data.Balance,
+					result.data.Balance
 			);
 		} else {
 			showError(result.message);
@@ -8071,7 +8071,7 @@ ManualFunctions: {
 		if (typeof cardNumber == 'undefined') {
 			cardNumber = frontol.actions.inputString(
 				INPUT_CARD_CODE_MESSAGE,
-				'',
+				''
 			);
 		}
 
@@ -8085,7 +8085,7 @@ ManualFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		result = checkPrefixCard(cardNumber);
@@ -8104,7 +8104,7 @@ ManualFunctions: {
 
 		var clientBirthday = frontol.actions.inputString(
 			'Введите дату рождения клиента в формате\nДДММГГГГ (только цифры):',
-			'',
+			''
 		);
 
 		if (!clientBirthday) {
@@ -8117,7 +8117,7 @@ ManualFunctions: {
 		if (clientBirthday.search(/^[0-9]{8}$/) === -1) {
 			showMessage(
 				'Ошибка ввода даты рождения:\nНеобходимо указывать только цифры\nлибо дата указана некорректно!',
-				Icon.Error,
+				Icon.Error
 			);
 			return false;
 		}
@@ -8148,7 +8148,7 @@ ManualFunctions: {
 		var stringToSend = JSON.stringify({
 			LicenseGuid: license,
 			CardCode: cardNumber,
-			Birthday: clientBirthday,
+			Birthday: clientBirthday
 		});
 
 		result = sendHttpRequest(
@@ -8156,7 +8156,7 @@ ManualFunctions: {
 				'/BonusWebApi/api/processing/SetClientBirthday',
 			'POST',
 			stringToSend,
-			'set_client_birthday',
+			'set_client_birthday'
 		);
 
 		if (result.success) {
@@ -8180,7 +8180,7 @@ ManualFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		var phoneNumber = showInputPhoneNumberDialog();
@@ -8200,7 +8200,7 @@ ManualFunctions: {
 				phoneNumber.replace('+', '%2b'), // кодируем + для передачи в url
 			'POST',
 			'',
-			'send_confirmcode_to_phone_number',
+			'send_confirmcode_to_phone_number'
 		);
 
 		if (!result.success) {
@@ -8223,7 +8223,7 @@ ManualFunctions: {
 		if (typeof cardNumber == 'undefined') {
 			cardNumber = frontol.actions.inputString(
 				INPUT_CARD_CODE_MESSAGE,
-				'',
+				''
 			);
 		}
 
@@ -8237,7 +8237,7 @@ ManualFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		result = checkPrefixCard(cardNumber);
@@ -8279,7 +8279,7 @@ ManualFunctions: {
 		var stringToSend = JSON.stringify({
 			LicenseGuid: license,
 			CardCode: cardNumber,
-			PhoneMobile: phoneNumber,
+			PhoneMobile: phoneNumber
 		});
 
 		result = sendHttpRequest(
@@ -8287,7 +8287,7 @@ ManualFunctions: {
 				'/BonusWebApi/api/processing/SendConfirmCodeToClient',
 			'POST',
 			stringToSend,
-			'send_confirmcode_to_client',
+			'send_confirmcode_to_client'
 		);
 
 		if (!result.success) {
@@ -8307,7 +8307,7 @@ ManualFunctions: {
 		if (typeof cardNumber == 'undefined') {
 			cardNumber = frontol.actions.inputString(
 				INPUT_CARD_CODE_MESSAGE,
-				'',
+				''
 			);
 		}
 
@@ -8321,7 +8321,7 @@ ManualFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		result = checkPrefixCard(cardNumber);
@@ -8364,7 +8364,7 @@ ManualFunctions: {
 			LicenseGuid: license,
 			CardCode: cardNumber,
 			PhoneMobile: phoneNumber,
-			SendByDefaultProvider: true,
+			SendByDefaultProvider: true
 		});
 
 		result = sendHttpRequest(
@@ -8372,7 +8372,7 @@ ManualFunctions: {
 				'/BonusWebApi/api/processing/SendConfirmCodeAndSaleSms',
 			'POST',
 			stringToSend,
-			'send_confirmcode_and_sale_sms',
+			'send_confirmcode_and_sale_sms'
 		);
 
 		if (!result.success) {
@@ -8382,7 +8382,7 @@ ManualFunctions: {
 
 		if ('NoMoney' in result.data && result.data.NoMoney) {
 			showMessage(
-				'Недостаточный баланс для оплаты SMS с кодом подтверждения',
+				'Недостаточный баланс для оплаты SMS с кодом подтверждения'
 			);
 			return false;
 		}
@@ -8398,7 +8398,7 @@ ManualFunctions: {
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
 					OR_MESSAGE +
 					CONTACT_SUPPORT_MESSAGE,
-				Icon.Error,
+				Icon.Error
 			);
 			return false;
 		}
@@ -8414,7 +8414,7 @@ ManualFunctions: {
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
 					OR_MESSAGE +
 					CONTACT_SUPPORT_MESSAGE,
-				Icon.Error,
+				Icon.Error
 			);
 			return false;
 		}
@@ -8436,7 +8436,7 @@ ManualFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		if (typeof phoneNumber == 'undefined') {
@@ -8461,14 +8461,14 @@ ManualFunctions: {
 		var stringToSend = JSON.stringify({
 			CardNum: phoneNumber,
 			PhoneConfirmCode: confirmCode,
-			RegSource: 'Bar',
+			RegSource: 'Bar'
 		});
 
 		result = sendHttpRequest(
 			processingServerAddress + '/BonusWebApi/Mobile/Register',
 			'POST',
 			stringToSend,
-			'register_client_by_phone_number',
+			'register_client_by_phone_number'
 		);
 
 		if (result.success) {
@@ -8484,7 +8484,7 @@ ManualFunctions: {
 		if (typeof cardNumber == 'undefined') {
 			cardNumber = frontol.actions.inputString(
 				INPUT_CARD_CODE_MESSAGE,
-				'',
+				''
 			);
 		}
 
@@ -8498,7 +8498,7 @@ ManualFunctions: {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		result = checkPrefixCard(cardNumber);
@@ -8546,7 +8546,7 @@ ManualFunctions: {
 			LicenseGuid: license,
 			CardCode: cardNumber,
 			PhoneMobile: phoneNumber,
-			ConfirmCode: confirmCode,
+			ConfirmCode: confirmCode
 		});
 
 		result = sendHttpRequest(
@@ -8554,7 +8554,7 @@ ManualFunctions: {
 				'/BonusWebApi/api/processing/ConfirmClientPhone',
 			'POST',
 			stringToSend,
-			'confirm_client_phone',
+			'confirm_client_phone'
 		);
 
 		if (result.success) {
@@ -8573,7 +8573,7 @@ ManualFunctions: {
 			attemptsNumber++;
 			confirmCode = frontol.actions.inputString(
 				INPUT_CONFIRM_CODE_MESSAGE,
-				'',
+				''
 			);
 
 			if (!confirmCode) {
@@ -8582,7 +8582,7 @@ ManualFunctions: {
 						(attemptsNumber < 2
 							? CR_MESSAGE + TRY_AGAIN_MESSAGE
 							: ''),
-					Icon.Error,
+					Icon.Error
 				);
 				continue;
 			}
@@ -8595,7 +8595,7 @@ ManualFunctions: {
 						(attemptsNumber < 2
 							? CR_MESSAGE + TRY_AGAIN_MESSAGE
 							: ''),
-					Icon.Error,
+					Icon.Error
 				);
 				confirmCode = '';
 				continue;
@@ -8610,7 +8610,7 @@ ManualFunctions: {
 		var phonePrefix = frontol.userValues.get('PhonePrefix');
 		var phoneNumber = frontol.actions.inputString(
 			INPUT_PHONE_NUMBER_MESSAGE,
-			phonePrefix ? phonePrefix : '',
+			phonePrefix ? phonePrefix : ''
 		);
 
 		if (!phoneNumber) {
@@ -8640,13 +8640,13 @@ ManualFunctions: {
 		//проверим, что документ - продажа
 		if (!isSaleDocument(doc))
 			showError(
-				'Ввод процессинговой карты возможен только в документе продажи!',
+				'Ввод процессинговой карты возможен только в документе продажи!'
 			);
 
 		if (frontol.userValues.get('OnlyOneCard') == '1') {
 			if (doc.userValues.get('cardBoxNumbers') != '') {
 				showError(
-					'В документе уже введена карта или расчитаны скидки!',
+					'В документе уже введена карта или расчитаны скидки!'
 				);
 			}
 		}
@@ -8670,15 +8670,15 @@ ManualFunctions: {
 				!(
 					doc.payment.type.code ==
 						Number(
-							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 						) ||
 					doc.payment.type.code ==
 						Number(
-							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME)
 						) ||
 					doc.payment.type.code ==
 						Number(
-							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME)
 						) ||
 					doc.payment.type.code ==
 						Number(frontol.userValues.get(COUPON_PAYMENT_CODE_NAME))
@@ -8801,20 +8801,20 @@ Libraries: {
 											f.push(
 												quote(n) +
 													(gap ? ': ' : ':') +
-													o,
+													o
 											));
 							else
 								for (n in i)
 									Object.prototype.hasOwnProperty.call(
 										i,
-										n,
+										n
 									) &&
 										((o = str(n, i)),
 										o &&
 											f.push(
 												quote(n) +
 													(gap ? ': ' : ':') +
-													o,
+													o
 											));
 							return (
 								(o =
@@ -8871,7 +8871,7 @@ Libraries: {
 						'\f': '\\f',
 						'\r': '\\r',
 						'"': '\\"',
-						'\\': '\\\\',
+						'\\': '\\\\'
 					}),
 					(JSON.stringify = function (t, e, r) {
 						var n;
@@ -8898,7 +8898,7 @@ Libraries: {
 									for (r in o)
 										Object.prototype.hasOwnProperty.call(
 											o,
-											r,
+											r
 										) &&
 											((n = walk(o, r)),
 											void 0 !== n
@@ -8921,13 +8921,13 @@ Libraries: {
 													t.charCodeAt(0).toString(16)
 												).slice(-4)
 											);
-										},
+										}
 									)),
 								rx_one.test(
 									text
 										.replace(rx_two, '@')
 										.replace(rx_three, ']')
-										.replace(rx_four, ''),
+										.replace(rx_four, '')
 								))
 							)
 								return (
@@ -8950,7 +8950,7 @@ Tests: {
 		request,
 		command,
 		requestDateTime,
-		responseDateTime,
+		responseDateTime
 	) {
 		if (!isDebugMode()) return;
 
@@ -8969,7 +8969,7 @@ Tests: {
 					'_' +
 					dateTimeNow +
 					'.log',
-				true,
+				true
 			);
 
 			// время отправки запроса
@@ -8992,7 +8992,7 @@ Tests: {
 		} catch (e) {
 			showMessage(
 				'Ошибка теста запроса-ответа!\n' + e.name + ': ' + e.message,
-				Icon.Error,
+				Icon.Error
 			);
 		}
 	}
@@ -9087,7 +9087,7 @@ Extra: {
 		operatorCode,
 		docNumber,
 		barCode,
-		kkmPos,
+		kkmPos
 	) {
 		var paymentCash = 0;
 		var paymentDebitCard = 0;
@@ -9124,7 +9124,7 @@ Extra: {
 							'Неизвестный тип платежа (' +
 								doc.payment.code +
 								')!',
-							Icon.Error,
+							Icon.Error
 						);
 						cancelAct();
 						return;
@@ -9189,12 +9189,12 @@ Extra: {
 					sectionName,
 					taxType,
 					taxationType,
-					taxPercent,
+					taxPercent
 				)
 			) {
 				if (cashBoxItems.LastError.length === 0) {
 					showMessage(
-						"Не удалось добавить позицию '" + name + "' в чек!",
+						"Не удалось добавить позицию '" + name + "' в чек!"
 					);
 				} else {
 					showMessage(
@@ -9203,7 +9203,7 @@ Extra: {
 							"' в чек!" +
 							CR_MESSAGE +
 							cashBoxItems.LastError +
-							'!',
+							'!'
 					);
 				}
 				cancelAct();
@@ -9240,7 +9240,7 @@ Extra: {
 			docNumber,
 			barCode,
 			kkmPos,
-			additionalTextPrint,
+			additionalTextPrint
 		);
 
 		if (fp.length === 0) {
@@ -9251,7 +9251,7 @@ Extra: {
 					'Ошибка выполнения операции!' +
 						CR_MESSAGE +
 						cashBox.LastError +
-						'!',
+						'!'
 				);
 			}
 			cancelAct();
@@ -9266,7 +9266,7 @@ Extra: {
 		operatorCode,
 		docNumber,
 		barCode,
-		kkmPos,
+		kkmPos
 	) {
 		var paymentCash = 0;
 		var paymentDebitCard = 0;
@@ -9300,7 +9300,7 @@ Extra: {
 						showMessage(
 							'Неизвестный тип платежа (' +
 								doc.payment.code +
-								')!',
+								')!'
 						);
 						cancelAct();
 						return;
@@ -9366,13 +9366,13 @@ Extra: {
 					sectionName,
 					taxType,
 					taxationType,
-					taxPercent,
+					taxPercent
 				)
 			) {
 				if (cashBoxItems.LastError.length === 0) {
 					showMessage(
 						"Не удалось добавить позицию '" + name + "' в чек!",
-						Icon.Error,
+						Icon.Error
 					);
 				} else {
 					showMessage(
@@ -9382,7 +9382,7 @@ Extra: {
 							CR_MESSAGE +
 							cashBoxItems.LastError +
 							'!',
-						Icon.Error,
+						Icon.Error
 					);
 				}
 				cancelAct();
@@ -9400,7 +9400,7 @@ Extra: {
 			operatorCode,
 			docNumber,
 			barCode,
-			kkmPos,
+			kkmPos
 		);
 
 		if (fp.length === 0) {
@@ -9412,7 +9412,7 @@ Extra: {
 						CR_MESSAGE +
 						cashBox.LastError +
 						'!',
-					Icon.Error,
+					Icon.Error
 				);
 			}
 			cancelAct();
@@ -9427,7 +9427,7 @@ Extra: {
 		operatorCode,
 		docNumber,
 		barCode,
-		kkmPos,
+		kkmPos
 	) {
 		if (
 			!cashBox.MoneyDeposit(
@@ -9436,7 +9436,7 @@ Extra: {
 				operatorCode,
 				docNumber,
 				barCode,
-				kkmPos,
+				kkmPos
 			)
 		) {
 			if (cashBox.LastError.length === 0) {
@@ -9446,7 +9446,7 @@ Extra: {
 					'Ошибка выполнения операции!' +
 						CR_MESSAGE +
 						cashBox.LastError +
-						'!',
+						'!'
 				);
 			}
 			return false;
@@ -9460,7 +9460,7 @@ Extra: {
 		operatorCode,
 		docNumber,
 		barCode,
-		kkmPos,
+		kkmPos
 	) {
 		if (
 			!cashBox.MoneyWithdrawal(
@@ -9469,7 +9469,7 @@ Extra: {
 				operatorCode,
 				docNumber,
 				barCode,
-				kkmPos,
+				kkmPos
 			)
 		) {
 			if (cashBox.LastError.length === 0) {
@@ -9479,7 +9479,7 @@ Extra: {
 					'Ошибка выполнения операции!' +
 						CR_MESSAGE +
 						cashBox.LastError +
-						'!',
+						'!'
 				);
 			}
 			return false;
@@ -9518,13 +9518,13 @@ Extra: {
 						doc.position.setSpecialPrice(
 							doc.position.ware.price -
 								(doc.position.ware.price / 1.13) * 0.01,
-							1,
+							1
 						);
 					} else {
 						doc.position.setSpecialPrice(
 							doc.position.ware.price -
 								(doc.position.ware.price / 1.13) * 0.01,
-							0,
+							0
 						);
 					}
 				}
@@ -9542,12 +9542,12 @@ Extra: {
 					if (doc.position.ware.maxDiscount != 0) {
 						doc.position.setSpecialPrice(
 							doc.position.ware.price,
-							1,
+							1
 						);
 					} else {
 						doc.position.setSpecialPrice(
 							rontol.currentDocument.position.ware.price,
-							0,
+							0
 						);
 					}
 				}
@@ -9579,35 +9579,35 @@ Extra: {
 			) {
 				if (frontol.currentDocument.payment.type.code == 1) {
 					showError(
-						'Введена оплата наличными!\nКомбинированная оплата недоступна!',
+						'Введена оплата наличными!\nКомбинированная оплата недоступна!'
 					);
 				}
 
 				if (
 					frontol.currentDocument.payment.type.code ==
 						Number(
-							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME),
+							frontol.userValues.get(BONUS_PAYMENT_CODE_NAME)
 						) ||
 					frontol.currentDocument.payment.type.code ==
 						Number(
-							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DISCOUNT_PAYMENT_CODE_NAME)
 						) ||
 					frontol.currentDocument.payment.type.code ==
 						Number(
-							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME),
+							frontol.userValues.get(DEPOSIT_PAYMENT_CODE_NAME)
 						) ||
 					frontol.currentDocument.payment.type.code ==
 						Number(frontol.userValues.get(COUPON_PAYMENT_CODE_NAME))
 				) {
 					showError(
-						'Цены не пересчитаны! Доступна только оплата наличными!',
+						'Цены не пересчитаны! Доступна только оплата наличными!'
 					);
 				}
 			}
 
 			SavePayment_ExtraTaxKyrgyzstan(
 				payment.type.code,
-				payment.sumInBaseCurrency,
+				payment.sumInBaseCurrency
 			);
 
 			frontol.currentDocument.userValues.set('NeedCalc', '1');
@@ -9790,7 +9790,7 @@ Extra: {
 
 			var loyaltyPrograms = {
 				Ids: '',
-				Names: '',
+				Names: ''
 			};
 
 			for (var i = 0; i < arrayLoyaltyPrograms.length; i++) {
@@ -9848,7 +9848,7 @@ Extra: {
 			var result = {
 				success: false,
 				message: '',
-				data: '',
+				data: ''
 			};
 
 			var processingServerAddress = getServerAddress();
@@ -9869,7 +9869,7 @@ Extra: {
 					license,
 				'POST',
 				'',
-				'loyalty_programs',
+				'loyalty_programs'
 			);
 
 			if (result.success) {
@@ -9884,7 +9884,7 @@ Extra: {
 		var cardCodeEncoded = base64_encode('123');
 		var cardCodeQR = frontol.actions.inputString(
 			'Отсканируйте QR-код карты из приложения',
-			cardCodeEncoded,
+			cardCodeEncoded
 		);
 
 		if (cardCodeQR) {
@@ -9915,9 +9915,9 @@ Extra: {
 			set: function (index) {
 				frontol.userValues.set(
 					'currentCategoryIndex',
-					index.toString(),
+					index.toString()
 				);
-			},
+			}
 		};
 
 		var currentSubcategoryIndex = {
@@ -9927,9 +9927,9 @@ Extra: {
 			set: function (index) {
 				frontol.userValues.set(
 					'currentSubcategoryIndex',
-					index.toString(),
+					index.toString()
 				);
-			},
+			}
 		};
 
 		var currentWareIndex = {
@@ -9938,7 +9938,7 @@ Extra: {
 			},
 			set: function (index) {
 				frontol.userValues.set('currentWareIndex', index.toString());
-			},
+			}
 		};
 
 		var maxCategoriesCount = 9;
@@ -9997,7 +9997,7 @@ Extra: {
 								.length > 1
 						) {
 							tree.Data.Category[i].Subcategory[j].Product.sort(
-								compareProducts,
+								compareProducts
 							);
 						} else {
 							tree.Data.Category[i].Subcategory[j].Product = [
@@ -10044,7 +10044,7 @@ Extra: {
 					null,
 					1,
 					null,
-					true,
+					true
 				);
 
 				if (frontol.userValues.get('SecondMonitor') == '1') {
@@ -10055,7 +10055,7 @@ Extra: {
 					'Ошибка добавления позиции в документ!' +
 						CR_MESSAGE +
 						CONTACT_YOUR_TECHNICIAN_MESSAGE,
-					Icon.Error,
+					Icon.Error
 				);
 			}
 		}
@@ -10085,7 +10085,7 @@ Extra: {
 
 				frontol.userValues.set(
 					'c' + (i + 1).toString(),
-					Categories[i].attributes.Name,
+					Categories[i].attributes.Name
 				);
 			}
 		}
@@ -10096,7 +10096,7 @@ Extra: {
 			currentCategoryIndex.set(index);
 			ClearSubcategoriesNames();
 			SetSubcategoriesNames(
-				tree.Data.Category[currentCategoryIndex.get()].Subcategory,
+				tree.Data.Category[currentCategoryIndex.get()].Subcategory
 			);
 		}
 
@@ -10152,7 +10152,7 @@ Extra: {
 
 				frontol.userValues.set(
 					's' + (i + 1).toString(),
-					Subcategories[i].attributes.Name,
+					Subcategories[i].attributes.Name
 				);
 			}
 		}
@@ -10215,7 +10215,7 @@ Extra: {
 			SetWaresNames(
 				tree.Data.Category[currentCategoryIndex.get()].Subcategory[
 					currentSubcategoryIndex.get()
-				].Product,
+				].Product
 			);
 		}
 
@@ -10236,7 +10236,7 @@ Extra: {
 
 				frontol.userValues.set(
 					'w' + (counter + 1).toString(),
-					Wares[i].attributes.DisplayName,
+					Wares[i].attributes.DisplayName
 				);
 				counter++;
 			}
@@ -10516,7 +10516,7 @@ Extra: {
 		function GetDirectory() {
 			var wshShell = new ActiveXObject('WScript.Shell');
 			var lnkPath = wshShell.ExpandEnvironmentStrings(
-				'%SystemDrive%\\CategoriesDirectory.lnk',
+				'%SystemDrive%\\CategoriesDirectory.lnk'
 			);
 			var objShortcut = wshShell.CreateShortcut(lnkPath);
 			return objShortcut.TargetPath;
@@ -10543,7 +10543,7 @@ Extra: {
 						e.name +
 						': ' +
 						e.message,
-					Icon.Error,
+					Icon.Error
 				);
 			} finally {
 				try {
@@ -10561,7 +10561,7 @@ Extra: {
 			data,
 			comment,
 			documentType,
-			delay,
+			delay
 		) {
 			if (typeof delay == 'undefined' || typeof delay != 'boolean')
 				delay = false;
@@ -10573,7 +10573,7 @@ Extra: {
 			var result = {
 				success: false,
 				message: '',
-				data: '',
+				data: ''
 			};
 
 			if (!uri) {
@@ -10661,7 +10661,7 @@ Extra: {
 					request,
 					comment,
 					requestDateTime,
-					responseDateTime,
+					responseDateTime
 				);
 			}
 
@@ -10730,7 +10730,7 @@ Extra: {
 							errorInformation +=
 								request.statusText.substring(
 									0,
-									SHOW_MAX_LENGTH_STRING,
+									SHOW_MAX_LENGTH_STRING
 								) + '...';
 						} else {
 							errorInformation += request.statusText;
@@ -10812,7 +10812,7 @@ Extra: {
 			result = {
 				success: false,
 				message: '',
-				data: '',
+				data: ''
 			};
 
 			if (isEmptyValue(url)) {
@@ -11150,13 +11150,13 @@ function RxTare() {
 		var result = {
 			success: false,
 			message: '',
-			data: '',
+			data: ''
 		};
 
 		var tDocumentDiscountDtos = [];
 
 		tDocumentDiscountDtos[0] = {
-			CardCode: cardCode,
+			CardCode: cardCode
 		};
 
 		var tDocumentDetailDtos = [];
@@ -11168,7 +11168,7 @@ function RxTare() {
 			tare = addedTareArray[i];
 			tDocumentDetailDtos[i] = {
 				ProductCode: tare.params.code,
-				Quantity: tare.quantity,
+				Quantity: tare.quantity
 			};
 		}
 
@@ -11179,7 +11179,7 @@ function RxTare() {
 			DocumentType: 15,
 			DocumentDateTime: getISODateTimeToString(':'),
 			DocumentDiscountDtos: tDocumentDiscountDtos,
-			DocumentDetailDtos: tDocumentDetailDtos,
+			DocumentDetailDtos: tDocumentDetailDtos
 		});
 
 		result = sendHttpRequest(
@@ -11187,7 +11187,7 @@ function RxTare() {
 				'/BonusWebApi/api/processing/ReturnGlassware',
 			'POST',
 			stringToSend,
-			'return_glassware',
+			'return_glassware'
 		);
 
 		if (result.success) {
@@ -11258,7 +11258,7 @@ function manualInputTare() {
 				while (tareQuantity != null) {
 					tareQuantity = frontol.actions.inputString(
 						'Введите количество тары',
-						'',
+						''
 					);
 
 					if (
@@ -11274,7 +11274,7 @@ function manualInputTare() {
 						if (tareQuantity == null) {
 							var retryInputTareQuantity = showMessage(
 								'Ввод количества тары отменен. Вы хотите повторить ввод количества тары?',
-								Icon.Question + Button.YesNo,
+								Icon.Question + Button.YesNo
 							);
 
 							if (retryInputTareQuantity == DialogResult.Yes) {
@@ -11283,7 +11283,7 @@ function manualInputTare() {
 						} else {
 							showMessage(
 								'Количество тары введено некорректно!',
-								Icon.Error,
+								Icon.Error
 							);
 						}
 					}
@@ -11291,7 +11291,7 @@ function manualInputTare() {
 
 				var endInputTare = showMessage(
 					'Продолжить ввод тары?',
-					Icon.Question + Button.YesNo,
+					Icon.Question + Button.YesNo
 				);
 
 				if (endInputTare == DialogResult.No) {
@@ -11304,7 +11304,7 @@ function manualInputTare() {
 					while (cardCode != null) {
 						cardCode = frontol.actions.inputString(
 							'Введите код карты',
-							'',
+							''
 						);
 
 						if (cardCode != null && cardCode.length > 0) {
@@ -11351,7 +11351,7 @@ function manualInputTare() {
 
 							var allRight = showMessage(
 								addedTareText + '\nВсе данные верны?',
-								Icon.Question + Button.YesNo,
+								Icon.Question + Button.YesNo
 							);
 
 							if (allRight == DialogResult.Yes) {
@@ -11367,7 +11367,7 @@ function manualInputTare() {
 							if (cardCode == null) {
 								var retryInputCard = showMessage(
 									'Ввод карты отменен. Вы хотите повторить ввод номера карты?',
-									Icon.Question + Button.YesNo,
+									Icon.Question + Button.YesNo
 								);
 
 								if (retryInputCard == DialogResult.Yes) {
@@ -11376,7 +11376,7 @@ function manualInputTare() {
 							} else {
 								showMessage(
 									'Код карты введен некорректно!',
-									Icon.Error,
+									Icon.Error
 								);
 							}
 						}
@@ -11385,14 +11385,14 @@ function manualInputTare() {
 			} else {
 				showMessage(
 					'Тара с кодом ' + tareCode + ' не найдена!',
-					Icon.Error,
+					Icon.Error
 				);
 			}
 		} else {
 			if (tareCode == null) {
 				var abortInputTare = showMessage(
 					'Ввод тары отменен. Вы хотите прекратить ввод тары?',
-					Icon.Question + Button.YesNo,
+					Icon.Question + Button.YesNo
 				);
 
 				if (abortInputTare == DialogResult.No) {
@@ -11431,7 +11431,7 @@ function RxMarketPrograms() {
 		) {
 			// получаем общий список доступных альтернативных маркетинговых программ
 			getAlternativeMarketPrograms(
-				serverResponse.AlternativeDiscountDtos,
+				serverResponse.AlternativeDiscountDtos
 			);
 		}
 
@@ -11448,7 +11448,7 @@ function RxMarketPrograms() {
 					// обновляем маркетинговую программу для позиций если процент скидки выбранной альтернативной программы больше
 					serverResponse.RegisterDetailResponseDtos =
 						updateMarketPrograms(
-							serverResponse.RegisterDetailResponseDtos,
+							serverResponse.RegisterDetailResponseDtos
 						);
 				}
 			}
@@ -11459,7 +11459,7 @@ function RxMarketPrograms() {
 	// обновляем JSON ответа
 	// если были выбраны маркетинговые акции - применяем акцию с максимальной скидкой
 	var updateMarketPrograms = function updateMarketPrograms(
-		registerDetailResponseDtos,
+		registerDetailResponseDtos
 	) {
 		for (var i = 0; i < registerDetailResponseDtos.length; i++) {
 			var registerDetailResponseDto = registerDetailResponseDtos[i];
@@ -11471,7 +11471,7 @@ function RxMarketPrograms() {
 			) {
 				var maxMarketProgram = {
 					id: 0,
-					discount: 0.0,
+					discount: 0.0
 				};
 
 				for (
@@ -11489,8 +11489,8 @@ function RxMarketPrograms() {
 						!isNaN(
 							parseInt(
 								alternativeDiscountDto.MarketProgramId,
-								10,
-							),
+								10
+							)
 						) &&
 						Number(alternativeDiscountDto.MarketProgramId) > 0 &&
 						'Discount' in alternativeDiscountDto &&
@@ -11524,7 +11524,7 @@ function RxMarketPrograms() {
 							'Discount' in registerDetailResponseDto &&
 							registerDetailResponseDto.Discount.toString() &&
 							!isNaN(
-								parseFloat(registerDetailResponseDto.Discount),
+								parseFloat(registerDetailResponseDto.Discount)
 							)
 						) {
 							if (
@@ -11534,8 +11534,8 @@ function RxMarketPrograms() {
 								!isNaN(
 									parseInt(
 										registerDetailResponseDto.MarketProgramId,
-										10,
-									),
+										10
+									)
 								)
 							) {
 								if (
@@ -11562,7 +11562,7 @@ function RxMarketPrograms() {
 	};
 	// получаем массив id альтернативных маркетинговых программ
 	var getAlternativeMarketPrograms = function getAlternativeMarketPrograms(
-		alternativeDiscountDtos,
+		alternativeDiscountDtos
 	) {
 		for (var i = 0; i < alternativeDiscountDtos.length; i++) {
 			var alternativeDiscountDto = alternativeDiscountDtos[i];
@@ -11588,7 +11588,7 @@ function RxMarketPrograms() {
 		function getAlternativeMarketProgramNames() {
 			var params = {
 				names: '',
-				ids: '',
+				ids: ''
 			};
 
 			for (var i = 0; i < alternativeMarketPrograms.length; i++) {
@@ -11632,13 +11632,13 @@ function RxMarketPrograms() {
 			selectedMarketProgramId = frontol.actions.selectString(
 				SELECT_AVAILABLE_DISCOUNTS_MESSAGE,
 				params.names,
-				params.ids,
+				params.ids
 			);
 
 			if (Number(selectedMarketProgramId) > 0) {
 				var pressedButton = showMessage(
 					getMarketProgramMessage(selectedMarketProgramId),
-					Icon.Question + Button.YesNo,
+					Icon.Question + Button.YesNo
 				);
 
 				if (pressedButton === DialogResult.Yes) {
@@ -11650,7 +11650,7 @@ function RxMarketPrograms() {
 					) {
 						var smsPrice = sendConfirmCodeAndSaleSms(
 							cardNumber,
-							phoneNumber,
+							phoneNumber
 						);
 
 						if (smsPrice === false) {
@@ -11659,7 +11659,7 @@ function RxMarketPrograms() {
 						}
 					}
 					removeAlternativeMarketProgramIndexById(
-						selectedMarketProgramId,
+						selectedMarketProgramId
 					);
 					selectedMarketPrograms.push(selectedMarketProgramId);
 					params = getAlternativeMarketProgramParams();
@@ -11693,10 +11693,10 @@ function RxMarketPrograms() {
 	};
 	// возвращает массив маркетинговых программ для позиции
 	this.getPositionMarketProgram = function getPositionMarketProgram(
-		positionId,
+		positionId
 	) {
 		var marketProgramIds = frontol.currentDocument.userValues.get(
-			POSITION_MARKET_PROGRAM_IDS_VALUE_NAME,
+			POSITION_MARKET_PROGRAM_IDS_VALUE_NAME
 		);
 
 		if (marketProgramIds.length > 0) {
@@ -11764,7 +11764,7 @@ function RxMarketPrograms() {
 	var saveUserValue = function saveUserValue(userValueName, newObjectsArray) {
 		var doc = frontol.currentDocument;
 		var savedObjectsArray = deserializingFromString(
-			doc.userValues.get(userValueName),
+			doc.userValues.get(userValueName)
 		);
 
 		if (savedObjectsArray.length > 0) {
@@ -11792,18 +11792,18 @@ function RxMarketPrograms() {
 			}
 			doc.userValues.set(
 				userValueName,
-				serializingToString(savedObjectsArray),
+				serializingToString(savedObjectsArray)
 			);
 		} else {
 			doc.userValues.set(
 				userValueName,
-				serializingToString(newObjectsArray),
+				serializingToString(newObjectsArray)
 			); // пишем новое значение если нет предыдущего
 		}
 	};
 	// записывает маркетинговые программы в пользовательскую переменную в формате positionIndex&marketProgramId&marketProgramIsForced
 	this.savePositionsMarketPrograms = function savePositionsMarketPrograms(
-		serverResponse,
+		serverResponse
 	) {
 		if (
 			'RegisterDetailResponseDtos' in serverResponse &&
@@ -11824,16 +11824,16 @@ function RxMarketPrograms() {
 					registerDetailResponseDto.PositionId.toString().length >
 						0 &&
 					!isNaN(
-						parseInt(registerDetailResponseDto.PositionId, 10),
+						parseInt(registerDetailResponseDto.PositionId, 10)
 					) &&
 					Number(registerDetailResponseDto.PositionId) > 0 &&
 					'MarketProgramId' in registerDetailResponseDto
 				) {
 					positionMarketProgram.positionId = Number(
-						registerDetailResponseDto.PositionId,
+						registerDetailResponseDto.PositionId
 					);
 					positionMarketProgram.marketProgramId = Number(
-						registerDetailResponseDto.MarketProgramId,
+						registerDetailResponseDto.MarketProgramId
 					);
 					positionMarketProgram.marketProgramIsForced = 0;
 
@@ -11851,7 +11851,7 @@ function RxMarketPrograms() {
 			if (positionsMarketPrograms.length > 0)
 				saveUserValue(
 					POSITION_MARKET_PROGRAM_IDS_VALUE_NAME,
-					positionsMarketPrograms,
+					positionsMarketPrograms
 				);
 		}
 	};
@@ -11913,7 +11913,7 @@ function manualScanQRCode(qrCode) {
 		dateTimeMonth - 1,
 		dateTimeDay,
 		dateTimeHours,
-		dateTimeMinutes,
+		dateTimeMinutes
 	);
 	var qrCodeTimestamp = qrCodeDateTime.getTime();
 
@@ -12108,7 +12108,7 @@ function RxFrontolToSecondMonitor() {
 
 	var result = {
 		data: false,
-		message: '',
+		message: ''
 	};
 
 	this.addRegisterInfo = function addRegisterInfo(result) {
@@ -12259,11 +12259,11 @@ function RxFrontolToSecondMonitor() {
 					ProductName: doc.position.ware.name,
 					TotalPrice: Number(doc.position.sum).round(2),
 					TotalPriceDiscounted: Number(doc.position.totalSum).round(
-						2,
+						2
 					),
 					Discount: Number(doc.position.totalSumDiscount).round(2),
 					PositionId: doc.position.id,
-					Count: doc.position.quantity,
+					Count: doc.position.quantity
 				};
 				numberInArray++;
 			}
@@ -12273,7 +12273,7 @@ function RxFrontolToSecondMonitor() {
 			AccessTokenGuid: token,
 			CardRegisterDateTime: getISODateTimeToString(':', ' '),
 			TotalPrice: Number(doc.sum).round(2),
-			TotalPriceDiscounted: Number(doc.totalSum).round(2),
+			TotalPriceDiscounted: Number(doc.totalSum).round(2)
 		};
 
 		tRegisterDetailDtos = registerDetailDtos;
@@ -12289,7 +12289,7 @@ function RxFrontolToSecondMonitor() {
 					MarketProgramId: clientChipInfoStrings[0],
 					MarketProgramName: clientChipInfoStrings[1],
 					AddChip: clientChipInfoStrings[2],
-					Balance: clientChipInfoStrings[3],
+					Balance: clientChipInfoStrings[3]
 				};
 
 				clientChipInfoArray.push(clientChipInfo);
@@ -12336,7 +12336,7 @@ function clearStatFiles() {
 			var file = files.item();
 			var dateCreated = new Date(file.DateCreated);
 			var passedDays = Math.round(
-				(dateNow - dateCreated) / 1000 / 60 / 60 / 24,
+				(dateNow - dateCreated) / 1000 / 60 / 60 / 24
 			);
 
 			if (passedDays >= 60) {
@@ -12440,7 +12440,7 @@ function forbidAlco(pos) {
 
 		if (groupFlag == 1) {
 			showMessage(
-				'С 21.00 до 12.00 продажа алкогольной продукции запрещена!',
+				'С 21.00 до 12.00 продажа алкогольной продукции запрещена!'
 			);
 			cancelAct();
 		}
@@ -12469,7 +12469,7 @@ function is18YearsOld() {
 	if (frontol.currentDocument.userValues.get('is18YearsOld') == '0') {
 		showMessage(
 			'ПОКУПАТЕЛЬ  НЕ  ПРОШЕЛ ПРОВЕРКУ, ДАННУЮ КАТЕГОРИЮ ТОВАРА НЕЛЬЗЯ ДОБАВИТЬ!',
-			Icon.Exclamation,
+			Icon.Exclamation
 		);
 		return false;
 	}
@@ -12499,7 +12499,7 @@ function is18YearsOld() {
 				'ВВЕДИТЕ ДАТУ РОЖДЕНИЯ В ФОРМАТЕ ДДММГГГГ' +
 				CR_MESSAGE +
 				'(ДЕНЬ МЕСЯЦ ГОД, ТОЛЬКО ЦИФРЫ, НАПРИМЕР 31072000)',
-			'',
+			''
 		);
 
 		//если пользователь нажал «Отмена» или ввел пустую строку,
@@ -12514,7 +12514,7 @@ function is18YearsOld() {
 			inputError = true;
 			showMessage(
 				'Вы не ввели значение или значение неправильное!\n(ДЕНЬ МЕСЯЦ ГОД)-31072000',
-				Icon.Error,
+				Icon.Error
 			);
 			continue;
 		}
@@ -12601,7 +12601,7 @@ function JetQrPayInit() {
 	frontol.addEventListener(
 		'cancelDocument',
 		'JetQrAfterCancelDocument',
-		false,
+		false
 	);
 }
 
@@ -12683,19 +12683,19 @@ function JetQrBeforeAddPayment(frontolPayment) {
 	if (frontol.currentDocument.type.code === 1) {
 		if (JetQrPay == null)
 			JetQrPay = new ActiveXObject(
-				'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver',
+				'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver'
 			);
 
 		var result = null;
 		if (frontolPayment.type.code === ALIF_SALOM) {
 			result = JetQrPay.ProcessSalomPayment(
 				frontolPaymentData,
-				frontolPaymentProducts,
+				frontolPaymentProducts
 			);
 		} else {
 			result = JetQrPay.ProcessQrPayment(
 				frontolPaymentData,
-				frontolPaymentProducts,
+				frontolPaymentProducts
 			);
 		}
 
@@ -12706,16 +12706,16 @@ function JetQrBeforeAddPayment(frontolPayment) {
 				frontol.currentDocument.addPayment(
 					result.FrontolBankCode,
 					result.AmountArrived,
-					null,
+					null
 				);
 				frontol.currentDocument.userValues.set(
 					result.InvoiceId,
-					result.InvoiceId,
+					result.InvoiceId
 				);
 			} else {
 				showMessage(
 					'Дублирующий платеж! Этот платеж уже есть в списке.',
-					Icon.Warning,
+					Icon.Warning
 				);
 			}
 		} else {
@@ -12744,7 +12744,7 @@ function CancelJetQrPaymentsOnDocument() {
 	if (documentHasJetQrPayments) {
 		if (JetQrPay == null)
 			JetQrPay = new ActiveXObject(
-				'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver',
+				'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver'
 			);
 
 		var documentNumber = 0;
@@ -12776,7 +12776,7 @@ function AlifShowAdminUI() {
 
 	if (JetQrPay == null)
 		JetQrPay = new ActiveXObject(
-			'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver',
+			'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver'
 		);
 
 	var result = JetQrPay.ShowAdminUI();
@@ -12794,7 +12794,7 @@ function AlifShowAdminUI() {
 				frontol.currentDocument.addPayment(
 					qrType,
 					result.AmountArrived,
-					null,
+					null
 				);
 			} else {
 				var isDuplicate =
@@ -12804,11 +12804,11 @@ function AlifShowAdminUI() {
 					frontol.currentDocument.addPayment(
 						qrType,
 						result.AmountArrived,
-						null,
+						null
 					);
 					frontol.currentDocument.userValues.set(
 						result.InvoiceId,
-						result.InvoiceId,
+						result.InvoiceId
 					);
 				} else
 					showMessage(
@@ -12879,12 +12879,12 @@ function EMVCo_JetQrPayInit() {
 	frontol.addEventListener(
 		'cancelDocument',
 		'EMVCo_JetQrAfterCancelDocument',
-		false,
+		false
 	);
 	frontol.addEventListener(
 		'stornoPayment',
 		'EMVCo_JetQrBeforeStornoPayment',
-		true,
+		true
 	);
 }
 
@@ -12894,7 +12894,7 @@ function EMVCo_JetQrBeforeAddPayment(frontolPayment) {
 		if (frontol.currentDocument.type.code === 1) {
 			if (JetQrPay == null)
 				JetQrPay = new ActiveXObject(
-					'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver',
+					'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver'
 				);
 
 			if (frontolPayment.type.code === EMVCo_TJ) {
@@ -12903,28 +12903,28 @@ function EMVCo_JetQrBeforeAddPayment(frontolPayment) {
 					frontol.currentDocument.number,
 					frontol.sessionNumber,
 					frontolPayment.sumInBaseCurrency,
-					frontol.codeWorkplace,
+					frontol.codeWorkplace
 				);
 
 				if (result.IsSuccessful) {
 					var isDuplicate =
 						frontol.currentDocument.userValues.get(
-							result.InvoiceId,
+							result.InvoiceId
 						) > 0;
 
 					if (isDuplicate === false) {
 						frontol.currentDocument.addPayment(
 							EMVCo_TJ,
 							result.AmountArrived,
-							null,
+							null
 						);
 						frontol.currentDocument.userValues.set(
 							result.InvoiceId,
-							result.InvoiceId,
+							result.InvoiceId
 						);
 					} else {
 						showMessage(
-							'Дублирующий платеж! Этот платеж уже есть в списке.',
+							'Дублирующий платеж! Этот платеж уже есть в списке.'
 						);
 					}
 				}
@@ -12937,7 +12937,7 @@ function EMVCo_JetQrBeforeAddPayment(frontolPayment) {
 		else if (frontol.currentDocument.type.code === 2) {
 			//Temporary fix until we implement partial payment cancellation
 			showMessage(
-				"Возврат платежа типа 'Алиф QR и Алиф Салом' не поддерживается! Произведите возврат наличными.",
+				"Возврат платежа типа 'Алиф QR и Алиф Салом' не поддерживается! Произведите возврат наличными."
 			);
 		}
 		cancelAct();
@@ -12959,7 +12959,7 @@ function EMVCo_CancelJetQrPaymentsOnDocument() {
 	if (documentHasJetQrPayments) {
 		if (JetQrPay == null)
 			JetQrPay = new ActiveXObject(
-				'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver',
+				'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver'
 			);
 
 		var documentNumber = 0;
@@ -12992,7 +12992,7 @@ function EMVCo_JetQrBeforeStornoPayment(frontolPayment) {
 //--------------------EO_SETTINGS_START----------------------------
 var EO_SETTINGS = {
 	PATH: 'C:\\EskhataOnline\\settings.json',
-	PAYMENT_TYPE_ID: 108,
+	PAYMENT_TYPE_ID: 108
 };
 
 var EO_STATUSES = {
@@ -13000,38 +13000,38 @@ var EO_STATUSES = {
 	ERROR_UNKNOWN: { code: 'UNKNOWN', message: 'Неизвестная ошибка!' }, // TODO
 	ERROR_FILE_NOT_FOUND: {
 		code: 'ERROR_FILE_NOT_FOUND',
-		message: 'Ошибка! Файл не найден. Обратитесь к администратору!',
+		message: 'Ошибка! Файл не найден. Обратитесь к администратору!'
 	},
 	ERROR_FILE_CANNOT_BE_READ: {
 		code: 'ERROR_FILE_CANNOT_BE_READ',
 		message:
-			'Ошибка! Не удаётся прочитить файл. Обратитесь к администратору!',
+			'Ошибка! Не удаётся прочитить файл. Обратитесь к администратору!'
 	},
 	ERROR_FILE_CANNOT_BE_CLOSED: {
 		code: 'ERROR_FILE_CANNOT_BE_CLOSED',
 		message:
-			'Ошибка! Не удаётся закрыть файл. Обратитесь к администратору!',
+			'Ошибка! Не удаётся закрыть файл. Обратитесь к администратору!'
 	},
 	ERROR_INIT_PRINTER: {
 		code: 'ERROR_INIT_PRINTER',
 		message:
-			'Ошибка при инициализации принтера. Обратитесь к администратору!',
+			'Ошибка при инициализации принтера. Обратитесь к администратору!'
 	},
 	ERROR_PAYMENT_ALREADY_EXIST: {
 		code: 'ERROR_EO_PAYMENT_ALREADY_EXIST',
 		message:
-			'Ошибка! Платёж через Эсхата Онлайн уже существует в данном документе.',
+			'Ошибка! Платёж через Эсхата Онлайн уже существует в данном документе.'
 	},
 	ERROR_PAYMENT_CANNOT_BE_REMOVED: {
 		code: 'ERROR_PAYMENT_CANNOT_BE_REMOVED',
 		message:
-			'Ошибка! Платёж через Эсхата Онлайн уже проведён по этому не может быть удалён.',
+			'Ошибка! Платёж через Эсхата Онлайн уже проведён по этому не может быть удалён.'
 	},
 	ERROR_PAYMENT_CANNOT_BE_RETURNED: {
 		code: 'ERROR_PAYMENT_CANNOT_BE_RETURNED',
 		message:
-			"Ошибка! Возврат платежа 'Эсхата Онлайн' не поддерживается! Произведите возврат наличными.",
-	},
+			"Ошибка! Возврат платежа 'Эсхата Онлайн' не поддерживается! Произведите возврат наличными."
+	}
 };
 //--------------------EO_SETTINGS_END----------------------------
 
@@ -13048,27 +13048,27 @@ function EO_AfterOpenDocument() {
 		frontol.currentDocument.userValues.set('EO_TRACK_ID', 0);
 		frontol.currentDocument.userValues.set(
 			'EO_CHECK_PAYMENT_RESULT_PAYMENT_ID',
-			0,
+			0
 		);
 		frontol.currentDocument.userValues.set(
 			'EO_CHECK_PAYMENT_RESULT_PAYMENT_NUMBER',
-			0,
+			0
 		);
 		frontol.currentDocument.userValues.set(
 			'EO_CHECK_PAYMENT_RESULT_PAYMENT_DATETIME',
-			0,
+			0
 		);
 		frontol.currentDocument.userValues.set(
 			'EO_CHECK_PAYMENT_RESULT_PAYMENT_AMOUNT',
-			0,
+			0
 		);
 		frontol.currentDocument.userValues.set(
 			'EO_CHECK_PAYMENT_RESULT_PAYMENT_CURRENCY',
-			0,
+			0
 		);
 		frontol.currentDocument.userValues.set(
 			'EO_CHECK_PAYMENT_RESULT_CLIENT_ACCOUNT',
-			0,
+			0
 		);
 
 		if (typeof JSON !== 'object' || typeof JSON.parse !== 'function') {
@@ -13088,7 +13088,7 @@ function EO_BeforeAddPayment(payment) {
 				var settings = EO_GetSettingsFromJsonFile(EO_SETTINGS.PATH);
 				//Инициализация DLL - EskhataOnlineTransport
 				var transactions = new ActiveXObject(
-					'EskhataOnlineTransport.Transactions',
+					'EskhataOnlineTransport.Transactions'
 				);
 				var dateOpen = frontol.currentDocument.dateOpen.split('.');
 				var dateOpenFormatted =
@@ -13101,11 +13101,11 @@ function EO_BeforeAddPayment(payment) {
 					document_date:
 						dateOpenFormatted +
 						' ' +
-						frontol.currentDocument.timeOpen,
+						frontol.currentDocument.timeOpen
 				};
 				//Отправка данных в DLL - EskhataOnlineTransport
 				var result_text = transactions.CheckPayment(
-					JSON.stringify(EO_REQUEST_MODEL),
+					JSON.stringify(EO_REQUEST_MODEL)
 				);
 				var result = JSON.parse(result_text);
 				//Получение и проверка ответа из DLL - EskhataOnlineTransport
@@ -13114,31 +13114,31 @@ function EO_BeforeAddPayment(payment) {
 					frontol.currentDocument.userValues.set('EO_PAYMENTS', 1);
 					frontol.currentDocument.userValues.set(
 						'EO_TRACK_ID',
-						result.meta.track_id,
+						result.meta.track_id
 					);
 					frontol.currentDocument.userValues.set(
 						'EO_CHECK_PAYMENT_RESULT_PAYMENT_ID',
-						result.data.data.data.transaction.id,
+						result.data.data.data.transaction.id
 					);
 					frontol.currentDocument.userValues.set(
 						'EO_CHECK_PAYMENT_RESULT_PAYMENT_NUMBER',
-						result.data.data.data.transaction.session_number,
+						result.data.data.data.transaction.session_number
 					);
 					frontol.currentDocument.userValues.set(
 						'EO_CHECK_PAYMENT_RESULT_PAYMENT_DATETIME',
-						result.data.data.data.transaction.created_at,
+						result.data.data.data.transaction.created_at
 					);
 					frontol.currentDocument.userValues.set(
 						'EO_CHECK_PAYMENT_RESULT_PAYMENT_AMOUNT',
-						result.data.data.data.transaction.amount,
+						result.data.data.data.transaction.amount
 					);
 					frontol.currentDocument.userValues.set(
 						'EO_CHECK_PAYMENT_RESULT_PAYMENT_CURRENCY',
-						result.data.data.data.transaction.currency,
+						result.data.data.data.transaction.currency
 					);
 					frontol.currentDocument.userValues.set(
 						'EO_CHECK_PAYMENT_RESULT_CLIENT_ACCOUNT',
-						result.data.data.data.transaction.account_number,
+						result.data.data.data.transaction.account_number
 					);
 
 					if (settings.data.printer.is_print_enabled)
@@ -13147,7 +13147,7 @@ function EO_BeforeAddPayment(payment) {
 					frontol.currentDocument.addPayment(
 						EO_SETTINGS.PAYMENT_TYPE_ID,
 						result.data.data.data.transaction.amount,
-						null,
+						null
 					);
 				} else {
 					showError('Eskhata Online: ' + result.message); //TODO неуспешный кейс месседж
@@ -13155,13 +13155,13 @@ function EO_BeforeAddPayment(payment) {
 			} else {
 				showError(
 					'Eskhata Online: ' +
-						EO_STATUSES.ERROR_PAYMENT_ALREADY_EXIST.message,
+						EO_STATUSES.ERROR_PAYMENT_ALREADY_EXIST.message
 				);
 			}
 		} else {
 			showError(
 				'Eskhata Online: ' +
-					EO_STATUSES.ERROR_PAYMENT_CANNOT_BE_RETURNED.message,
+					EO_STATUSES.ERROR_PAYMENT_CANNOT_BE_RETURNED.message
 			);
 		}
 		cancelAct();
@@ -13178,7 +13178,7 @@ function EO_BeforeRemovePayment() {
 			// Отмена удаления платежа и вывод соответствующего сообщения
 			showError(
 				'Eskhata Online: ' +
-					EO_STATUSES.ERROR_PAYMENT_CANNOT_BE_REMOVED.message,
+					EO_STATUSES.ERROR_PAYMENT_CANNOT_BE_REMOVED.message
 			);
 		}
 	}
@@ -13191,19 +13191,19 @@ function EO_BeforeCloseDocument() {
 		if (frontol.currentDocument.type.code === 1) {
 			//Инициализация DLL - EskhataOnlineTransport
 			var transactions = new ActiveXObject(
-				'EskhataOnlineTransport.Transactions',
+				'EskhataOnlineTransport.Transactions'
 			);
 			//Подготовка модели запроса
 			var EO_REQUEST_MODEL = {
 				track_id: frontol.currentDocument.userValues.get('EO_TRACK_ID'),
 				transaction_id: frontol.currentDocument.userValues.get(
-					'EO_CHECK_PAYMENT_RESULT_PAYMENT_ID',
+					'EO_CHECK_PAYMENT_RESULT_PAYMENT_ID'
 				),
-				document_number: frontol.currentDocument.number,
+				document_number: frontol.currentDocument.number
 			};
 			//Отправка данных в DLL - EskhataOnlineTransport
 			var result = JSON.parse(
-				transactions.Confirm(JSON.stringify(EO_REQUEST_MODEL)),
+				transactions.Confirm(JSON.stringify(EO_REQUEST_MODEL))
 			);
 			//Получение и проверка ответа из DLL - EskhataOnlineTransport
 			if (result.code != EO_STATUSES.SUCCESS.code) {
@@ -13212,7 +13212,7 @@ function EO_BeforeCloseDocument() {
 		} else {
 			showError(
 				'Eskhata Online: ' +
-					EO_STATUSES.ERROR_PAYMENT_CANNOT_BE_RETURNED.message,
+					EO_STATUSES.ERROR_PAYMENT_CANNOT_BE_RETURNED.message
 			);
 		}
 	}
@@ -13225,19 +13225,19 @@ function EO_BeforeCancelDocument() {
 		if (frontol.currentDocument.type.code === 1) {
 			//Инициализация DLL - EskhataOnlineTransport
 			var transactions = new ActiveXObject(
-				'EskhataOnlineTransport.Transactions',
+				'EskhataOnlineTransport.Transactions'
 			);
 			//Подготовка модели запроса
 			var EO_REQUEST_MODEL = {
 				track_id: frontol.currentDocument.userValues.get('EO_TRACK_ID'),
 				transaction_id: frontol.currentDocument.userValues.get(
-					'EO_CHECK_PAYMENT_RESULT_PAYMENT_ID',
+					'EO_CHECK_PAYMENT_RESULT_PAYMENT_ID'
 				),
-				document_number: frontol.currentDocument.number,
+				document_number: frontol.currentDocument.number
 			};
 			//Отправка данных в DLL - EskhataOnlineTransport
 			var result = JSON.parse(
-				transactions.Cancel(JSON.stringify(EO_REQUEST_MODEL)),
+				transactions.Cancel(JSON.stringify(EO_REQUEST_MODEL))
 			);
 			//Получение и проверка ответа из DLL - EskhataOnlineTransport
 			if (result.code != EO_STATUSES.SUCCESS.code) {
@@ -13246,7 +13246,7 @@ function EO_BeforeCancelDocument() {
 		} else {
 			showError(
 				'Eskhata Online: ' +
-					EO_STATUSES.ERROR_PAYMENT_CANNOT_BE_RETURNED.message,
+					EO_STATUSES.ERROR_PAYMENT_CANNOT_BE_RETURNED.message
 			);
 		}
 	}
@@ -13347,32 +13347,32 @@ function EO_ReplaceData(data) {
 		.replace(
 			'__DATETIME__',
 			frontol.currentDocument.userValues.get(
-				'EO_CHECK_PAYMENT_RESULT_PAYMENT_DATETIME',
-			),
+				'EO_CHECK_PAYMENT_RESULT_PAYMENT_DATETIME'
+			)
 		)
 		.replace(
 			'__CLIENT_ACCOUNT__',
 			frontol.currentDocument.userValues.get(
-				'EO_CHECK_PAYMENT_RESULT_CLIENT_ACCOUNT',
-			),
+				'EO_CHECK_PAYMENT_RESULT_CLIENT_ACCOUNT'
+			)
 		)
 		.replace(
 			'__PAYMENT_NUMBER__',
 			frontol.currentDocument.userValues.get(
-				'EO_CHECK_PAYMENT_RESULT_PAYMENT_NUMBER',
-			),
+				'EO_CHECK_PAYMENT_RESULT_PAYMENT_NUMBER'
+			)
 		)
 		.replace(
 			'__AMOUNT__',
 			frontol.currentDocument.userValues.get(
-				'EO_CHECK_PAYMENT_RESULT_PAYMENT_AMOUNT',
-			),
+				'EO_CHECK_PAYMENT_RESULT_PAYMENT_AMOUNT'
+			)
 		)
 		.replace(
 			'__CURRENCY__',
 			frontol.currentDocument.userValues.get(
-				'EO_CHECK_PAYMENT_RESULT_PAYMENT_CURRENCY',
-			),
+				'EO_CHECK_PAYMENT_RESULT_PAYMENT_CURRENCY'
+			)
 		);
 }
 
@@ -13449,7 +13449,7 @@ function $$$returnByCheck() {
 	} else if (workOption == '2') {
 		var BARCODE = frontol.actions.inputString(
 			'Отсканируйте ШК документа продажи',
-			'',
+			''
 		);
 
 		if (BARCODE == '' || BARCODE == null) {
@@ -13484,7 +13484,7 @@ function addPositionsFromSql(doc, data) {
 
 		doc.userValues.set(
 			'BaseDocumentUserValues',
-			base64_encode(userValuesStr),
+			base64_encode(userValuesStr)
 		);
 	} else {
 		showError('Некоретные данные чека продажи(Основания)');
@@ -13511,7 +13511,7 @@ function addPositionsFromSql(doc, data) {
 				null,
 				quantity.round(3),
 				summ,
-				false,
+				false
 			);
 		} catch (e) {
 			showMessage(
@@ -13525,7 +13525,7 @@ function addPositionsFromSql(doc, data) {
 					'\nОписание ошибки: ' +
 					e.name +
 					': ' +
-					e.message,
+					e.message
 			);
 		}
 	}
@@ -13570,7 +13570,7 @@ function sqlRequest(sqlCommandText) {
 	var result = {
 		success: false,
 		message: 'Данные по чеку не найдены!',
-		data: '',
+		data: ''
 	};
 
 	//для отладки переделать в глобальные параметры
@@ -13634,7 +13634,7 @@ function sqlRequest(sqlCommandText) {
 					USERVALUES: recordset.Fields('USERVALUES').Value,
 					PRODUCTCODE: recordset.Fields('PRODUCTCODE').Value,
 					KOL: recordset.Fields('KOL').Value,
-					SUMMA: +recordset.Fields('SUMMA').Value,
+					SUMMA: +recordset.Fields('SUMMA').Value
 				});
 
 				// для отладки поглядеть что пришло
@@ -13755,7 +13755,7 @@ function createActionData(filePath) {
 			actionData[params[0]] = {
 				sum: params[1],
 				cashierMesage: params[2],
-				slipMessage: params[3],
+				slipMessage: params[3]
 			};
 		}
 	} catch (e) {
@@ -13767,7 +13767,7 @@ function createActionData(filePath) {
 				e.name +
 				': ' +
 				e.message,
-			Icon.Error,
+			Icon.Error
 		);
 	} finally {
 		try {
@@ -13801,7 +13801,7 @@ function EnterParameter(param, header) {
 	var headerString = 'Вводимый параметр: ' + header;
 	var newValue = frontol.actions.inputString(
 		headerString,
-		frontol.userValues.get(param),
+		frontol.userValues.get(param)
 	);
 	if (newValue == null) return false;
 	frontol.userValues.set(param, newValue.trim());
@@ -13848,7 +13848,7 @@ function ManualPrintOptionsButton() {
 
 		'choosePrintWithoutSending\n' +
 			'printWithSendingToPhone\n' +
-			'printWithSendingToMail\n',
+			'printWithSendingToMail\n'
 	);
 
 	if (st == null || st == '') return;
@@ -13982,7 +13982,7 @@ function $ManualButton() {
 				'\n' +
 				'\n' +
 				'freedomBankTerminalIpAdd\n' +
-				'\n',
+				'\n'
 		);
 
 		if (st == null || st == '') return;
@@ -14042,7 +14042,7 @@ function $ManualButton() {
 				var options = {
 					formCode: 'GET_X_REPORT',
 					ffdVersion: 'VER_1',
-					shouldPrintSlip: true,
+					shouldPrintSlip: true
 				};
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
@@ -14059,7 +14059,7 @@ function $ManualButton() {
 					ffdVersion: 'VER_1',
 					shouldPrintSlip: true,
 					cashier: frontol.currentUser.name,
-					kktVersion: '1',
+					kktVersion: '1'
 				};
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
@@ -14070,7 +14070,7 @@ function $ManualButton() {
 			case 'freedomBankTerminalIpAdd': {
 				EnterParameter(
 					VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS,
-					' ip:port для терминала FreedomBank',
+					' ip:port для терминала FreedomBank'
 				);
 				break;
 			}
@@ -14146,7 +14146,7 @@ function $ManualButton() {
 				'printLastDoc\n' +
 				'printLastDocByFDNum\n' +
 				'IsSessionOn\n' +
-				'\n',
+				'\n'
 		);
 
 		if (st == null || st == '') return;
@@ -14207,14 +14207,14 @@ function $ManualButton() {
 				var TerminalIdsunmi = frontol.userValues.get('SharqTerminalId');
 
 				var options = {
-					operationid: 'X-отчет',
+					operationid: 'X-отчет'
 				};
 				var stringToSend = JSON.stringify(options);
 				var result = SendToFiscalSharq(
 					FRadress,
 					TerminalIdsunmi,
 					'xreport',
-					stringToSend,
+					stringToSend
 				);
 				showMessage(result.message);
 
@@ -14226,14 +14226,14 @@ function $ManualButton() {
 				var FRadress = frontol.userValues.get('Sharqfiscalipadres');
 				var TerminalIdsunmi = frontol.userValues.get('SharqTerminalId');
 				var options = {
-					operationid: 'Z-отчет',
+					operationid: 'Z-отчет'
 				};
 				var stringToSend = JSON.stringify(options);
 				var result = SendToFiscalSharq(
 					FRadress,
 					TerminalIdsunmi,
 					'zreport',
-					stringToSend,
+					stringToSend
 				);
 				showMessage(result.message);
 
@@ -14244,7 +14244,7 @@ function $ManualButton() {
 				var options = {
 					formCode: 'GET_X_REPORT',
 					ffdVersion: 'VER_1',
-					shouldPrintSlip: true,
+					shouldPrintSlip: true
 				};
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
@@ -14261,7 +14261,7 @@ function $ManualButton() {
 					ffdVersion: 'VER_1',
 					shouldPrintSlip: true,
 					cashier: frontol.currentUser.name,
-					kktVersion: '1',
+					kktVersion: '1'
 				};
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
@@ -14320,7 +14320,7 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 		}
 		frontol.actions.showMessage(
 			'Ошибка ОФД: ' + request.status + ',Нет связи с ККМ',
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return;
@@ -14355,7 +14355,7 @@ function JSONParse(jsonString) {
 		if (!keyValue[1]) {
 			frontol.actions.showMessage(
 				'Отсутствует значение для ключа: ' + keyValue[0],
-				Icon.Error,
+				Icon.Error
 			);
 			continue;
 		}
@@ -14377,7 +14377,7 @@ function JSONStringify(obj) {
 		ffdVersion: 'VER_1',
 		shouldPrintSlip: true,
 		cashier: frontol.currentUser.name,
-		kktVersion: '1',
+		kktVersion: '1'
 	};
 	var jsonString = '{';
 	for (var key in obj) {
@@ -14402,7 +14402,7 @@ function JSONStringify(obj) {
 function deviceStatusToSend() {
 	var options = JSONStringify({
 		formCode: 'DEVICE_STATUS',
-		shouldPrintSlip: true,
+		shouldPrintSlip: true
 	});
 	return options;
 }
@@ -14442,8 +14442,8 @@ function GiveDocumentToString(doc, PrintOption) {
 					price,
 					quantity,
 					sum,
-					vatValue,
-				),
+					vatValue
+				)
 			);
 
 			//присвоим запятую
@@ -14498,7 +14498,7 @@ function GiveDocumentToString(doc, PrintOption) {
 			operationType: 'INCOME',
 			taxType: 'GENERAL',
 			consumerContacts: PrintOption,
-			customMessage: infoCardClient,
+			customMessage: infoCardClient
 		});
 	}
 	//sboboev+
@@ -14517,7 +14517,7 @@ function GiveDocumentToString(doc, PrintOption) {
 			operationType: 'REVERT_INCOME',
 			taxType: 'GENERAL',
 			consumerContacts: PrintOption,
-			customMessage: infoCardClient,
+			customMessage: infoCardClient
 		});
 	}
 	//sboboev-
@@ -14560,7 +14560,7 @@ function GiveDocumentToString(doc, PrintOption) {
 			receiptNonCash: Number(nocashamount * 100).round(0),
 			cashChangeAmount: Number(AmountChangeCash * 100).round(0), //Сдача
 			bankRRN: '000000000000',
-			bankCard: null,
+			bankCard: null
 		});
 	} else {
 		var options2 = JSONStringify({
@@ -14569,7 +14569,7 @@ function GiveDocumentToString(doc, PrintOption) {
 			receiptNonCash: Number(nocashamount * 100).round(0),
 			cashChangeAmount: Number(AmountChangeCash * 100).round(0), //Сдача
 			bankRRN: null,
-			bankCard: null,
+			bankCard: null
 		});
 	}
 
@@ -14582,7 +14582,7 @@ function GiveDocumentToString(doc, PrintOption) {
 	if (justWriteLog()) {
 		var stringToSendObject = JSON.parse(stringToSend);
 		writeToFile(
-			'\nТело запроса:\n' + JSON.stringify(stringToSendObject, null, 2),
+			'\nТело запроса:\n' + JSON.stringify(stringToSendObject, null, 2)
 		);
 	}
 	return stringToSend;
@@ -14660,7 +14660,7 @@ function createProductForFiscal(
 	prquantity,
 	prsum,
 	vat,
-	vatCode,
+	vatCode
 ) {
 	var prname = escapeSpecialChars(prname);
 	var vatValue;
@@ -14673,7 +14673,7 @@ function createProductForFiscal(
 		7: 8,
 		14: 15,
 		15: 16,
-		18: 19,
+		18: 19
 	};
 
 	// Проверка: ставка не указана
@@ -14686,7 +14686,7 @@ function createProductForFiscal(
 	) {
 		frontol.actions.showMessage(
 			"Ошибка: У товара '" + prname + "' ставка НДС не указана.",
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return null;
@@ -14700,7 +14700,7 @@ function createProductForFiscal(
 				"'. Указано: " +
 				vat +
 				'%',
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return null;
@@ -14729,7 +14729,7 @@ function createProductForFiscal(
 		commodity: 'GOODS',
 		vatCode: vatValue,
 		sum: prsum,
-		marker: '',
+		marker: ''
 	};
 }
 //sboboev-
@@ -14774,7 +14774,7 @@ function createVatsForFiscal(vatsValue, vatSum) {
 	}
 	return {
 		vatCode: vatValue,
-		vatSum: vatSum,
+		vatSum: vatSum
 	};
 }
 
@@ -14827,7 +14827,7 @@ function OpenDraw() {
 		formCode: 'OPEN_DRAWER',
 		onTimeout: 500,
 		offTimeout: 100,
-		onQuantity: 1,
+		onQuantity: 1
 	});
 
 	var stringToSend = options;
@@ -14839,7 +14839,7 @@ function OpenDraw() {
 		var error = getErrorOFD(result.rc);
 		frontol.actions.showMessage(
 			'Не исправность с ДЯ: ' + CR_MESSAGE + CR_MESSAGE + error,
-			Icon.Error,
+			Icon.Error
 		);
 		//break;
 		return;
@@ -14855,7 +14855,7 @@ function escapeSpecialChars(str) {
 		'\r': '\\r',
 		'\t': '\\t',
 		'\b': '\\b',
-		'\f': '\\f',
+		'\f': '\\f'
 	};
 
 	// Замещаем все специальные символы в строке их экранированными версиями
@@ -14890,7 +14890,7 @@ function toISOProto() {
 					'.' +
 					String((this.getMilliseconds() / 1000).toFixed(3)).slice(
 						2,
-						5,
+						5
 					) +
 					'Z'
 				);
@@ -15003,7 +15003,7 @@ function hideCardNumber(cardNumber) {
 		/(\d{4})(\d{5})(\d*)/,
 		function (matchMedia, p1, p2, p3) {
 			return p1 + p2.replace(/\d/g, '*') + p3;
-		},
+		}
 	);
 }
 
@@ -15039,7 +15039,7 @@ function chekInfoArea(doc) {
 function StatusKKM() {
 	var options = JSONStringify({
 		formCode: 'DEVICE_STATUS',
-		shouldPrintSlip: false,
+		shouldPrintSlip: false
 	});
 
 	var stringToSend = options;
@@ -15056,7 +15056,7 @@ function StatusKKM() {
 		var error = getErrorOFD(result.rc);
 		frontol.actions.showMessage(
 			'Ответ ККМ: ' + CR_MESSAGE + CR_MESSAGE + error,
-			Icon.Error,
+			Icon.Error
 		);
 	}
 }
@@ -15106,7 +15106,7 @@ Fiscat: {
 		var dataString = JSON.stringify({
 			formCode: 'PRINT_LAST_FD',
 			ffdVersion: 'VER_1',
-			shouldPrintSlip: true,
+			shouldPrintSlip: true
 		});
 
 		printDocByComPort(dataString, 'getLastFD');
@@ -15115,12 +15115,12 @@ Fiscat: {
 	function runPrintLastDocByFDNum() {
 		var docNumber = frontol.actions.inputString(
 			'Введите номер документа',
-			'',
+			''
 		);
 		if (!docNumber) {
 			frontol.actions.showMessage(
 				'Номер документа не введен',
-				Icon.Error,
+				Icon.Error
 			);
 			return;
 		}
@@ -15128,7 +15128,7 @@ Fiscat: {
 		if (!/^\d+$/g.test(docNumber)) {
 			frontol.actions.showMessage(
 				'Номер документа должен состоять из цифр',
-				Icon.Error,
+				Icon.Error
 			);
 			return;
 		}
@@ -15137,7 +15137,7 @@ Fiscat: {
 			formCode: 'PRINT_FD_BY_NUMBER',
 			ffdVersion: 'VER_1',
 			shouldPrintSlip: true,
-			fdNumber: +docNumber,
+			fdNumber: +docNumber
 		});
 
 		printDocByComPort(dataString, 'getFDByNumber');
@@ -15151,7 +15151,7 @@ Fiscat: {
 			var error = getErrorOFD(result.rc);
 			frontol.actions.showMessage(
 				'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
-				Icon.Error,
+				Icon.Error
 			);
 			cancelAct();
 			return;
@@ -15199,10 +15199,10 @@ function dcpay(payment) {
 			//writeLog("Запрос на сервер Тело"+stringToSend);
 
 			var httpClient = new ActiveXObject(
-				'AsyncHttpClient.HttpClientWrapper',
+				'AsyncHttpClient.HttpClientWrapper'
 			);
 			var loadingScreen = new ActiveXObject(
-				'CustomLoadingInterface.LoadingScreen',
+				'CustomLoadingInterface.LoadingScreen'
 			);
 			var imagePath = 'D:/wait.jpg'; // Замените на актуальный путь
 			loadingScreen.SetImage(imagePath); // Устанавливаем изображение
@@ -15213,7 +15213,7 @@ function dcpay(payment) {
 			} catch (error) {
 				frontol.actions.showMessage(
 					'Произошла ошибка: Сервер ДС недоступен, попробуйте позже!',
-					Icon.Error,
+					Icon.Error
 				);
 				cancelAct();
 				return;
@@ -15244,12 +15244,12 @@ function dcpay(payment) {
 						ENTER +
 						'Отправитель: ' +
 						ReadXml(response, 'phone'),
-					Icon.Information,
+					Icon.Information
 				);
 				frontol.currentDocument.addPayment(
 					paymentcode,
 					summafrontol,
-					null,
+					null
 				);
 				var dateforfile = ReadXml(response, 'frontoldate');
 				cancelAct();
@@ -15257,7 +15257,7 @@ function dcpay(payment) {
 				loadingScreen.Hide();
 				//writeLog("Пришел ответ не успех"+response);
 				frontol.actions.showMessage(
-					'Информация: ' + ReadXml(response, 'message'),
+					'Информация: ' + ReadXml(response, 'message')
 				);
 				var dateforfile = ReadXml(response, 'frontoldate');
 				cancelAct();
@@ -15268,7 +15268,7 @@ function dcpay(payment) {
 				loadingScreen.Hide();
 				frontol.actions.showMessage(
 					'Не пришел ответ от DC',
-					Icon.Error,
+					Icon.Error
 				);
 				cancelAct();
 				//writeLog("Нет соединения или протокол не доступен");
@@ -15302,7 +15302,7 @@ function FreedomBankInit() {
 	frontol.addEventListener(
 		'cancelDocument',
 		'FreedomBankAfterCancelDocument',
-		false,
+		false
 	);
 }
 
@@ -15313,7 +15313,7 @@ function _getTerminalHttpAddress(terminalIpAddress) {
 function _askRRNFromUser() {
 	var RRN = frontol.actions.inputString(
 		'Введите RRN для возврата на терминале Freedom Bank',
-		'',
+		''
 	);
 
 	return RRN;
@@ -15333,8 +15333,8 @@ function _freedomBankSale(payment, terminalIpAdd) {
 	var dataToSend = {
 		task: 'purchase',
 		data: {
-			amount: amount,
-		},
+			amount: amount
+		}
 	};
 	var url = _getTerminalHttpAddress(terminalIpAdd);
 	try {
@@ -15344,7 +15344,7 @@ function _freedomBankSale(payment, terminalIpAdd) {
 			'Ошибка при отправке запроса к терминалу Freedom Bank' +
 				CR_MESSAGE +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return;
@@ -15365,7 +15365,7 @@ function _freedomBankSale(payment, terminalIpAdd) {
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
 					CR_MESSAGE +
 					responseData.message,
-				Icon.Error,
+				Icon.Error
 			);
 		}
 	} else {
@@ -15374,7 +15374,7 @@ function _freedomBankSale(payment, terminalIpAdd) {
 			'Ошибка при подключении к терминалу Freedom Bank' +
 				CR_MESSAGE +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error,
+			Icon.Error
 		);
 	}
 }
@@ -15397,7 +15397,7 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 	if (!RRN) {
 		showMessage(
 			'RRN не введен для возврата.' + CR_MESSAGE + 'Возврат невозможен.',
-			Icon.Exclamation,
+			Icon.Exclamation
 		);
 		cancelAct();
 		return;
@@ -15407,8 +15407,8 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 		task: 'refund',
 		data: {
 			amount: amount,
-			tagRRN: RRN,
-		},
+			tagRRN: RRN
+		}
 	};
 	var url = _getTerminalHttpAddress(terminalIpAdd);
 	var result = sendHttpRequestSimple(url, 'POST', dataToSend);
@@ -15424,7 +15424,7 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
 					CR_MESSAGE +
 					responseData.message,
-				Icon.Error,
+				Icon.Error
 			);
 		}
 	} else {
@@ -15433,7 +15433,7 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 			'Ошибка при подключении к терминалу Freedom Bank' +
 				CR_MESSAGE +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error,
+			Icon.Error
 		);
 	}
 }
@@ -15445,7 +15445,7 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 		// оплату в возврат, то нужно провести документ
 		showMessage(
 			'Документ не является продажей. Отмена невозможна.',
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return;
@@ -15460,7 +15460,7 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 		// АПИ требует RRN для отмены
 		showMessage(
 			'RRN не найден в документе. Отмена невозможна.' + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return;
@@ -15472,7 +15472,7 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 		// и платеж был найден в вызывающей функции (AfterCancelDocument)
 		showMessage(
 			'Платеж типа Freedom Bank не найден в документе. Отмена невозможна.' + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return;
@@ -15482,7 +15482,7 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 		task: 'reversal',
 		data: {
 			amount: docPayment.sumInBaseCurrency,
-			tagRRN: RRN,
+			tagRRN: RRN
 		}
 	}
 	var url = _getTerminalHttpAddress(terminalIpAdd);
@@ -15500,7 +15500,7 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
 					CR_MESSAGE +
 					responseData.message,
-				Icon.Error,
+				Icon.Error
 			);
 			cancelAct();
 			return;
@@ -15511,7 +15511,7 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 			'Ошибка при подключении к терминалу Freedom Bank' +
 				CR_MESSAGE +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return;
@@ -15530,7 +15530,7 @@ function FreedomBankBeforeAddPayment(payment) {
 			'Не задан IP адрес терминала Freedom Bank' +
 				CR_MESSAGE +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return;
@@ -15546,7 +15546,7 @@ function FreedomBankBeforeAddPayment(payment) {
 			'Операция не поддерживается терминалом Freedom Bank' +
 				CR_MESSAGE +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 	}
@@ -15564,7 +15564,7 @@ function FreedomBankAfterCancelDocument() {
 			'Не задан IP адрес терминала Freedom Bank' +
 				CR_MESSAGE +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error,
+			Icon.Error
 		);
 		cancelAct();
 		return;
