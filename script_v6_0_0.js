@@ -15359,6 +15359,7 @@ function _freedomBankSale(payment, terminalIpAdd) {
 		showMessage(
 			'Ошибка при отправке запроса к терминалу Freedom Bank' +
 				CR_MESSAGE +
+				e.message + CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
