@@ -15502,7 +15502,8 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 	// Проведенный документ нельзя отменить, значит документ еще не закрыт
 
 	// Если документ продажи отменяется, значит до этого был вызвана функция
-	// FreedomBankBeforeAddPayment, который добавляет RRN в пользовательские поля документа
+	// FreedomBankBeforeAddPayment, который добавляет обработал платеж
+	// и добавил RRN в пользовательские поля документа
 	var RRN = _getFreedomBankRRNFromDoc(doc);
 	if (!RRN) {
 		// АПИ требует RRN для отмены
@@ -15628,6 +15629,18 @@ function $TestFreedomConnection() {
 			actionCode: "2"
 		}
 	};
+	var terminalIpAdd = getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
+		if (isEmptyValue(terminalIpAdd)) {
+			frontol.actions.showMessage(
+				'Не задан IP адрес терминала Freedom Bank' +
+					CR_MESSAGE +
+					CONTACT_YOUR_TECHNICIAN_MESSAGE,
+				Icon.Error
+			);
+			cancelAct();
+			return;
+		}
+
 	var url = _getTerminalHttpAddress(terminalIpAdd);
 
 	try {
