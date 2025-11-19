@@ -13927,7 +13927,6 @@ function $ManualButton() {
 		var freedomBankTerminalIpAdd = getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS)
 
 		//TODO. DELETE
-		showMessage('VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS ' + VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS)
 		showMessage('VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = ' + freedomBankTerminalIpAdd)
 
 
@@ -15353,6 +15352,8 @@ function _freedomBankSale(payment, terminalIpAdd) {
 	};
 	var url = _getTerminalHttpAddress(terminalIpAdd);
 	try {
+		showMessage('Sending request to ' + url)
+		showMessage('Payload ' + JSON.stringify(dataToSend))
 		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
 	} catch (e) {
 		showMessage(
