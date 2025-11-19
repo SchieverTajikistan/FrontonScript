@@ -10862,7 +10862,7 @@ Extra: {
 			}
 			
 			//TOOD.
-			showMessage('GOT RESPONSE ' + JSON.stringify(result))
+			showMessage('GOT RESPONSE ' + request.responseText);
 
 			if (request.status == 200) {
 				//TODO.
@@ -10875,6 +10875,8 @@ Extra: {
 				} catch (e) {
 					result.message = e.message;
 				}
+			} else {
+				result.message = request.responseText;
 			}
 			return result;
 		}
@@ -15385,6 +15387,10 @@ function _freedomBankSale(payment, terminalIpAdd) {
 		showMessage('Payload ' + JSON.stringify(dataToSend))
 		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
 	} catch (e) {
+		if (isAppIsNotLaunched(e)) {
+			e.message = 'Не удалось отправить запрос на терминал. Убедитесь, что терминал включен' +
+			' и приложение банка запущено.'
+		}
 		showMessage(
 			'Ошибка при отправке запроса к терминалу Freedom Bank' +
 				CR +
@@ -15600,8 +15606,12 @@ function FreedomBankBeforeAddPayment(payment) {
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
-		cancelAct();
 	}
+	
+	// every action handler MUST add/not add the payment
+	// here we MUST cancel the action. Otherwise we can end up
+	// adding one more payment in any case.
+	cancelAct();
 }
 
 function FreedomBankAfterCancelDocument() {
