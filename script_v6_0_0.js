@@ -10815,6 +10815,8 @@ Extra: {
 				data: ''
 			};
 
+			timeout = timeout || 10
+
 			if (isEmptyValue(url)) {
 				result.message = 'Не указан адрес запроса';
 				return result;
