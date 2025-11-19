@@ -10839,7 +10839,14 @@ Extra: {
 
 			var request = new ActiveXObject('Microsoft.XMLHTTP');
 			showMessage('Opening request to ' + url + ' method: ' + method);
-			request.open(method, url, true);
+			try {
+				request.open(method, url, true);
+			} catch (e) {
+				var errMessage = e.message
+				var message = 'Неудалось открыть соединение с ' + url + CR + errMessage
+				e.message = message
+				throw e;
+			}
 			request.setRequestHeader('Content-Type', 'application/json');
 
 			//TODO.
@@ -15377,8 +15384,9 @@ function _freedomBankSale(payment, terminalIpAdd) {
 	} catch (e) {
 		showMessage(
 			'Ошибка при отправке запроса к терминалу Freedom Bank' +
-				CR_MESSAGE +
-				e.message + CR +
+				CR +
+				e.message +
+				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
@@ -15397,9 +15405,9 @@ function _freedomBankSale(payment, terminalIpAdd) {
 		} else {
 			showMessage(
 				'Ошибка при обработке платежа' +
-					CR_MESSAGE +
+					CR +
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
-					CR_MESSAGE +
+					CR +
 					responseData.message,
 				Icon.Error
 			);
@@ -15407,8 +15415,10 @@ function _freedomBankSale(payment, terminalIpAdd) {
 	} else {
 		// Обработка ошибки запроса
 		showMessage(
-			'Ошибка при подключении к терминалу Freedom Bank' +
-				CR_MESSAGE +
+			'Не удалось выполнить запрос к терминалу Freedom Bank' +
+				CR +
+				result.message +
+				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
