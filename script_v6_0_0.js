@@ -10839,7 +10839,10 @@ Extra: {
 
 			var request = new ActiveXObject('Microsoft.XMLHTTP');
 			showMessage('Opening request to ' + url + ' method: ' + method);
-			request.open(method, url, true);
+
+			// explicitly set to async = false since some API might not return any response
+			// for example FreedomBank terminal API just hungs.
+			request.open(method, url, false);
 			request.setRequestHeader('Content-Type', 'application/json');
 
 			//TODO.
@@ -15357,6 +15360,13 @@ function _getFreedomBankRRNFromDoc(doc) {
 	return RRN;
 }
 
+function isAppIsNotLaunched(err) {
+	if (err.number) {
+		return err.number == -2146697211
+	}
+	return false;
+}
+
 // ACTIONS
 /*
 
@@ -15614,7 +15624,6 @@ function FreedomBankAfterCancelDocument() {
 	_freedomBankCancelDoc(currDoc, terminalIpAdd);
 }
 
-
 function $TestFreedomConnection() {
 	var dataToSend = {
 		task: 'print',
@@ -15642,6 +15651,10 @@ function $TestFreedomConnection() {
 		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
 		showMessage('RESULT FROM PRINT -> ' + JSON.stringify(result))
 	} catch (e) {
+		if (isAppIsNotLaunched(e)) {
+			e.message = 'Не удалось отправить запрос на терминал. Убедитесь, что терминал включен' +
+			' и приложение банка запущено.'
+		}
 		showMessage(
 			'Ошибка при отправке запроса к терминалу Freedom Bank' +
 				CR +
