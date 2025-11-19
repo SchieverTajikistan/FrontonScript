@@ -10815,7 +10815,7 @@ Extra: {
 				data: ''
 			};
 
-			timeout = timeout || 10
+			timeout = timeout || 30
 
 			if (isEmptyValue(url)) {
 				result.message = 'Не указан адрес запроса';
@@ -10839,14 +10839,7 @@ Extra: {
 
 			var request = new ActiveXObject('Microsoft.XMLHTTP');
 			showMessage('Opening request to ' + url + ' method: ' + method);
-			try {
-				request.open(method, url, true);
-			} catch (e) {
-				var errMessage = e.message
-				var message = 'Неудалось открыть соединение с ' + url + CR + errMessage
-				e.message = message
-				throw e;
-			}
+			request.open(method, url, true);
 			request.setRequestHeader('Content-Type', 'application/json');
 
 			//TODO.
