@@ -15422,6 +15422,8 @@ function _freedomBankSale(payment, terminalIpAdd) {
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
+		cancelAct();
+		return;
 	}
 }
 
@@ -15616,6 +15618,35 @@ function FreedomBankAfterCancelDocument() {
 		return;
 	}
 	_freedomBankCancelDoc(currDoc, terminalIpAdd);
+}
+
+
+function $TestFreedomConnection() {
+	var dataToSend = {
+		task: 'print',
+		data: {
+			actionCode: "2"
+		}
+	};
+	var url = _getTerminalHttpAddress(terminalIpAdd);
+
+	try {
+		showMessage('Sending request to ' + url)
+		showMessage('Payload ' + JSON.stringify(dataToSend))
+		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
+		showMessage('RESULT FROM PRINT -> ' + JSON.stringify(result))
+	} catch (e) {
+		showMessage(
+			'Ошибка при отправке запроса к терминалу Freedom Bank' +
+				CR +
+				e.message +
+				CR +
+				CONTACT_YOUR_TECHNICIAN_MESSAGE,
+			Icon.Error
+		);
+		cancelAct();
+		return;
+	}
 }
 
 // FREEDOM BANK \ END =========================================================================================================================================================================================
