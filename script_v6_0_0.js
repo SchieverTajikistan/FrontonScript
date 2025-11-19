@@ -10825,11 +10825,18 @@ Extra: {
 				return result;
 			}
 
+			//TODO.
+			showMessage('URL (before) ' + url)
 			url = GetCorrectServerAddress(url);
+			//TODO.
+			showMessage('URL (after) ' + url)
 
 			var request = new ActiveXObject('Microsoft.XMLHTTP');
 			request.open(method, url, true);
 			request.setRequestHeader('Content-Type', 'application/json');
+
+			//TODO.
+			showMessage('SENDING data to ' + url)
 			request.send(data);
 
 			var startTime = new Date().getTime();
@@ -10843,8 +10850,13 @@ Extra: {
 					return result;
 				}
 			}
+			
+			//TOOD.
+			showMessage('GOT RESPONSE ' + JSON.stringify(result))
 
 			if (request.status == 200) {
+				//TODO.
+				showMessage('Got result 200')
 				try {
 					if ('responseText' in request && request.responseText) {
 						result.data = JSON.parse(request.responseText);
@@ -15347,7 +15359,7 @@ function _freedomBankSale(payment, terminalIpAdd) {
 	var dataToSend = {
 		task: 'purchase',
 		data: {
-			amount: amount
+			amount: amount.toString()
 		}
 	};
 	var url = _getTerminalHttpAddress(terminalIpAdd);
