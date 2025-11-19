@@ -14455,6 +14455,19 @@ function deviceStatusToSend() {
 оплаты, то логику данной функции придется поменять.
 */
 function _getRRNForCheck(doc) {
+	if (isReturnDocument(doc)) {
+		// Проверим вводили ли на основании
+		if (doc.baseDocument) {
+			// На основании, значит документ основания (т.е продажа)
+			// должна иметь РРН
+			return _getFreedomBankRRNFromDoc(doc.baseDocument)
+		} else {
+			// Просто возврат и в документе выбран банковский
+			// вид оплаты (т.е ФридомБанк). Запросим РРН
+			return _askRRNFromUser()
+		}
+	}
+	// значит обычная продажа
 	return _getFreedomBankRRNFromDoc(doc)
 }
 
