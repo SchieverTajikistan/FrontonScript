@@ -14445,6 +14445,19 @@ function deviceStatusToSend() {
 	return options;
 }
 
+/*
+	Для возврата безналичных платежей нам нужен РРН.
+На данный момент только ФридомБанк добавляет РРН
+в переменные документа.
+
+Каждая касса имеет только один ПОС терминал от определенного банка
+если в будушем терминалов станет несколько и будут разрешены комбинированные
+оплаты, то логику данной функции придется поменять.
+*/
+function _getRRNForCheck(doc) {
+	return _getFreedomBankRRNFromDoc(doc)
+}
+
 // Формируем документ типом строки для запроса
 function GiveDocumentToString(doc, PrintOption) {
 	getJson2();
@@ -14521,44 +14534,29 @@ function GiveDocumentToString(doc, PrintOption) {
 	vats = '[' + vatString + ']';
 	//Налог документа-
 
-	if (doc.type.operation == 0) {
-		// Если документ = Продажа
+	if(isSaleDocument(doc) || isReturnDocument(doc)) {
 		var customMess = createCustomDataForBill(doc);
 		var infoCardClient = removeNewlines(customMess);
 		var extraInfo = chekInfoArea(doc);
 		infoCardClient = infoCardClient + extraInfo;
-
-		// Шапка документа для отправки
-		var options = JSONStringify({
-			formCode: 'RECEIPT',
-			ffdVersion: 'VER_1',
-			shouldPrintSlip: true,
-			operationType: 'INCOME',
-			taxType: 'GENERAL',
-			consumerContacts: PrintOption,
-			customMessage: infoCardClient
-		});
 	}
-	//sboboev+
-	if (doc.type.operation == 1) {
-		// Если документ = Возврат
-		var customMess = createCustomDataForBill(doc);
-		var infoCardClient = removeNewlines(customMess);
-		var extraInfo = chekInfoArea(doc);
-		infoCardClient = infoCardClient + extraInfo;
 
-		// Шапка документа для отправки, перед оформлением возврата на кассе необходимо сначала внести сумму, которую планируется вернуть.
-		var options = JSONStringify({
-			formCode: 'RECEIPT',
-			ffdVersion: 'VER_1',
-			shouldPrintSlip: true,
-			operationType: 'REVERT_INCOME',
-			taxType: 'GENERAL',
-			consumerContacts: PrintOption,
-			customMessage: infoCardClient
-		});
+	// Шапка документа для отправки
+	var options = {
+		formCode: 'RECEIPT',
+		ffdVersion: 'VER_1',
+		shouldPrintSlip: true,
+		operationType: 'INCOME',
+		taxType: 'GENERAL',
+		consumerContacts: PrintOption,
+		customMessage: infoCardClient
+	};
+
+	if (isReturnDocument(doc)) {
+		options.operationType = 'REVERT_INCOME'
 	}
-	//sboboev-
+	options = JSONStringify(options)
+
 	// добавим массив товаров в шапку
 	options = options.slice(0, -1) + ',';
 	options = options + products + ',';
@@ -14576,6 +14574,7 @@ function GiveDocumentToString(doc, PrintOption) {
 	) {
 		if (doc.payment.sumInBaseCurrency > 0) {
 			if (doc.payment.type.code == 1) {
+				// наличные
 				cashamount = cashamount + doc.payment.sumInPaymentCurrency;
 			} else {
 				nocashamount = nocashamount + doc.payment.sumInPaymentCurrency;
@@ -14591,26 +14590,20 @@ function GiveDocumentToString(doc, PrintOption) {
 	}
 	cashamount = cashamount - AmountChangeCash;
 
-	if (nocashamount > 0) {
-		var options2 = JSONStringify({
-			receiptSum: Number(doc.totalSum * 100).round(0),
-			receiptCash: Number(cashamount * 100).round(0),
-			receiptNonCash: Number(nocashamount * 100).round(0),
-			cashChangeAmount: Number(AmountChangeCash * 100).round(0), //Сдача
-			bankRRN: '000000000000',
-			bankCard: null
-		});
-	} else {
-		var options2 = JSONStringify({
+	var options2 = {
 			receiptSum: Number(doc.totalSum * 100).round(0),
 			receiptCash: Number(cashamount * 100).round(0),
 			receiptNonCash: Number(nocashamount * 100).round(0),
 			cashChangeAmount: Number(AmountChangeCash * 100).round(0), //Сдача
 			bankRRN: null,
 			bankCard: null
-		});
-	}
+		};
 
+	if (nocashamount > 0) {
+		options2.bankRRN = _getRRNForCheck(doc);
+	} 
+
+	options2 = JSONStringify(options2)
 	// Добавим Налоги документа к подвалу
 	options2 = options2.slice(1);
 	options2 = options2.slice(0, -1) + ',';
