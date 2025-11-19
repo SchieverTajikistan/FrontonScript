@@ -10825,6 +10825,10 @@ Extra: {
 				return result;
 			}
 
+			if (typeof data != 'string') {
+				data = JSON.stringify(data)
+			}
+
 			//TODO.
 			showMessage('URL (before) ' + url)
 			url = GetCorrectServerAddress(url);
@@ -10832,6 +10836,7 @@ Extra: {
 			showMessage('URL (after) ' + url)
 
 			var request = new ActiveXObject('Microsoft.XMLHTTP');
+			showMessage('Opening request to ' + url + ' method: ' + method);
 			request.open(method, url, true);
 			request.setRequestHeader('Content-Type', 'application/json');
 
