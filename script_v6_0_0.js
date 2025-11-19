@@ -15468,12 +15468,13 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 		if (responseData.result == 0) {
 			currDoc.addPayment(payment.type.code, amount, null);
 		} else {
+			var msg = responseData.message || responseData.msg;
 			showMessage(
 				'Ошибка при обработке возврата' +
 					CR_MESSAGE +
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
 					CR_MESSAGE +
-					responseData.message,
+					msg,
 				Icon.Error
 			);
 		}
@@ -15671,4 +15672,4 @@ function $TestFreedomConnection() {
 	}
 }
 
-// FREEDOM BANK \ END =========================================================================================================================================================================================
+// FREEDOM BANK \ END ======================================================
