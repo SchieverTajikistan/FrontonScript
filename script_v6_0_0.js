@@ -258,6 +258,8 @@ var FTP_REGEXP = /^ftp:\/\/(.+):(.+)@([^\/]+)\/(.+)$/;
 // USER PARAMETERS \ START ===========================================================
 
 VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
+VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
+VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
 
 // USER PARAMTERS \ END ==============================================================
 
@@ -14852,23 +14854,63 @@ function formatDate(date) {
 }
 
 function IsFRfromTG() {
-	if (frontol.userValues.get('isfiscalTG') === '1') {
-		return true;
-	} else {
-		return false;
-	}
+	frontol.userValues.get('isfiscalTG') === '1';
 }
 
 function IsSessionOpen() {
-	if (frontol.userValues.get('IsSessionOn') === '1') {
-		return true;
-	} else {
-		return false;
-	}
+	return frontol.userValues.get('IsSessionOn') === '1';
 }
-function show(message) {
-	frontol.actions.showMessage(message);
+
+/* Меняет значения индикции статусов сессий/смен
+Мы держим статусы 2-ух оборудований:
+	1. ККМ/ФР (фискальный регистратор)
+	2. Касса (Фронтол)
+
+Статусы бывают:
+	0 - неактивная/закрытая смена
+	1 - активная/открытая смена
+
+Держим 2 статуса, т.к мы тригерим закрытие смены на ФР
+после того как закроется смена на кассе (см. afterCloseSession), и это
+может привести к тому, что смена успешно закроется на самой кассе, а при закрытии
+в ФР выдаст нам ошибку. И в данном случае мы имеем 2 разных статуса:
+	Касса - смена закрыта   ||   ФР - смена открыта
+При повторном закрытии фронтол будет "ругаится", что смена уже закрыта.
+Для таких случаев будем держать оба статуса, чтобы в случае сбоя просто закрыть кассу напряму
+в ФР.
+
+- Почему мы закрываем смену на кассе, а затем в ФР, почему не наоборот ?
+Ответ: Одна из причин, что если мы сможем закрыть смену в ФР по разным причинам, то
+закрыть смену на кассе тоже не получится. Это приведет к тому, что данные не выгрузятся
+в РАРУС пока ИТ не исправит ошибку. 
+*/
+
+function IsSessionOpen_KASSA() {
+	return frontol.userValues.get(VAR_SESSION_STATUS_KASSA) === '1';
 }
+
+function SetSessionOpen_KASSA() {
+	return frontol.userValues.set(VAR_SESSION_STATUS_KASSA) = '1';
+}
+
+function SetSessionClose_KASSA() {
+	return frontol.userValues.set(VAR_SESSION_STATUS_KASSA) = '0';
+}
+
+
+function IsSessionOpen_FR() {
+	return frontol.userValues.get(VAR_SESSION_STATUS_FR) === '1'
+}
+
+function SetSessionOpen_FR() {
+	return frontol.userValues.get('IsSessionOpen_FR') = '1'
+}
+
+function SetSessionClose_FR() {
+	return frontol.userValues.get('IsSessionOpen_FR') = '0'
+}
+
+
 
 function OpenDraw() {
 	var options = JSONStringify({
@@ -15370,9 +15412,6 @@ function isAppIsNotLaunched(err) {
 }
 
 // ACTIONS
-/*
-
-*/
 function _freedomBankSale(payment, terminalIpAdd) {
 	var amount = payment.sumInBaseCurrency;
 	var dataToSend = {
