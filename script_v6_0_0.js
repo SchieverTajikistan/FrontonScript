@@ -15592,7 +15592,7 @@ function _freedomBankCloseSession(terminalIpAdd) {
 	url = _getTerminalHttpAddress(terminalIpAdd)
 
 	var dataToSend = {
-		task: 'settle',
+		task: 'settle'
 	};
 
 	var result = sendHttpRequestSimple(url, 'POST', dataToSend);
