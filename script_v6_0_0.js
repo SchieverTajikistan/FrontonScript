@@ -13899,7 +13899,6 @@ function ManualPrintOptionsButton() {
 }
 
 function $ManualButton() {
-	// if (AdminUser !== frontol.currentUser.code && HeadCashier !== frontol.currentUser.code) {
 	if (!isMenuAccessAvailable()) {
 		showMessage('У вас нет доступа к административному интерфейсу.', Icon.Exclamation);
 		return;
@@ -14117,7 +14116,7 @@ function $ManualButton() {
 
 	//Для СтарКассир
 	// if (HeadCashier == frontol.currentUser.code) {
-	if (isAdminOrMainCashier()) {
+	if (isServiceUser()) {
 		//Зададим переменные
 		var fiscalipadresString = '1. Установить ip адресс ФР от Т.Группа';
 
@@ -15115,40 +15114,30 @@ Fiscat: {
 	var COM_PORT_ENABLED = 'comPortEnabled';
 
 	function isSysAdmin() {
-		// if (!userHasProfile()) showError("Не установлен профиль текущего пользователя");
-		var isAdmin;
-		try {
-			isAdmin = frontol.currentUser.profile.code == 1;
-		} catch (e) {
-			isAdmin = AdminUser === frontol.currentUser.code;
-		}
-		return isAdmin;
+		// В фронтол 5 отсутствует атрибут .profile у currentUser-а.
+		// Поэтому нельзя проверить является ли пользователь Администратором или нет.
+		// Все Админ пользователи должны иметь префикс Админ/админ
+
+		var subs = frontol.currentUser.name.substr(0, 5);
+		return subs.toLowerCase() === 'админ';
 	}
 
-	function isUser() {
-		return frontol.currentUser != false;
-	}
+	function isServiceUser() {
+		return frontol.currentUser.code === 3;  // спец. пользователь для снятий отчетов и тд
 
-	function userHasProfile() {
-		if (!isUser()) showError('Не установлен текущий пользователь');
-		return isUser() && frontol.currentUser.profile;
-	}
-
-	function isAdminOrMainCashier() {
-		// if (!userHasProfile()) showError("Не установлен профиль текущего пользователя");
-		var res;
-		try {
-			res =
-				frontol.currentUser.profile.code == 2 ||
-				frontol.currentUser.profile.code == 3;
-		} catch (e) {
-			res = HeadCashier === frontol.currentUser.code;
-		}
-		return res;
+		// var res;
+		// try {
+		// 	res =
+		// 		frontol.currentUser.profile.code == 2 ||
+		// 		frontol.currentUser.profile.code == 3;
+		// } catch (e) {
+		// 	res = HeadCashier === frontol.currentUser.code;
+		// }
+		// return res;
 	}
 
 	function isMenuAccessAvailable() {
-		return isSysAdmin() || isAdminOrMainCashier();
+		return isSysAdmin() || isServiceUser();
 	}
 
 	function runPrintLastDoc() {
