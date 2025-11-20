@@ -14321,6 +14321,7 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 	request.open('POST', 'http://' + ipdevice + '/api/' + comand);
 	request.setRequestHeader('Content-Type', 'application/json');
 	request.send(stringToSend);
+
 	var timeoutQuery = 40; // Таймаут
 	for (var i = 1; i <= timeoutQuery; i++) {
 		if (request.readyState != 4) {
@@ -14336,6 +14337,10 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 		cancelAct();
 		return;
 	}
+
+	//TODO.
+	showMessage('GOT RESPONSE FROM KKM -> ' + JSON.parse(request.responseText));
+
 
 	//При успешного ответа
 	if (request.status == 200) {
