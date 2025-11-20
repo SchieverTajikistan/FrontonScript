@@ -15587,6 +15587,28 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 		return;
 	}
 }
+
+function _freedomBankCloseSession(terminalIpAdd) {
+	url = _getTerminalHttpAddress(terminalIpAdd)
+
+	var dataToSend = {
+		task: 'settle',
+	};
+
+	var result = sendHttpRequestSimple(url, 'POST', dataToSend);
+	if (result.success === false || result.data.data.result !== 0) {
+		var responseData = result.data.data;
+		var msg = responseData.message || responseData.msg;
+		showMessage(
+			'Ошибка при обработке запроса. Попробуйте закрыть смену вручную на терминале!' +
+				CR_MESSAGE +
+				CONTACT_YOUR_TECHNICIAN_MESSAGE +
+				CR_MESSAGE +
+				msg,
+			Icon.Warning
+		);
+	}
+}
 //
 
 function FreedomBankBeforeAddPayment(payment) {
@@ -15645,6 +15667,17 @@ function FreedomBankAfterCancelDocument() {
 	}
 	_freedomBankCancelDoc(currDoc, terminalIpAdd);
 }
+
+function FreedomBankAfterSessionClose() {
+	var terminalIpAdd = getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
+	if (!terminalIpAdd) {
+		return;
+	}
+	_freedomBankCloseSession()
+}
+
+
+// MISC
 
 function $TestFreedomConnection() {
 	var dataToSend = {
