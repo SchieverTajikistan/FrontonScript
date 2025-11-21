@@ -417,10 +417,6 @@ FunctionsOfEventListeners: {
 			inputReceiptDocumentInformation(doc);
 		}
 
-	if (!IsSessionOpen_FR()) {
-			afterOpenSession();
-		}
-
 		if (frontol.userValues.get('ForbidReturnWithPayments') != '') {
 			forbidReturnDocWithProcPayments();
 		}
@@ -13628,8 +13624,8 @@ function $ManualButton() {
 						showMessage('Неверное значение. Введите 0 либо 1', Icon.Exclamation);
 						break;
 					}
-
 				}
+				break;
 			}
 
 			case 'freedomBankTerminalIpAdd': {
@@ -14373,7 +14369,7 @@ function formatDate(date) {
 }
 
 function IsFRfromTG() {
-	frontol.userValues.get('isfiscalTG') === '1';
+	return frontol.userValues.get('isfiscalTG') === '1';
 }
 
 /* Меняет значения индикции статусов сессий/смен
@@ -14414,7 +14410,7 @@ function SetSessionClose_KASSA() {
 
 
 function IsSessionOpen_FR() {
-	return frontol.userValues.get(VAR_SESSION_STATUS_FR) == '1'
+	return frontol.userValues.get(VAR_SESSION_STATUS_FR) == '1';
 }
 
 function SetSessionOpen_FR() {
