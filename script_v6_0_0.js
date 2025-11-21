@@ -13443,9 +13443,9 @@ function $ManualButton() {
 			SessionValString += ' ( Открыта )';
 		else SessionValString += ' ( Закрыта )';
 
-		var SetFRSessionStatusString = 'Установить статус смены ФР (только во фронтол)' + CR
-		+ '0 - Закрыта; 1 - Открыта'
-
+		var SetFRSessionStatusString = `Установить статус смены ФР (только во фронтол)
+		0 - Закрыта; 1 - Открыта
+		`
 		var TGXString = ' X-Отчет ФР от Т.Группа';
 		var TGZString = ' Z-Отчет ФР от Т.Группа';
 
@@ -13625,7 +13625,8 @@ function $ManualButton() {
 					}
 					default: {
 						prevStatus == '1' ? SetSessionOpen_FR() : SetSessionClose_FR();
-						showMessage('Неверное значение. eведите 0 либо 1', Icon.Exclamation);
+						showMessage('Неверное значение. Введите 0 либо 1', Icon.Exclamation);
+						break;
 					}
 
 				}
