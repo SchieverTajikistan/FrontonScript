@@ -527,7 +527,6 @@ FunctionsOfEventListeners: {
 		//Параметры
 		// Используется для обмена заказов из 1С Битрикс
 		vSet('FilePath', '\\\\10.101.42.107\\Rarus\\BitrixOrders\\');
-		EO_AfterOpenDocument();
 	}
 
 	//ЗАКРЫТИЕ ДОКУМЕНТА - ДО
@@ -568,8 +567,6 @@ FunctionsOfEventListeners: {
 			}
 			//GetFooter(doc);
 		}
-
-		EO_BeforeCloseDocument();
 
 		//Технология групп +
 		getJson2();
@@ -995,7 +992,6 @@ FunctionsOfEventListeners: {
 				}
 			}
 		}
-		EO_BeforeCancelDocument();
 	}
 
 	// ВВОД ПЛАТЕЖА - ДО
@@ -1011,8 +1007,6 @@ FunctionsOfEventListeners: {
 		if (isReturnDocument(doc)) {
 			CheckEnterPayment(payment, 2);
 		}
-
-		EO_BeforeAddPayment(payment);
 	}
 
 	//УДАЛЕНИЕ ПЛАТЕЖА - ДО
@@ -1021,8 +1015,6 @@ FunctionsOfEventListeners: {
 		if (isSaleDocument(frontol.currentDocument)) {
 			CheckDeletePayment(payment, 1);
 		}
-
-		EO_BeforeRemovePayment(payment);
 	}
 
 	//УДАЛЕНИЕ ПЛАТЕЖА - ПОСЛЕ
