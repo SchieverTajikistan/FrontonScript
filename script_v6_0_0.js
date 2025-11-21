@@ -20,33 +20,26 @@
 /* jshint -W018 */ // confusing use of '!'
 
 var LOG_DIR = 'D:/logs';
-var IS_DUBUG = false;
 
-//======Технология групп +
-var ENTER = '\n';
-var CONNECT_ERROR = 'Ошибка сети ' + ENTER;
-var REQUEST_PROCESS = 'Идет запрос ждите...' + ENTER;
-var REQUEST_PROCESS_OFD = 'Процесс печати чека...' + ENTER;
-//================================================================
-var CR_MESSAGE = '\n';
-var CR = '\n';
+// MESSAGES \ +
+var CR = '\n';  // new line
+var REQUEST_PROCESS_OFD = 'Процесс печати чека...' + CR;
 var REQUEST_IN_PROCESS_MESSAGE = 'Обработка запроса...';
 var TRY_AGAIN_MESSAGE = 'Попробуйте ещё раз';
-
 var CONTACT_YOUR_TECHNICIAN_MESSAGE =
 	'Обратитесь к администратору или к своему техническому специалисту' +
-	CR_MESSAGE;
+	CR;
+var UNKNOWN_ERROR_MESSAGE = 'Неизвестная ошибка' + CR;
+
 var SERVER_ADDRESS_NOT_SET_MESSAGE =
-	'Не указан адрес сервера' + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE;
-var UNKNOWN_ERROR_MESSAGE = 'Неизвестная ошибка' + CR_MESSAGE;
-var NO_SERVER_RESPONSE_MESSAGE = 'Нет ответа от сервера' + CR_MESSAGE;
-var INTERNET_ERROR_MESSAGE = 'Ошибка сети' + CR_MESSAGE;
-var SERVER_ERROR_MESSAGE = 'Ошибка сервера' + CR_MESSAGE;
-var ERROR_MESSAGE = 'Ошибка' + CR_MESSAGE;
+	'Не указан адрес сервера' + CR + CONTACT_YOUR_TECHNICIAN_MESSAGE;
+var NO_SERVER_RESPONSE_MESSAGE = 'Нет ответа от сервера' + CR;
+var INTERNET_ERROR_MESSAGE = 'Ошибка сети' + CR;
+var SERVER_ERROR_MESSAGE = 'Ошибка сервера' + CR;
+var ERROR_MESSAGE = 'Ошибка' + CR;
 var DESCRIPTION_MESSAGE = 'Описание: ';
 var HTTP_STATE_MESSAGE = 'Статус HTTP-запроса->';
 var HTTP_CODE_MESSAGE = 'HTTP-код->';
-//Технология групп -
 
 var PROMO_TEXT_KEY = 'promoText';
 var PROMO_TEXT_VALUE =
@@ -64,50 +57,45 @@ var DEPOSIT_PAYMENT_CODE_NAME = 'DepositPaymentCode';
 
 var GET_ALL_CHECKS_FROM_CASH_VALUE_NAME = 'GetAllChecksFromCash';
 
-var CR_MESSAGE = '\n';
-
 var RX_LOYALTY_NAME = 'RxLoyalty';
 var CONTROL_MENU_TITLE = 'Меню управления ' + RX_LOYALTY_NAME;
 
-var REQUEST_IN_PROCESS_MESSAGE = 'Обработка запроса...';
-var TRY_AGAIN_MESSAGE = 'Попробуйте ещё раз';
 var REQUEST_WILL_BE_SEND_LATER_MESSAGE = 'Запрос будет отправлен позже';
 var CHECK_SETTINGS_MESSAGE =
-	'Проверьте настройки программы лояльности ' + RX_LOYALTY_NAME + CR_MESSAGE;
-var OR_MESSAGE = 'или' + CR_MESSAGE;
-var CONTACT_YOUR_TECHNICIAN_MESSAGE =
-	'Обратитесь к администратору или к своему техническому специалисту' +
-	CR_MESSAGE;
+	'Проверьте настройки программы лояльности ' + RX_LOYALTY_NAME + CR;
+var OR_MESSAGE = 'или' + CR;
 var CONTACT_SUPPORT_MESSAGE =
 	'Обратитесь в службу поддержки программы лояльности ' +
 	RX_LOYALTY_NAME +
-	CR_MESSAGE;
+	CR;
 
 var LICENSE_NOT_SET_MESSAGE =
 	'Не указана лицензия' +
-	CR_MESSAGE +
+	CR +
 	CHECK_SETTINGS_MESSAGE +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
+
 var SERVER_ADDRESS_NOT_SET_MESSAGE =
 	'Не указан адрес сервера' +
-	CR_MESSAGE +
+	CR +
 	CHECK_SETTINGS_MESSAGE +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
+
 var TOKEN_NOT_SET_MESSAGE =
 	'Не указан токен авторизации' +
-	CR_MESSAGE +
+	CR +
 	CHECK_SETTINGS_MESSAGE +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 
 var LICENSE_NOT_FOUND_MESSAGE =
 	'Лицензия не найдена' +
-	CR_MESSAGE +
+	CR +
 	CHECK_SETTINGS_MESSAGE +
 	OR_MESSAGE +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var TOKEN_NOT_FOUND_MESSAGE =
 	'Токен авторизации не найден' +
-	CR_MESSAGE +
+	CR +
 	CHECK_SETTINGS_MESSAGE +
 	OR_MESSAGE +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
@@ -115,35 +103,35 @@ var TOKEN_NOT_FOUND_MESSAGE =
 var CARD_CODE_EMPTY_MESSAGE = 'Не указан номер карты, купона или сертификата';
 var CARD_PATTERN_NOT_VALID_MESSAGE =
 	'Номер карты, купона или сертификата не соответствует шаблону' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var CARD_PATTERN_NOT_EXIST_MESSAGE =
 	'Шаблон номера карты, купона или сертификата не найден' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var CARD_BLOCKED_MESSAGE =
 	'Карта, купон или сертификат заблокированы' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var CARD_ALREADY_REGISTERED_MESSAGE =
 	'Карта, купон или сертификат скорее всего уже были зарегистрированы на другой кассе.' +
-	CR_MESSAGE +
+	CR +
 	'Одновременное использование на разных кассах не допускается' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE +
 	OR_MESSAGE +
 	CONTACT_SUPPORT_MESSAGE;
 var CARD_SYNCHRONOUS_REGISTRATION_MESSAGE =
 	'Попытка одновременной регистрации карты, купона или сертификата с разных касс' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var CARD_NOT_FOUND_MESSAGE =
 	'Номер карты, купона или сертификата не найден' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var CARD_EXPIRED_MESSAGE =
 	'Срок действия карты, купона или сертификата истек' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var CARD_ACCUMULATION_ONLY_MESSAGE =
 	'Бонусная карта доступна только для накопления';
@@ -153,29 +141,29 @@ var CARD_USING_NOT_CONFIRMED =
 
 var DOCUMENT_TYPE_NOT_FOUND_MESSAGE =
 	'Не найден тип отправленного документа' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var DOCUMENT_TYPE_INCORRECT_MESSAGE =
 	'Некорректный тип отправленного документа' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var DOCUMENT_DETAILS_EMPTY_MESSAGE =
 	'Список товаров в отправленном документе пуст' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var DOCUMENT_DISCOUNTS_EMPTY_MESSAGE =
 	'В отправленном документе нет скидок' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var DOCUMENT_ALREADY_RETURNED_MESSAGE =
 	'По отправленному документу уже был возврат' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var DOCUMENT_EMPTY_MESSAGE =
-	'Отправленый документ пуст' + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE;
+	'Отправленый документ пуст' + CR + CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var PARENT_DOCUMENT_NOT_FOUND_MESSAGE =
 	'Для отправленного документа не найден документ-основание' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var DOCUMENT_WILL_BE_SEND_LATER_MESSAGE = 'Документ будет отправлен позже';
 var NO_OPENED_DOCUMENTS_MESSAGE = 'Нет открытых документов';
@@ -184,31 +172,31 @@ var NO_DELAYED_DOCUMENTS_TO_SEND_MESSAGE =
 
 var UNAUTHORIZED_MESSAGE =
 	'Ошибка авторизации, возможно указан неверный токен' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var LICENSE_NOT_ACTIVE_MESSAGE =
-	'Лицензия недействительна' + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE;
+	'Лицензия недействительна' + CR + CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var SUBJECT_NOT_FOUND_MESSAGE =
 	'Не найден магазин, указанный для этой кассы' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var CALCULATION_ALGORITHM_NOT_FOUND_MESSAGE =
 	'Не найдены правила для расчета скидок' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var INVALID_CODE_TO_START_GENERATE =
 	'Невозможно запустить генератор для отправленного кода' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
 var NO_CASH_PARAMS_FOR_LICENSE_MESSAGE =
 	'Нет настроек для кассы с указанной лицензией' +
-	CR_MESSAGE +
+	CR +
 	CONTACT_YOUR_TECHNICIAN_MESSAGE;
-var UNKNOWN_ERROR_MESSAGE = 'Неизвестная ошибка' + CR_MESSAGE;
-var NO_SERVER_RESPONSE_MESSAGE = 'Нет ответа от сервера' + CR_MESSAGE;
-var INTERNET_ERROR_MESSAGE = 'Ошибка сети' + CR_MESSAGE;
-var SERVER_ERROR_MESSAGE = 'Ошибка сервера' + CR_MESSAGE;
-var ERROR_MESSAGE = 'Ошибка' + CR_MESSAGE;
+var UNKNOWN_ERROR_MESSAGE = 'Неизвестная ошибка' + CR;
+var NO_SERVER_RESPONSE_MESSAGE = 'Нет ответа от сервера' + CR;
+var INTERNET_ERROR_MESSAGE = 'Ошибка сети' + CR;
+var SERVER_ERROR_MESSAGE = 'Ошибка сервера' + CR;
+var ERROR_MESSAGE = 'Ошибка' + CR;
 var DESCRIPTION_MESSAGE = 'Описание: ';
 var INSUFFICIENT_FUNDS = 'Недостаточно средств для списания';
 
@@ -217,9 +205,9 @@ var INPUT_CARD_CODE_MESSAGE =
 
 var INPUT_PHONE_NUMBER_MESSAGE =
 	'Введите номер телефона' +
-	CR_MESSAGE +
+	CR +
 	'в международном формате (только цифры).' +
-	CR_MESSAGE +
+	CR +
 	'Для России первая цифра 7';
 var PHONE_NUMBER_EMPTY_MESSAGE = 'Не указан номер телефона';
 var PHONE_NUMBER_ERROR_MESSAGE =
@@ -249,19 +237,17 @@ var cashBox = null;
 var cashBoxItems = null;
 
 var shelfLifeDiscounts = null;
-//Технология Групп +
-var AdminUser = 100000079;
-var HeadCashier = 3;
-//Технология Групп -
 var FTP_REGEXP = /^ftp:\/\/(.+):(.+)@([^\/]+)\/(.+)$/;
 
 // USER PARAMETERS \ + ===========================================================
+// Названия переменных которые хранятся в фронтол
 
 VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
 VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
 VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
 
 // USER PARAMTERS \ - ==============================================================
+
 
 // sboboev+
 // Уведомление о закрытии смены
@@ -393,9 +379,9 @@ function init() {
 		) {
 			showMessage(
 				'Ошибка инициализации компоненты RobotX.EnterCard!' +
-					CR_MESSAGE +
+					CR +
 					e.message +
-					CR_MESSAGE +
+					CR +
 					CONTACT_YOUR_TECHNICIAN_MESSAGE,
 				Icon.Error
 			);
@@ -442,7 +428,7 @@ FunctionsOfEventListeners: {
 		if (getClientUUID() === '29A1BC43-C747-4B97-ACD7-6F74CFC88BA1') {
 			/*if (!cashBox) {
                 showMessage(
-                    "Компонента для работы с CashBoxSystem не была проинициализирована!" + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE,
+                    "Компонента для работы с CashBoxSystem не была проинициализирована!" + CR + CONTACT_YOUR_TECHNICIAN_MESSAGE,
                     Icon.Error
                 );
                 cancelAct();
@@ -465,7 +451,7 @@ FunctionsOfEventListeners: {
                         if (cashBox.LastError.length === 0) {
                             showMessage("Не удалось снять X-Отчет!", Icon.Error);
                         } else {
-                            showMessage("Не удалось снять X-Отчет!" + CR_MESSAGE + cashBox.LastError + "!", Icon.Error);
+                            showMessage("Не удалось снять X-Отчет!" + CR + cashBox.LastError + "!", Icon.Error);
                         }
                     }
                     cancelAct();
@@ -477,7 +463,7 @@ FunctionsOfEventListeners: {
                         if (cashBox.LastError.length === 0) {
                             showMessage("Не удалось снять последний Z-Отчет!", Icon.Error);
                         } else {
-                            showMessage("Не удалось снять последний Z-Отчет!" + CR_MESSAGE + cashBox.LastError + "!");
+                            showMessage("Не удалось снять последний Z-Отчет!" + CR + cashBox.LastError + "!");
                         }
                     }
                     cancelAct();
@@ -505,7 +491,7 @@ FunctionsOfEventListeners: {
 					var error = getErrorOFD(result.rc);
 					SetSessionClose_FR() // навсякий случай
 					frontol.actions.showMessage(
-						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
+						'Ответ ОФД с ошибкой: ' + CR + ' -> ' + error,
 						Icon.Error
 					);
 					cancelAct();
@@ -601,7 +587,7 @@ FunctionsOfEventListeners: {
 			if (result.rc !== 'SUCCESS') {
 				var error = getErrorOFD(result.rc);
 				showMessage(
-					'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
+					'Ответ ОФД с ошибкой: ' + CR + ' -> ' + error,
 					Icon.Error
 				);
 				//break;
@@ -624,7 +610,7 @@ FunctionsOfEventListeners: {
 			if (result.rc !== 'SUCCESS') {
 				var error = getErrorOFD(result.rc);
 				frontol.actions.showMessage(
-					'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
+					'Ответ ОФД с ошибкой: ' + CR + ' -> ' + error,
 					Icon.Error
 				);
 				//break;
@@ -680,7 +666,7 @@ FunctionsOfEventListeners: {
 						var error = getErrorOFD(result.rc);
 						showMessage(
 							'Ответ ОФД с ошибкой: ' +
-								CR_MESSAGE +
+								CR +
 								' -> ' +
 								error,
 							Icon.Error
@@ -888,7 +874,7 @@ FunctionsOfEventListeners: {
 
 			showMessage(
 				'Регистрация в процессинге успешно отменена!' +
-					CR_MESSAGE +
+					CR +
 					'Номер: ' +
 					cardNumber
 			);
@@ -1103,7 +1089,7 @@ FunctionsOfEventListeners: {
 				if (result.rc !== 'SUCCESS') {
 					var error = getErrorOFD(result.rc);
 					frontol.actions.showMessage(
-						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error + 
+						'Ответ ОФД с ошибкой: ' + CR + ' -> ' + error + 
 						CR + 'Попробуйте открыть смену в ФР вручную.',
 						Icon.Error
 					);
@@ -1120,7 +1106,7 @@ FunctionsOfEventListeners: {
 		if (getClientUUID() === '29A1BC43-C747-4B97-ACD7-6F74CFC88BA1') {
 			/*if (!cashBox) {
                 showMessage(
-                    "Компонента для работы с CashBoxSystem не была проинициализирована!" + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE,
+                    "Компонента для работы с CashBoxSystem не была проинициализирована!" + CR + CONTACT_YOUR_TECHNICIAN_MESSAGE,
                     Icon.Error
                 );
                 cancelAct();
@@ -1137,7 +1123,7 @@ FunctionsOfEventListeners: {
                     cancelAct();
                 }
                 else {
-                    showMessage("Ошибка закрытия смены CashBoxSystem!" + CR_MESSAGE + cashBox.LastError + "!", Icon.Error);
+                    showMessage("Ошибка закрытия смены CashBoxSystem!" + CR + cashBox.LastError + "!", Icon.Error);
                     cancelAct();
                 }
             }*/
@@ -1168,7 +1154,7 @@ FunctionsOfEventListeners: {
 				if (result.rc !== 'SUCCESS') {
 					var error = getErrorOFD(result.rc);
 					showMessage(
-						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
+						'Ответ ОФД с ошибкой: ' + CR + ' -> ' + error,
 						Icon.Error
 					);
 					cancelAct();
@@ -2995,7 +2981,7 @@ MainFunctions: {
 			}
 		} else {
 			var errorDelayInformation =
-				result.message + CR_MESSAGE + 'Отправка документов отменена';
+				result.message + CR + 'Отправка документов отменена';
 
 			if (silent == true) {
 				frontol.actions.wait(errorDelayInformation, 15);
@@ -3241,7 +3227,7 @@ MainFunctions: {
 						if (foundFlag)
 							prohibitingMessage =
 								'В документе были использованы купоны или сертификаты,' +
-								CR_MESSAGE +
+								CR +
 								'ввод бонусной карты будет отменен!';
 
 						break;
@@ -3253,7 +3239,7 @@ MainFunctions: {
 						if (foundFlag)
 							prohibitingMessage =
 								'В документе были использованы бонусные карты,' +
-								CR_MESSAGE +
+								CR +
 								'ввод купона или сертификата будет отменен!';
 
 						break;
@@ -3292,7 +3278,7 @@ MainFunctions: {
 						if (foundType) {
 							prohibitingMessage =
 								'В документе была использована бонусная карта, действие введенного купона будет отменено!' +
-								CR_MESSAGE +
+								CR +
 								'Для использования купона отмените ввод бонусной карты и введите номер купона';
 							cancelRegistration = true;
 							break;
@@ -3385,7 +3371,7 @@ MainFunctions: {
 				HandleUnknownCard();
 
 				//формируем сообщение
-				var errorInformation = result.message + CR_MESSAGE;
+				var errorInformation = result.message + CR;
 
 				errorInformation += REQUEST_WILL_BE_SEND_LATER_MESSAGE;
 				showMessage(errorInformation, Icon.Error);
@@ -3424,7 +3410,7 @@ MainFunctions: {
 				} else {
 					showMessage(
 						INSUFFICIENT_FUNDS +
-							CR_MESSAGE +
+							CR +
 							CARD_ACCUMULATION_ONLY_MESSAGE,
 						Icon.Warning
 					);
@@ -3459,7 +3445,7 @@ MainFunctions: {
 				);
 				showMessage(
 					'Регистрация осуществлялась по номеру телефона,' +
-						CR_MESSAGE +
+						CR +
 						'бонусы можно только копить'
 				);
 				doc.userValues.remove('RegisteredByPhone');
@@ -3702,7 +3688,7 @@ MainFunctions: {
 				}
 				showMessage(
 					'Не заданы тип оплаты или ставка!' +
-						CR_MESSAGE +
+						CR +
 						'Купон ' +
 						cardNumber +
 						' не был введён!',
@@ -5900,7 +5886,7 @@ function copyShelfLifeDiscountsFile() {
 	} catch (e) {
 		showMessage(
 			'Ошибка создания объекта WScript.Shell!' +
-				CR_MESSAGE +
+				CR +
 				e.name +
 				': ' +
 				e.message,
@@ -5929,7 +5915,7 @@ function copyShelfLifeDiscountsFile() {
 	} catch (e) {
 		showMessage(
 			'Ошибка создания объекта Scripting.FileSystemObject!' +
-				CR_MESSAGE +
+				CR +
 				e.name +
 				': ' +
 				e.message,
@@ -5945,7 +5931,7 @@ function copyShelfLifeDiscountsFile() {
 			'Ошибка созадния каталога ' +
 				RX_LOYALTY_DIRECTORY +
 				'!' +
-				CR_MESSAGE +
+				CR +
 				e.name +
 				': ' +
 				e.message,
@@ -5962,7 +5948,7 @@ function copyShelfLifeDiscountsFile() {
 				'Ошибка созадния каталога ' +
 					RX_LOYALTY_DIRECTORY_FRONTOL_DEV +
 					'!' +
-					CR_MESSAGE +
+					CR +
 					e.name +
 					': ' +
 					e.message,
@@ -5979,7 +5965,7 @@ function copyShelfLifeDiscountsFile() {
 			'Ошибка присвоения свойству CurrentDirectory объекта WScript.Shell значения ' +
 				RX_LOYALTY_DIRECTORY +
 				'!' +
-				CR_MESSAGE +
+				CR +
 				e.name +
 				': ' +
 				e.message,
@@ -6014,7 +6000,7 @@ function copyShelfLifeDiscountsFile() {
 					SHELF_LIFE_DISCOUNTS_FILE +
 					' c ftp-сервера ' +
 					ftpServer +
-					CR_MESSAGE +
+					CR +
 					'Код ошибки ' +
 					resultCode,
 				Icon.Error
@@ -6023,7 +6009,7 @@ function copyShelfLifeDiscountsFile() {
 	} catch (e) {
 		showMessage(
 			'Ошибка выполнения метода run объекта WScript.Shell!' +
-				CR_MESSAGE +
+				CR +
 				e.name +
 				': ' +
 				e.message,
@@ -7835,9 +7821,9 @@ ManualFunctions: {
 						'Введите полный путь к файлу ССГ ' +
 							SHELF_LIFE_DISCOUNTS_FILE +
 							'.' +
-							CR_MESSAGE +
+							CR +
 							'В случае использования FTP укажите полный путь в следующем формате:' +
-							CR_MESSAGE +
+							CR +
 							'ftp://ИМЯ_ПОЛЬЗОВАТЕЛЯ:ПАРОЛЬ@FTP_СЕРВЕР/ПУТЬ_К_ФАЙЛУ/',
 						shelfLifeDiscountsPath
 					);
@@ -8406,7 +8392,7 @@ ManualFunctions: {
 		} else {
 			showMessage(
 				'В ответе сервера отсутствует код подтверждения' +
-					CR_MESSAGE +
+					CR +
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
 					OR_MESSAGE +
 					CONTACT_SUPPORT_MESSAGE,
@@ -8422,7 +8408,7 @@ ManualFunctions: {
 		} else {
 			showMessage(
 				'В ответе сервера отсутствует цена за SMS-сообщение с кодом подтверждения' +
-					CR_MESSAGE +
+					CR +
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
 					OR_MESSAGE +
 					CONTACT_SUPPORT_MESSAGE,
@@ -8592,7 +8578,7 @@ ManualFunctions: {
 				showMessage(
 					CONFIRM_CODE_EMPTY_MESSAGE +
 						(attemptsNumber < 2
-							? CR_MESSAGE + TRY_AGAIN_MESSAGE
+							? CR + TRY_AGAIN_MESSAGE
 							: ''),
 					Icon.Error
 				);
@@ -8605,7 +8591,7 @@ ManualFunctions: {
 				showMessage(
 					CONFIRM_CODE_ERROR_MESSAGE +
 						(attemptsNumber < 2
-							? CR_MESSAGE + TRY_AGAIN_MESSAGE
+							? CR + TRY_AGAIN_MESSAGE
 							: ''),
 					Icon.Error
 				);
@@ -9158,7 +9144,7 @@ Extra: {
 			var price = doc.position.price;
 			var name =
 				doc.position.ware.name +
-				CR_MESSAGE +
+				CR +
 				doc.position.ware.mark +
 				' ' +
 				doc.position.barcode;
@@ -9213,7 +9199,7 @@ Extra: {
 						"Не удалось добавить позицию '" +
 							name +
 							"' в чек!" +
-							CR_MESSAGE +
+							CR +
 							cashBoxItems.LastError +
 							'!'
 					);
@@ -9261,7 +9247,7 @@ Extra: {
 			} else {
 				showMessage(
 					'Ошибка выполнения операции!' +
-						CR_MESSAGE +
+						CR +
 						cashBox.LastError +
 						'!'
 				);
@@ -9335,7 +9321,7 @@ Extra: {
 			var price = doc.position.price;
 			var name =
 				doc.position.ware.name +
-				CR_MESSAGE +
+				CR +
 				doc.position.ware.mark +
 				' ' +
 				doc.position.barcode;
@@ -9391,7 +9377,7 @@ Extra: {
 						"Не удалось добавить позицию '" +
 							name +
 							"' в чек!" +
-							CR_MESSAGE +
+							CR +
 							cashBoxItems.LastError +
 							'!',
 						Icon.Error
@@ -9421,7 +9407,7 @@ Extra: {
 			} else {
 				showMessage(
 					'Ошибка выполнения операции!' +
-						CR_MESSAGE +
+						CR +
 						cashBox.LastError +
 						'!',
 					Icon.Error
@@ -9456,7 +9442,7 @@ Extra: {
 			} else {
 				showMessage(
 					'Ошибка выполнения операции!' +
-						CR_MESSAGE +
+						CR +
 						cashBox.LastError +
 						'!'
 				);
@@ -9489,7 +9475,7 @@ Extra: {
 			} else {
 				showMessage(
 					'Ошибка выполнения операции!' +
-						CR_MESSAGE +
+						CR +
 						cashBox.LastError +
 						'!'
 				);
@@ -10065,7 +10051,7 @@ Extra: {
 			} catch (e) {
 				showMessage(
 					'Ошибка добавления позиции в документ!' +
-						CR_MESSAGE +
+						CR +
 						CONTACT_YOUR_TECHNICIAN_MESSAGE,
 					Icon.Error
 				);
@@ -10707,7 +10693,7 @@ Extra: {
 						CONTACT_YOUR_TECHNICIAN_MESSAGE +
 						HTTP_STATE_MESSAGE +
 						requestState +
-						CR_MESSAGE;
+						CR;
 					if (documentType && delay) {
 						frontol.currentDocument.userValues.set('Delay', 1);
 						DelayDocument(data, documentType);
@@ -10729,12 +10715,12 @@ Extra: {
 						CONTACT_SUPPORT_MESSAGE +
 						HTTP_CODE_MESSAGE +
 						request.status +
-						CR_MESSAGE +
+						CR +
 						'Адрес запроса: ' +
 						uri;
 
 					if ('statusText' in request && request.statusText != '') {
-						errorInformation += CR_MESSAGE;
+						errorInformation += CR;
 
 						if (
 							request.statusText.length > SHOW_MAX_LENGTH_STRING
@@ -10749,7 +10735,7 @@ Extra: {
 						}
 					}
 
-					errorInformation += CR_MESSAGE;
+					errorInformation += CR;
 
 					if (
 						'responseText' in request &&
@@ -10758,7 +10744,7 @@ Extra: {
 						errorInformation +=
 							DESCRIPTION_MESSAGE +
 							DecryptServerError(request.responseText) +
-							CR_MESSAGE;
+							CR;
 					}
 
 					if (documentType && delay) {
@@ -10785,7 +10771,7 @@ Extra: {
 						errorInformation +=
 							DESCRIPTION_MESSAGE +
 							DecryptServerError(request.responseText) +
-							CR_MESSAGE;
+							CR;
 					}
 
 					if (documentType && delay) {
@@ -12529,11 +12515,11 @@ function is18YearsOld() {
 		//запрос данных с помощью диалога ввода
 		inputText = frontol.actions.inputString(
 			'ВНИМАНИЕ!!!' +
-				CR_MESSAGE +
+				CR +
 				'ЗАПРЕТ ПРОДАЖИ АЛКОГОЛЯ И ТАБАКА ЛИЦАМ, НЕ ДОСТИГШИМ 18 ЛЕТ.' +
-				CR_MESSAGE +
+				CR +
 				'ВВЕДИТЕ ДАТУ РОЖДЕНИЯ В ФОРМАТЕ ДДММГГГГ' +
-				CR_MESSAGE +
+				CR +
 				'(ДЕНЬ МЕСЯЦ ГОД, ТОЛЬКО ЦИФРЫ, НАПРИМЕР 31072000)',
 			''
 		);
@@ -14115,7 +14101,6 @@ function $ManualButton() {
 	}
 
 	//Для СтарКассир
-	// if (HeadCashier == frontol.currentUser.code) {
 	if (isServiceUser()) {
 		//Зададим переменные
 		var fiscalipadresString = '1. Установить ip адресс ФР от Т.Группа';
@@ -14916,7 +14901,7 @@ function OpenDraw() {
 	} else if (result.rc !== 'SUCCESS') {
 		var error = getErrorOFD(result.rc);
 		frontol.actions.showMessage(
-			'Не исправность с ДЯ: ' + CR_MESSAGE + CR_MESSAGE + error,
+			'Не исправность с ДЯ: ' + CR + CR + error,
 			Icon.Error
 		);
 		//break;
@@ -15132,7 +15117,7 @@ function StatusKKM() {
 	} else if (result.rc !== 'SUCCESS') {
 		var error = getErrorOFD(result.rc);
 		frontol.actions.showMessage(
-			'Ответ ККМ: ' + CR_MESSAGE + CR_MESSAGE + error,
+			'Ответ ККМ: ' + CR + CR + error,
 			Icon.Error
 		);
 	}
@@ -15153,16 +15138,6 @@ Fiscat: {
 
 	function isServiceUser() {
 		return frontol.currentUser.code === 3;  // спец. пользователь для снятий отчетов и тд
-
-		// var res;
-		// try {
-		// 	res =
-		// 		frontol.currentUser.profile.code == 2 ||
-		// 		frontol.currentUser.profile.code == 3;
-		// } catch (e) {
-		// 	res = HeadCashier === frontol.currentUser.code;
-		// }
-		// return res;
 	}
 
 	function isMenuAccessAvailable() {
@@ -15217,7 +15192,7 @@ Fiscat: {
 		if (result.rc !== 'SUCCESS') {
 			var error = getErrorOFD(result.rc);
 			frontol.actions.showMessage(
-				'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
+				'Ответ ОФД с ошибкой: ' + CR + ' -> ' + error,
 				Icon.Error
 			);
 			cancelAct();
@@ -15481,7 +15456,7 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 
 	if (!RRN) {
 		showMessage(
-			'RRN не введен для возврата.' + CR_MESSAGE + 'Возврат невозможен.',
+			'RRN не введен для возврата.' + CR + 'Возврат невозможен.',
 			Icon.Exclamation
 		);
 		cancelAct();
@@ -15506,9 +15481,9 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 			var msg = responseData.message || responseData.msg;
 			showMessage(
 				'Ошибка при обработке возврата' +
-					CR_MESSAGE +
+					CR +
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
-					CR_MESSAGE +
+					CR +
 					msg,
 				Icon.Error
 			);
@@ -15517,7 +15492,7 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 		// Обработка ошибки запроса
 		showMessage(
 			'Ошибка при подключении к терминалу Freedom Bank' +
-				CR_MESSAGE +
+				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
@@ -15546,7 +15521,7 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 	if (!RRN) {
 		// АПИ требует RRN для отмены
 		showMessage(
-			'RRN не найден в документе. Отмена невозможна.' + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE,
+			'RRN не найден в документе. Отмена невозможна.' + CR + CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
 		cancelAct();
@@ -15558,7 +15533,7 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 		// Платеж Freedom Bank не найден. Такого не должно быть, т.к RRN есть
 		// и платеж был найден в вызывающей функции (AfterCancelDocument)
 		showMessage(
-			'Платеж типа Freedom Bank не найден в документе. Отмена невозможна.' + CR_MESSAGE + CONTACT_YOUR_TECHNICIAN_MESSAGE,
+			'Платеж типа Freedom Bank не найден в документе. Отмена невозможна.' + CR + CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
 		cancelAct();
@@ -15583,9 +15558,9 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 		} else {
 			showMessage(
 				'Ошибка при отмене документа' +
-					CR_MESSAGE +
+					CR +
 					CONTACT_YOUR_TECHNICIAN_MESSAGE +
-					CR_MESSAGE +
+					CR +
 					responseData.message,
 				Icon.Error
 			);
@@ -15596,7 +15571,7 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 		// Обработка ошибки запроса
 		showMessage(
 			'Ошибка при подключении к терминалу Freedom Bank' +
-				CR_MESSAGE +
+				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
@@ -15637,7 +15612,7 @@ function FreedomBankBeforeAddPayment(payment) {
 	if (isEmptyValue(terminalIpAdd)) {
 		frontol.actions.showMessage(
 			'Не задан IP адрес терминала Freedom Bank' +
-				CR_MESSAGE +
+				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
@@ -15653,7 +15628,7 @@ function FreedomBankBeforeAddPayment(payment) {
 	} else {
 		showMessage(
 			'Операция не поддерживается терминалом Freedom Bank' +
-				CR_MESSAGE +
+				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
@@ -15675,7 +15650,7 @@ function FreedomBankAfterCancelDocument() {
 	if (!terminalIpAdd) {
 		showMessage(
 			'Не задан IP адрес терминала Freedom Bank' +
-				CR_MESSAGE +
+				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
@@ -15707,7 +15682,7 @@ function $TestFreedomConnection() {
 		if (isEmptyValue(terminalIpAdd)) {
 			frontol.actions.showMessage(
 				'Не задан IP адрес терминала Freedom Bank' +
-					CR_MESSAGE +
+					CR +
 					CONTACT_YOUR_TECHNICIAN_MESSAGE,
 				Icon.Error
 			);
