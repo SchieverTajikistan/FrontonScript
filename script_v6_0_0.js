@@ -13332,18 +13332,7 @@ function setCustomActionData(path) {
 }
 
 // Ввод значение параметров печати ФР
-function EnterParameter(param, header, isSetValue=true) {
-	// добавляет в init функции
-	// // добавляем для типа String метод trim
-	// if (!String.prototype.trim) {
-	// 	(function () {
-	// 		// Make sure we trim BOM and NBSP
-	// 		var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
-	// 		String.prototype.trim = function () {
-	// 			return this.replace(rtrim, '');
-	// 		};
-	// 	})();
-	// }
+function EnterParameter(param, header) {
 	var headerString = 'Вводимый параметр: ' + header;
 	var newValue = frontol.actions.inputString(
 		headerString,
@@ -13352,9 +13341,7 @@ function EnterParameter(param, header, isSetValue=true) {
 	if (newValue == null) return;
 
 	newValue = newValue.trim()
-	if (isSetValue) {
-		frontol.userValues.set(param, newValue);
-	}
+	frontol.userValues.set(param, newValue);
 	
 	return newValue;
 }
@@ -13625,8 +13612,9 @@ function $ManualButton() {
 			}
 
 			case 'FRnewStatus': {
-				var FRStatus = EnterParameter(VAR_SESSION_STATUS_FR, SetFRSessionStatusString, false)
-				switch (FRStatus) {
+				var prevStatus = IsSessionOpen_FR() ? '1' : '0';
+				var newStatus = EnterParameter(VAR_SESSION_STATUS_FR, SetFRSessionStatusString);
+				switch (newStatus) {
 					case '0': {
 						SetSessionClose_FR();
 						break;
@@ -13636,6 +13624,7 @@ function $ManualButton() {
 						break;
 					}
 					default: {
+						prevStatus == '1' ? SetSessionOpen_FR() : SetSessionClose_FR();
 						showMessage('Неверное значение. eведите 0 либо 1', Icon.Exclamation);
 					}
 
