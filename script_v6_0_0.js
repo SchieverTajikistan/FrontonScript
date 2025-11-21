@@ -15196,7 +15196,7 @@ function FreedomBankAfterSessionClose() {
 	if (!terminalIpAdd) {
 		return;
 	}
-	_freedomBankCloseSession()
+	_freedomBankCloseSession(terminalIpAdd)
 }
 
 
