@@ -1177,10 +1177,11 @@ FunctionsOfEventListeners: {
 				SetSessionClose_FR();
 				OpenDraw();
 			} else {
-				showMessage('Статус смены в ФР = неактивен/закрыт. Пропускаем.', Icon.Exclamation);
+				showMessage('Статус смены в ФР = неактивен/закрыт. Пропускаем закрытие.', Icon.Exclamation);
 			}
 		}
 		// Технология групп -
+
 	}
 
 	//ДОБАВЛЕНИЕ ПОЗИЦИИ - ДО
@@ -15370,6 +15371,8 @@ function FreedomBankInit() {
 		'FreedomBankAfterCancelDocument',
 		false
 	);
+
+	frontol.addEventListener('closeSession', 'FreedomBankAfterSessionClose', false);
 }
 
 function _getTerminalHttpAddress(terminalIpAddress) {
@@ -15615,9 +15618,9 @@ function _freedomBankCloseSession(terminalIpAdd) {
 		var msg = responseData.message || responseData.msg;
 		showMessage(
 			'Ошибка при обработке запроса. Попробуйте закрыть смену вручную на терминале!' +
-				CR_MESSAGE +
+				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE +
-				CR_MESSAGE +
+				CR +
 				msg,
 			Icon.Warning
 		);
