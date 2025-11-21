@@ -13332,25 +13332,31 @@ function setCustomActionData(path) {
 }
 
 // Ввод значение параметров печати ФР
-function EnterParameter(param, header) {
-	// добавляем для типа String метод trim
-	if (!String.prototype.trim) {
-		(function () {
-			// Make sure we trim BOM and NBSP
-			var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
-			String.prototype.trim = function () {
-				return this.replace(rtrim, '');
-			};
-		})();
-	}
+function EnterParameter(param, header, isSetValue=true) {
+	// добавляет в init функции
+	// // добавляем для типа String метод trim
+	// if (!String.prototype.trim) {
+	// 	(function () {
+	// 		// Make sure we trim BOM and NBSP
+	// 		var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+	// 		String.prototype.trim = function () {
+	// 			return this.replace(rtrim, '');
+	// 		};
+	// 	})();
+	// }
 	var headerString = 'Вводимый параметр: ' + header;
 	var newValue = frontol.actions.inputString(
 		headerString,
 		frontol.userValues.get(param)
 	);
-	if (newValue == null) return false;
-	frontol.userValues.set(param, newValue.trim());
-	return true;
+	if (newValue == null) return;
+
+	newValue = newValue.trim()
+	if (isSetValue) {
+		frontol.userValues.set(param, newValue);
+	}
+	
+	return newValue;
 }
 
 // Очистка значение параметров печати ФР
@@ -13446,10 +13452,12 @@ function $ManualButton() {
 		}
 
 		var SessionValString = 'Значение смены';
-
 		if (IsSessionOpen_FR())
 			SessionValString += ' ( Открыта )';
 		else SessionValString += ' ( Закрыта )';
+
+		var SetFRSessionStatusString = 'Установить статус смены ФР (только во фронтол)' + CR
+		+ '0 - Закрыта; 1 - Открыта'
 
 		var TGXString = ' X-Отчет ФР от Т.Группа';
 		var TGZString = ' Z-Отчет ФР от Т.Группа';
@@ -13506,11 +13514,13 @@ function $ManualButton() {
 				printLastDocByFDNum + '\n'
 				+
 				'\n' +
-				SessionValString + '\n'
+				SetFRSessionStatusString + '\n'
 				+
 				'\n' +
 				'---------- Прочее ---------------\n' +
-				freedomBnkTerminalIpAddTitle,
+				freedomBnkTerminalIpAddTitle + '\n'
+				+
+				SessionValString + '\n',
 
 				'\n' +
 				'fiscalipadres' + '\n'
@@ -13536,7 +13546,7 @@ function $ManualButton() {
 				'printLastDocByFDNum' + '\n'
 				+
 				'\n' +
-				'\n' +
+				'FRnewStatus' + '\n' +
 				'\n' +
 				'\n' +
 				'freedomBankTerminalIpAdd' + '\n'
@@ -13613,6 +13623,25 @@ function $ManualButton() {
 				SetSessionClose_FR();
 				break;
 			}
+
+			case 'FRnewStatus': {
+				var FRStatus = EnterParameter(VAR_SESSION_STATUS_FR, SetFRSessionStatusString, false)
+				switch (FRStatus) {
+					case '0': {
+						SetSessionClose_FR();
+						break;
+					}
+					case '1': {
+						SetSessionOpen_FR();
+						break;
+					}
+					default: {
+						showMessage('Неверное значение. eведите 0 либо 1', Icon.Exclamation);
+					}
+
+				}
+			}
+
 			case 'freedomBankTerminalIpAdd': {
 				EnterParameter(
 					VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS,
@@ -14386,24 +14415,24 @@ function IsSessionOpen_KASSA() {
 }
 
 function SetSessionOpen_KASSA() {
-	return frontol.userValues.set(VAR_SESSION_STATUS_KASSA) = '1';
+	frontol.userValues.set(VAR_SESSION_STATUS_KASSA, '1');
 }
 
 function SetSessionClose_KASSA() {
-	return frontol.userValues.set(VAR_SESSION_STATUS_KASSA) = '0';
+	frontol.userValues.set(VAR_SESSION_STATUS_KASSA, '0');
 }
 
 
 function IsSessionOpen_FR() {
-	return frontol.userValues.get(VAR_SESSION_STATUS_FR) === '1'
+	return frontol.userValues.get(VAR_SESSION_STATUS_FR) == '1'
 }
 
 function SetSessionOpen_FR() {
-	return frontol.userValues.get(VAR_SESSION_STATUS_FR) = '1'
+	frontol.userValues.set(VAR_SESSION_STATUS_FR, '1');
 }
 
 function SetSessionClose_FR() {
-	return frontol.userValues.get(VAR_SESSION_STATUS_FR) = '0'
+	frontol.userValues.set(VAR_SESSION_STATUS_FR, '0');
 }
 
 
