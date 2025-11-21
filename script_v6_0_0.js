@@ -255,13 +255,13 @@ var HeadCashier = 3;
 //Технология Групп -
 var FTP_REGEXP = /^ftp:\/\/(.+):(.+)@([^\/]+)\/(.+)$/;
 
-// USER PARAMETERS \ START ===========================================================
+// USER PARAMETERS \ + ===========================================================
 
 VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
 VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
 VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
 
-// USER PARAMTERS \ END ==============================================================
+// USER PARAMTERS \ - ==============================================================
 
 // sboboev+
 // Уведомление о закрытии смены
@@ -431,7 +431,7 @@ FunctionsOfEventListeners: {
 			inputReceiptDocumentInformation(doc);
 		}
 
-		if (frontol.userValues.get('IsShiftClosed') == '1') {
+	if (!IsSessionOpen_FR()) {
 			afterOpenSession();
 		}
 
@@ -487,9 +487,8 @@ FunctionsOfEventListeners: {
 		}
 		//Технология Групп +
 		if (IsFRfromTG()) {
-			if (IsSessionOpen()) {
-				// Смена уже открыта — ничего не делаем
-			} else {
+			if (!IsSessionOpen_FR()) {
+				// Смена закрыта в ФР. Попробуем открыть в ФР
 				var options = {
 					formCode: 'OPEN_SHIFT',
 					ffdVersion: 'VER_1',
@@ -504,7 +503,7 @@ FunctionsOfEventListeners: {
 
 				if (result.rc !== 'SUCCESS') {
 					var error = getErrorOFD(result.rc);
-					frontol.userValues.set('IsSessionOn', '0');
+					SetSessionClose_FR() // навсякий случай
 					frontol.actions.showMessage(
 						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
 						Icon.Error
@@ -513,7 +512,7 @@ FunctionsOfEventListeners: {
 					return;
 				}
 
-				frontol.userValues.set('IsSessionOn', '1');
+				SetSessionOpen_FR()
 			}
 		}
 		//Технология Групп -
@@ -601,7 +600,7 @@ FunctionsOfEventListeners: {
 			var result = sendtofiscal(FRadress, 'addCash', stringToSend);
 			if (result.rc !== 'SUCCESS') {
 				var error = getErrorOFD(result.rc);
-				frontol.actions.showMessage(
+				showMessage(
 					'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
 					Icon.Error
 				);
@@ -641,7 +640,14 @@ FunctionsOfEventListeners: {
 			ManualPrintOptionsButton();
 
 			if (IsFRfromTG()) {
-				if (IsSessionOpen()) {
+				if (!IsSessionOpen_FR()) {
+					showMessage('Печать невозможна. Смена закрыта в ФР.' +
+						CR +
+						CONTACT_YOUR_TECHNICIAN_MESSAGE
+					)
+
+				};
+				if (IsSessionOpen_FR()) {
 					// Значение параметры вариантов печати чека
 					var PrintWithoutSending = frontol.userValues.get(
 						'PrintWithoutSending'
@@ -672,7 +678,7 @@ FunctionsOfEventListeners: {
 					);
 					if (result.rc !== 'SUCCESS') {
 						var error = getErrorOFD(result.rc);
-						frontol.actions.showMessage(
+						showMessage(
 							'Ответ ОФД с ошибкой: ' +
 								CR_MESSAGE +
 								' -> ' +
@@ -1044,7 +1050,9 @@ FunctionsOfEventListeners: {
 
 	//ОТКРЫТИЕ СМЕНЫ - ПОСЛЕ
 	function afterOpenSession() {
-		frontol.userValues.set('IsShiftClosed', '0');
+		// т.к триггерится после успешного открытия смены на кассе
+		// меняем статус
+		SetSessionOpen_KASSA(); 
 		getCashParams(true);
 
 		if (isGlobalValueSet(SHELF_LIFE_DISCOUNTS_VALUE_NAME)) {
@@ -1078,8 +1086,8 @@ FunctionsOfEventListeners: {
 		getJson2();
 		//Технология Групп +
 		if (IsFRfromTG()) {
-			if (IsSessionOpen()) {
-				showMessage('Смена открыта в ККМ', Icon.Exclamation);
+			if (IsSessionOpen_FR()) {
+				showMessage('Смена уже открыта в ККМ', Icon.Exclamation);
 			} else {
 				var options = {
 					formCode: 'OPEN_SHIFT',
@@ -1092,19 +1100,18 @@ FunctionsOfEventListeners: {
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
 				var result = sendtofiscal(FRadress, 'openShift', stringToSend);
-				frontol.userValues.set('IsSessionOn', '1');
 				if (result.rc !== 'SUCCESS') {
 					var error = getErrorOFD(result.rc);
 					frontol.actions.showMessage(
-						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
+						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error + 
+						CR + 'Попробуйте открыть смену в ФР вручную.',
 						Icon.Error
 					);
-					//break;
 					cancelAct();
 					return;
 				}
 			}
-			//frontol.userValues.set("IsSessionOn", "1");
+			SetSessionOpen_FR();
 		}
 		//Технология Групп -
 	}
@@ -1140,13 +1147,14 @@ FunctionsOfEventListeners: {
 	//ЗАКРЫТИЕ СМЕНЫ - ПОСЛЕ
 	function afterCloseSession() {
 		frontol.userValues.remove(CUSTOM_ACTION_DATA);
-		frontol.userValues.set('IsShiftClosed', '1');
+
+		SetSessionClose_KASSA();
 		SendDelayed(true);
 		//Технология групп +
 		getJson2();
 
 		if (IsFRfromTG()) {
-			if (IsSessionOpen()) {
+			if (IsSessionOpen_FR()) {
 				var options = {
 					formCode: 'CLOSE_SHIFT',
 					ffdVersion: 'VER_1',
@@ -1157,18 +1165,19 @@ FunctionsOfEventListeners: {
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
 				var result = sendtofiscal(FRadress, 'closeShift', stringToSend);
-				frontol.userValues.set('IsSessionOn', '0');
 				if (result.rc !== 'SUCCESS') {
 					var error = getErrorOFD(result.rc);
-					frontol.actions.showMessage(
+					showMessage(
 						'Ответ ОФД с ошибкой: ' + CR_MESSAGE + ' -> ' + error,
 						Icon.Error
 					);
 					cancelAct();
 					return;
 				}
-				frontol.userValues.set('IsSessionOn', '0');
+				SetSessionClose_FR();
 				OpenDraw();
+			} else {
+				showMessage('Статус смены в ФР = неактивен/закрыт. Пропускаем.', Icon.Exclamation);
 			}
 		}
 		// Технология групп -
@@ -13928,7 +13937,7 @@ function $ManualButton() {
 
 		var SessionValString = 'Значение смены';
 
-		if (frontol.userValues.get('IsSessionOn') == 1)
+		if (IsSessionOpen_FR())
 			SessionValString += ' ( Открыта )';
 		else SessionValString += ' ( Закрыта )';
 
@@ -14017,8 +14026,7 @@ function $ManualButton() {
 				'printLastDocByFDNum' + '\n'
 				+
 				'\n' +
-				'IsSessionOn' + '\n'
-				+
+				'\n' +
 				'\n' +
 				'\n' +
 				'freedomBankTerminalIpAdd' + '\n'
@@ -14067,15 +14075,6 @@ function $ManualButton() {
 				break;
 			}
 
-			case 'IsSessionOn': {
-				if (frontol.userValues.get('IsSessionOn') == '1') {
-					frontol.userValues.set('IsSessionOn', '0');
-				} else {
-					frontol.userValues.set('IsSessionOn', '1');
-				}
-				break;
-			}
-
 			case 'TGX': {
 				var FRadress = frontol.userValues.get('fiscalipadres');
 				var options = {
@@ -14086,8 +14085,6 @@ function $ManualButton() {
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
 				var result = sendtofiscal(FRadress, 'getXReport', stringToSend);
-				//frontol.userValues.set("IsSessionOn", "0");
-
 				break;
 			}
 
@@ -14103,7 +14100,7 @@ function $ManualButton() {
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
 				var result = sendtofiscal(FRadress, 'closeShift', stringToSend);
-				frontol.userValues.set('IsSessionOn', '0');
+				SetSessionClose_FR();
 				break;
 			}
 			case 'freedomBankTerminalIpAdd': {
@@ -14150,7 +14147,7 @@ function $ManualButton() {
 
 		var SessionValString = 'Значение смены';
 
-		if (frontol.userValues.get('IsSessionOn') == 1)
+		if (IsSessionOpen_FR())
 			SessionValString += ' ( Открыта )';
 		else SessionValString += ' ( Закрыта )';
 
@@ -14184,7 +14181,7 @@ function $ManualButton() {
 				'\n' +
 				'printLastDoc\n' +
 				'printLastDocByFDNum\n' +
-				'IsSessionOn\n' +
+				'\n' +
 				'\n'
 		);
 
@@ -14232,14 +14229,6 @@ function $ManualButton() {
 				break;
 			}
 
-			case 'IsSessionOn': {
-				if (frontol.userValues.get('IsSessionOn') == '1') {
-					frontol.userValues.set('IsSessionOn', '0');
-				} else {
-					frontol.userValues.set('IsSessionOn', '1');
-				}
-				break;
-			}
 			case 'SharqCloseCashier': {
 				getJson2();
 				var FRadress = frontol.userValues.get('Sharqfiscalipadres');
@@ -14288,7 +14277,6 @@ function $ManualButton() {
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
 				var result = sendtofiscal(FRadress, 'getXReport', stringToSend);
-				//frontol.userValues.set("IsSessionOn", "0");
 
 				break;
 			}
@@ -14305,7 +14293,7 @@ function $ManualButton() {
 				var stringToSend = JSONStringify(options);
 				var FRadress = frontol.userValues.get('fiscalipadres');
 				var result = sendtofiscal(FRadress, 'closeShift', stringToSend);
-				frontol.userValues.set('IsSessionOn', '0');
+				SetSessionClose_FR();
 				break;
 			}
 		}
@@ -14346,10 +14334,10 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 	//При успешного ответа
 	if (request.status == 200) {
 		if (comand == 'openShift') {
-			frontol.userValues.set('IsSessionOn', '1');
+			SetSessionOpen_FR();   // не знаю почему мы делаем это здесь... но ок
 		}
 		if (comand == 'closeShift') {
-			frontol.userValues.set('IsSessionOn', '0');
+			SetSessionClose_FR();
 		}
 		var ObjectJSON = JSON.parse(request.responseText);
 
@@ -14360,12 +14348,15 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 		//frontol.actions.showMessage("Информация от фискального регистратора"+CR+CR+request.responseText, Icon.Error)
 		var ObjectJSON = JSONParse(request.responseText);
 		if (ObjectJSON.rc == 'SHIFT_MUST_BE_CLOSED') {
-			frontol.userValues.set('IsSessionOn', '1');
+			SetSessionOpen_FR();
+			showMessage('Смена открыта в ФР. Закройте смену.', Icon.Exclamation);
+		} else {
+			frontol.actions.showMessage(
+				'Ошибка ОФД: ' + request.status + ',Нет связи с ККМ',
+				Icon.Error
+			);
 		}
-		frontol.actions.showMessage(
-			'Ошибка ОФД: ' + request.status + ',Нет связи с ККМ',
-			Icon.Error
-		);
+		
 		cancelAct();
 		return;
 	}
@@ -14857,10 +14848,6 @@ function IsFRfromTG() {
 	frontol.userValues.get('isfiscalTG') === '1';
 }
 
-function IsSessionOpen() {
-	return frontol.userValues.get('IsSessionOn') === '1';
-}
-
 /* Меняет значения индикции статусов сессий/смен
 Мы держим статусы 2-ух оборудований:
 	1. ККМ/ФР (фискальный регистратор)
@@ -14903,11 +14890,11 @@ function IsSessionOpen_FR() {
 }
 
 function SetSessionOpen_FR() {
-	return frontol.userValues.get('IsSessionOpen_FR') = '1'
+	return frontol.userValues.get(VAR_SESSION_STATUS_FR) = '1'
 }
 
 function SetSessionClose_FR() {
-	return frontol.userValues.get('IsSessionOpen_FR') = '0'
+	return frontol.userValues.get(VAR_SESSION_STATUS_FR) = '0'
 }
 
 
@@ -15137,8 +15124,7 @@ function StatusKKM() {
 	var result = sendtofiscal(FRadress, 'deviceStatus', stringToSend);
 	// frontol.actions.showMessage(result.data.onlineStatus);
 	if (result.rc == 'SUCCESS') {
-		if (result.data.onlineStatus == true) {
-		} else {
+		if (result.data.onlineStatus !== true) {
 			frontol.actions.showMessage('ПРОВЕРЬТЕ СОСТОЯНИЕ ККМ');
 		}
 		// return result.rc;
