@@ -13443,9 +13443,8 @@ function $ManualButton() {
 			SessionValString += ' ( Открыта )';
 		else SessionValString += ' ( Закрыта )';
 
-		var SetFRSessionStatusString = `Установить статус смены ФР (только во фронтол)
-		0 - Закрыта; 1 - Открыта
-		`
+		var SetFRSessionStatusString = 'Установить статус смены ФР (только во фронтол)'
+
 		var TGXString = ' X-Отчет ФР от Т.Группа';
 		var TGZString = ' Z-Отчет ФР от Т.Группа';
 
@@ -13613,6 +13612,7 @@ function $ManualButton() {
 
 			case 'FRnewStatus': {
 				var prevStatus = IsSessionOpen_FR() ? '1' : '0';
+				SetFRSessionStatusString = SetFRSessionStatusString + CR + '0 - Закрыта; 1 - Открыта';
 				var newStatus = EnterParameter(VAR_SESSION_STATUS_FR, SetFRSessionStatusString);
 				switch (newStatus) {
 					case '0': {
