@@ -14896,6 +14896,39 @@ function isAppIsNotLaunched(err) {
 	return false;
 }
 
+function _validateResult(result) {
+	var isOk = false;
+	if (result.success) {
+		var responseData = result.data.data;
+		// Обработка успешного ответа
+		if (responseData.result == 0) {
+			isOk = true;
+		} else {
+			// result хранит код. Даже если мы могли выпонить операцию
+			// проблема может быть с банком или картой клиента. В таком случае
+			// success == true, но result != 0.
+			var msg = result.message || responseData.msg;
+			showMessage(
+				'Ошибка при выполнении операции на терминале.' +
+					CR +
+					msg,
+				Icon.Exclamation
+			);
+		}
+	} else {
+		// Обработка ошибки запроса
+		showMessage(
+			'Не удалось выполнить запрос к терминалу Freedom Bank' +
+				CR +
+				result.message +
+				CR +
+				CONTACT_YOUR_TECHNICIAN_MESSAGE,
+			Icon.Error
+		);
+	}
+	return isOk;
+
+}
 // ACTIONS
 function _freedomBankSale(payment, terminalIpAdd) {
 	var amount = payment.sumInBaseCurrency;
@@ -14907,8 +14940,6 @@ function _freedomBankSale(payment, terminalIpAdd) {
 	};
 	var url = _getTerminalHttpAddress(terminalIpAdd);
 	try {
-		showMessage('Sending request to ' + url)
-		showMessage('Payload ' + JSON.stringify(dataToSend))
 		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
 	} catch (e) {
 		if (isAppIsNotLaunched(e)) {
@@ -14923,40 +14954,18 @@ function _freedomBankSale(payment, terminalIpAdd) {
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
-		cancelAct();
 		return;
 	}
 
+	var isSuccess = _validateResult(result);
+	
 	var currDoc = frontol.currentDocument;
-	if (result.success) {
+	if (isSuccess) {
 		var responseData = result.data.data;
 		// Обработка успешного ответа
-		if (responseData.result == 0) {
-			var RRN = responseData.tagRRN;
-			currDoc.userValues.set('FreedomBank_RRN', RRN); // понадобится при возврате и других операциях
-			currDoc.addPayment(payment.type.code, amount, null);
-		} else {
-			showMessage(
-				'Ошибка при обработке платежа' +
-					CR +
-					CONTACT_YOUR_TECHNICIAN_MESSAGE +
-					CR +
-					responseData.message,
-				Icon.Error
-			);
-		}
-	} else {
-		// Обработка ошибки запроса
-		showMessage(
-			'Не удалось выполнить запрос к терминалу Freedom Bank' +
-				CR +
-				result.message +
-				CR +
-				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error
-		);
-		cancelAct();
-		return;
+		var RRN = responseData.tagRRN;
+		currDoc.userValues.set('FreedomBank_RRN', RRN); // понадобится при возврате и других операциях
+		currDoc.addPayment(payment.type.code, amount, null);
 	}
 }
 
@@ -14992,31 +15001,29 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 		}
 	};
 	var url = _getTerminalHttpAddress(terminalIpAdd);
-	var result = sendHttpRequestSimple(url, 'POST', dataToSend);
-	if (result.success) {
-		var responseData = result.data.data;
-		// Обработка успешного ответа
-		if (responseData.result == 0) {
-			currDoc.addPayment(payment.type.code, amount, null);
-		} else {
-			var msg = responseData.message || responseData.msg;
-			showMessage(
-				'Ошибка при обработке возврата' +
-					CR +
-					CONTACT_YOUR_TECHNICIAN_MESSAGE +
-					CR +
-					msg,
-				Icon.Error
-			);
+	try {
+		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
+	} catch (e) {
+		if (isAppIsNotLaunched(e)) {
+			e.message = 'Не удалось отправить запрос на терминал. Убедитесь, что терминал включен' +
+			' и приложение банка запущено.'
 		}
-	} else {
-		// Обработка ошибки запроса
 		showMessage(
-			'Ошибка при подключении к терминалу Freedom Bank' +
+			'Ошибка при отправке запроса к терминалу Freedom Bank' +
+				CR +
+				e.message +
 				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
 			Icon.Error
 		);
+		return;
+	}
+
+	var isSuccess = _validateResult(result);
+	var currDoc = frontol.currentDocument;
+
+	if (isSuccess) {
+		currDoc.addPayment(payment.type.code, amount, null);
 	}
 }
 
@@ -15070,32 +15077,11 @@ function _freedomBankCancelDoc(doc, terminalIpAdd) {
 	}
 	var url = _getTerminalHttpAddress(terminalIpAdd);
 	var result = sendHttpRequestSimple(url, 'POST', dataToSend);
-	if (result.success) {
-		var responseData = result.data.data;
-		// Обработка успешного ответа
-		if (responseData.result == 0) {
-			// Успешно отменено
-			return;
-		} else {
-			showMessage(
-				'Ошибка при отмене документа' +
-					CR +
-					CONTACT_YOUR_TECHNICIAN_MESSAGE +
-					CR +
-					responseData.message,
-				Icon.Error
-			);
-			cancelAct();
-			return;
-		}
-	} else {
-		// Обработка ошибки запроса
-		showMessage(
-			'Ошибка при подключении к терминалу Freedom Bank' +
-				CR +
-				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error
-		);
+	var isSuccess = _validateResult(result);
+
+	var currDoc = frontol.currentDocument;
+
+	if (!isSuccess) {
 		cancelAct();
 		return;
 	}
