@@ -257,7 +257,7 @@ function checkShiftReminder() {
 	var minutes = now.getMinutes();
 
 	if (hours === 23 && minutes >= 50 && minutes <= 59) {
-		frontol.actions.showMessage(
+		showMessage(
 			'Закройте смену! Через 10 минут ККМ будет заблокирована!',
 			Icon.Warning
 		);
@@ -486,7 +486,7 @@ FunctionsOfEventListeners: {
 				if (result.rc !== 'SUCCESS') {
 					var error = getErrorOFD(result.rc);
 					SetSessionClose_FR() // навсякий случай
-					frontol.actions.showMessage(
+					showMessage(
 						'Ответ ОФД с ошибкой: ' + CR + ' -> ' + error,
 						Icon.Error
 					);
@@ -10793,9 +10793,28 @@ Extra: {
 				}
 			}
 		}
+		
+		function _waitResponse(request, timeOut) {
+			var result; 
 
+			var count = timeOut;
+			while (request.readyState != 4) {
+				if (count <= 0) {
+					// Opps... timeout
+					request.abort();
+					result.message =
+						'Превышено время ожидания ответа от сервера';
+					return result;
+					
+				}
+				count --;
+				frontol.actions.wait('Ждем еще ' + count, 1)
+			}
+
+			return request;
+		}
 		function sendHttpRequestSimple(url, method, data, timeout) {
-			result = {
+			var result = {
 				success: false,
 				message: '',
 				data: ''
@@ -10817,52 +10836,32 @@ Extra: {
 				data = JSON.stringify(data)
 			}
 
-			//TODO.
-			showMessage('URL (before) ' + url)
 			url = GetCorrectServerAddress(url);
-			//TODO.
-			showMessage('URL (after) ' + url)
 
 			var request = new ActiveXObject('Microsoft.XMLHTTP');
-			showMessage('Opening request to ' + url + ' method: ' + method);
 
-			// explicitly set to async = false since some API might not return any response
-			// for example FreedomBank terminal API just hungs.
-			request.open(method, url, false);
+			request.open(method, url, true);
 			request.setRequestHeader('Content-Type', 'application/json');
 
-			//TODO.
-			showMessage('SENDING data to ' + url)
 			request.send(data);
 
-			var startTime = new Date().getTime();
-			while (request.readyState != 4) {
-				var currentTime = new Date().getTime();
-				if (currentTime - startTime > timeout * 1000) {
-					// Opps... timeout
-					request.abort();
-					result.message =
-						'Превышено время ожидания ответа от сервера';
-					return result;
-				}
+			var response = _waitResponse(request, timeout);
+			if (!response) {
+				result.message = 'Превышено время ожидания ответа от сервера';
+				return result;
 			}
-			
-			//TOOD.
-			showMessage('GOT RESPONSE ' + request.responseText);
 
-			if (request.status == 200) {
-				//TODO.
-				showMessage('Got result 200')
+			if (response.status == 200) {
 				try {
-					if ('responseText' in request && request.responseText) {
-						result.data = JSON.parse(request.responseText);
+					if ('responseText' in response && response.responseText) {
+						result.data = JSON.parse(response.responseText);
 					}
 					result.success = true;
 				} catch (e) {
 					result.message = e.message;
 				}
 			} else {
-				result.message = request.responseText;
+				result.message = response.responseText;
 			}
 			return result;
 		}
@@ -13460,10 +13459,6 @@ function $ManualButton() {
 			'1. Установить ip адресс для терминала FreedomBank';
 		var freedomBankTerminalIpAdd = getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS)
 
-		//TODO. DELETE
-		showMessage('VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = ' + freedomBankTerminalIpAdd)
-
-
 		if (isEmptyValue(freedomBankTerminalIpAdd)) {
 			freedomBnkTerminalIpAddTitle += ' (Не указан)';
 		}
@@ -13835,10 +13830,10 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 	request.setRequestHeader('Content-Type', 'application/json');
 	request.send(stringToSend);
 
-	var timeoutQuery = 40; // Таймаут
+	var timeoutQuery = 30; // Таймаут
 	for (var i = 1; i <= timeoutQuery; i++) {
 		if (request.readyState != 4) {
-			frontol.actions.wait(REQUEST_PROCESS_OFD, 0);
+			frontol.actions.wait(REQUEST_PROCESS_OFD, 3);
 		} else {
 			break;
 		}
@@ -13850,10 +13845,6 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 		cancelAct();
 		return;
 	}
-
-	//TODO.
-	showMessage('GOT RESPONSE FROM KKM -> ' + JSON.parse(request.responseText));
-
 
 	//При успешного ответа
 	if (request.status == 200) {
@@ -14172,10 +14163,6 @@ function writeToFile(content) {
 	} catch (e) {
 		frontol.actions.showMessage('Ошибка записи в файл: ' + e.message);
 	}
-}
-
-function cancelAct() {
-	frontol.actions.cancel();
 }
 
 // Ошибки Фискат
@@ -14867,10 +14854,6 @@ function ReadXml(data, value) {
 	var res = data.substr(pos1, pos2 - pos1);
 	if (res.length == 0) return '';
 	return res;
-}
-
-function cancelAct() {
-	frontol.actions.cancel();
 }
 
 // FREEDOM BANK \ START ==========================================================================================================================================================================================
