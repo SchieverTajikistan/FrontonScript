@@ -12832,123 +12832,6 @@ function AlifShowAdminUI() {
 	JetQrPay = null;
 }
 
-//START PROCCESSING - EMVCo_TJ (ALIF gateway)
-//ALIF
-var EMVCo_TJ = 107;
-
-function EMVCo_JetQrPayInit() {
-	frontol.addEventListener('addPayment', 'EMVCo_JetQrBeforeAddPayment', true);
-	frontol.addEventListener(
-		'cancelDocument',
-		'EMVCo_JetQrAfterCancelDocument',
-		false
-	);
-	frontol.addEventListener(
-		'stornoPayment',
-		'EMVCo_JetQrBeforeStornoPayment',
-		true
-	);
-}
-
-function EMVCo_JetQrBeforeAddPayment(frontolPayment) {
-	if (frontolPayment.type.code === EMVCo_TJ) {
-		//DocumentType = 1(Продажа)
-		if (frontol.currentDocument.type.code === 1) {
-			if (JetQrPay == null)
-				JetQrPay = new ActiveXObject(
-					'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver'
-				);
-
-			if (frontolPayment.type.code === EMVCo_TJ) {
-				var result = JetQrPay.ProcessMerchantPresentedQrPayment(
-					frontolPayment.number,
-					frontol.currentDocument.number,
-					frontol.sessionNumber,
-					frontolPayment.sumInBaseCurrency,
-					frontol.codeWorkplace
-				);
-
-				if (result.IsSuccessful) {
-					var isDuplicate =
-						frontol.currentDocument.userValues.get(
-							result.InvoiceId
-						) > 0;
-
-					if (isDuplicate === false) {
-						frontol.currentDocument.addPayment(
-							EMVCo_TJ,
-							result.AmountArrived,
-							null
-						);
-						frontol.currentDocument.userValues.set(
-							result.InvoiceId,
-							result.InvoiceId
-						);
-					} else {
-						showMessage(
-							'Дублирующий платеж! Этот платеж уже есть в списке.'
-						);
-					}
-				}
-			}
-
-			JetQrPay.Dispose();
-			JetQrPay = null;
-		}
-		//DocumentType = 2(Возврат)
-		else if (frontol.currentDocument.type.code === 2) {
-			//Temporary fix until we implement partial payment cancellation
-			showMessage(
-				"Возврат платежа типа 'Алиф QR и Алиф Салом' не поддерживается! Произведите возврат наличными."
-			);
-		}
-		cancelAct();
-	}
-}
-
-function EMVCo_JetQrAfterCancelDocument() {
-	//В данном событии вызываем отмену платежей Алиф только для документов типа "Продажа".
-	//Если не делать этот check, пользователь может создать документ типа "Возврат" и отменить его вместо того чтобы закрыть. В таком случае платежи Алиф оменятся, чего быть не должно.
-	//Для документов типа "Возврат" фунцкия отмены платежей Алиф вызовится "после" закрытия документа в обратобчике AlifAfterCloseDocument
-	if (frontol.currentDocument.type.code === 1) {
-		EMVCo_CancelJetQrPaymentsOnDocument();
-	}
-}
-
-function EMVCo_CancelJetQrPaymentsOnDocument() {
-	var documentHasJetQrPayments = hasPaymentOfType(EMVCo_TJ);
-
-	if (documentHasJetQrPayments) {
-		if (JetQrPay == null)
-			JetQrPay = new ActiveXObject(
-				'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver'
-			);
-
-		var documentNumber = 0;
-
-		if (frontol.currentDocument.type.code === 1)
-			//тип документа "Продажа"
-			documentNumber = frontol.currentDocument.number;
-		else if (frontol.currentDocument.type.code === 2)
-			//тип документа "Возврат", мы должны передавать номера документа основания(тип "Продажа") для возврата, так как платежи в базе связаны с именно с тeм документом
-			documentNumber = frontol.currentDocument.baseDocument.number;
-
-		JetQrPay.CancelPayments(documentNumber);
-
-		JetQrPay.Dispose();
-		JetQrPay = null;
-	}
-}
-
-function EMVCo_JetQrBeforeStornoPayment(frontolPayment) {
-	if (frontolPayment.type.code === EMVCo_TJ) {
-		showMessage('Нельзя сторнировать данный вид платежа!');
-		cancelAct();
-	}
-}
-
-//END EMVCo_TJ (Gateway ALIF)
-
 //Возвратная касса
 //==========================================================================================================================================================================================
 function $$$returnByCheck() {
@@ -14405,8 +14288,6 @@ function SetSessionClose_FR() {
 	frontol.userValues.set(VAR_SESSION_STATUS_FR, '0');
 }
 
-
-
 function OpenDraw() {
 	var options = JSONStringify({
 		formCode: 'OPEN_DRAWER',
@@ -14481,57 +14362,6 @@ function toISOProto() {
 				);
 			};
 		})();
-	}
-}
-
-function logg(a, b, c, d) {
-	var IS_DEBUG = true;
-	if (!IS_DEBUG) return;
-	try {
-		var inserts = [];
-		!b
-			? (b = '')
-			: typeof b != 'string'
-			? (b = JSON.stringify(b))
-			: (b = b);
-		inserts.push(b);
-		!c
-			? (c = '')
-			: typeof c != 'string'
-			? (c = JSON.stringify(c))
-			: (c = c);
-		inserts.push(c);
-		!d
-			? (d = '')
-			: typeof d != 'string'
-			? (d = JSON.stringify(d))
-			: (d = d);
-		inserts.push(d);
-		var borderString =
-			'\n------------------------------------------------------------------------------------------------------\n';
-		var sringForInserts = a.split('{}');
-		var date = new Date().toISOString();
-		var stringForLog = date + ' ';
-		if (sringForInserts.length == 1) {
-			stringForLog = stringForLog + a + ' ' + b + ' ' + c + ' ' + d;
-		} else {
-			//stringForLog = sringForInserts[0];
-			for (var i = 0; i < sringForInserts.length; i++) {
-				stringForLog += sringForInserts[i] + ' {' + inserts[i] + ' }';
-			}
-		}
-		stringForLog += borderString;
-
-		var fso = new ActiveXObject('Scripting.FileSystemObject');
-
-		var fileName = 'RxLoy_' + date.slice(0, date.indexOf('T')) + '.txt';
-		//showMessage(LOG_DIR + "/" + fileName);
-		createDirectory(LOG_DIR);
-		var file = fso.OpenTextFile(LOG_DIR + '/' + fileName, 8, true);
-		file.Write(stringForLog);
-		file.Close();
-	} catch (e) {
-		showMessage(e.message);
 	}
 }
 
