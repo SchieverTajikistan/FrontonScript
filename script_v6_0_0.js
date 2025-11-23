@@ -13833,7 +13833,7 @@ function sendtofiscal(ipdevice, comand, stringToSend) {
 	var timeoutQuery = 30; // Таймаут
 	for (var i = 1; i <= timeoutQuery; i++) {
 		if (request.readyState != 4) {
-			frontol.actions.wait(REQUEST_PROCESS_OFD, 3);
+			frontol.actions.wait(REQUEST_PROCESS_OFD, 0);
 		} else {
 			break;
 		}
@@ -14864,6 +14864,12 @@ function FreedomBankInit() {
 	frontol.addEventListener('addPayment', 'FreedomBankBeforeAddPayment', true);
 	frontol.addEventListener(
 		'cancelDocument',
+		'FreedomBankBeforeCancelDocument',
+		true
+	);
+
+	frontol.addEventListener(
+		'cancelDocument',
 		'FreedomBankAfterCancelDocument',
 		false
 	);
@@ -15117,7 +15123,7 @@ function FreedomBankBeforeAddPayment(payment) {
 
 	var terminalIpAdd = getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
 	if (isEmptyValue(terminalIpAdd)) {
-		frontol.actions.showMessage(
+		showMessage(
 			'Не задан IP адрес терминала Freedom Bank' +
 				CR +
 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
@@ -15127,10 +15133,12 @@ function FreedomBankBeforeAddPayment(payment) {
 		return;
 	}
 
+	// Платеж добавляет в:
 	if (isSaleDocument(frontol.currentDocument)) {
 		// Продажа
 		_freedomBankSale(payment, terminalIpAdd);
 	} else if (isReturnDocument(frontol.currentDocument)) {
+		// Возврат
 		_freedomBankReturn(payment, terminalIpAdd);
 	} else {
 		showMessage(
@@ -15147,12 +15155,26 @@ function FreedomBankBeforeAddPayment(payment) {
 	cancelAct();
 }
 
-function FreedomBankAfterCancelDocument() {
+function FreedomBankBeforeCancelDocument() {
 	var currDoc = frontol.currentDocument;
-
 	if (!hasPaymentOfType(FREEDOM_BANK_PAYMENT_CODE)) {
 		return;
 	}
+
+	if (!isSaleDocument(currDoc)) {
+		// Отмена возможна для документа продажи
+		// Можно внедрить логику и для возвратов, но пока раз уже добавили
+		// оплату в возврат, то нужно провести документ
+		showMessage(
+			'Документ не является продажей. Отмена невозможна.',
+			Icon.Error
+		);
+		cancelAct();
+		return;
+	}
+
+	// Есть тип оплаты фридом банка и это продажа, но НЕ задан ИП адес терминала ?
+	// Стопэ-стопэ
 	var terminalIpAdd = getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
 	if (!terminalIpAdd) {
 		showMessage(
@@ -15164,7 +15186,33 @@ function FreedomBankAfterCancelDocument() {
 		cancelAct();
 		return;
 	}
+}
+
+function FreedomBankAfterCancelDocument() {
+	var currDoc = frontol.currentDocument;
+	
+	// Все проверки должны быть осуществлены в функции ДО (FreedomBankBeforeCancel).
+	// Чтобы в случае чего можно было отменить процесс отмены чека
+	// Здесь мы делаем чеки на всякий случай.
+	// Главным элементом является, то что здесь мы проверяем есть ли
+	// тип оплаты Фридом банка в документе
+	if (!hasPaymentOfType(FREEDOM_BANK_PAYMENT_CODE)) {
+		return;
+	}
+
+	if (!isSaleDocument(currDoc)) {
+		showMessage(
+			'Документ не является продажей. Отмена невозможна.',
+			Icon.Error
+		);
+		cancelAct();
+		return;
+	}
+
+	var terminalIpAdd = getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
+	//
 	_freedomBankCancelDoc(currDoc, terminalIpAdd);
+
 }
 
 function FreedomBankAfterSessionClose() {
