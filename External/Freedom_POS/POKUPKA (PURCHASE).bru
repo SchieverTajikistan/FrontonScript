@@ -1,7 +1,7 @@
 meta {
   name: POKUPKA (PURCHASE)
   type: http
-  seq: 1
+  seq: 2
 }
 
 post {
@@ -14,11 +14,12 @@ body:json {
   {
     "task": "purchase",
     "data": {
-      "amount": "0.2"
+      "amount": 0.2
     }
   }
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

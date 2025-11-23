@@ -1,0 +1,58 @@
+meta {
+  name: ZAKRITIE SMENI (SETTLE)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{url}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  { "task": "settle"}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  ```
+  Request
+  { “task”: ”settle” }
+  
+  4.8.2Response
+  {
+    “data”:{
+      “msg”:String,
+      “result”:int,
+      "receiptInfo":String
+    }
+  }
+  
+  
+  Example:
+  
+  request:
+    { "task": "settle" }
+    
+  response:
+  {
+    "data": {
+      "receiptInfo": "ТОО \"Cullinan\"nг \
+  . Алматы, ул. Мака \
+  т а е в а , 127/1\n И И Н 201240002166\n т е л : +7 777 77 \
+  77\nREPORT\nTerminal ID: 61021804\nCURRENCY KZT\nDATE/TIME 15:25 \
+  05/05/2023\n=========================\nAMEX\n-------------------------------- \
+  ----------------\nAuth Confirm\nOPERATING 0002\nAMOUNT \
+  10₸\n------------------------------------------------\nTOTAL OPERATING 0002\nTOTAL \
+  AMOUNT 10₸\n=========================\nTOTAL OPERATING \ 0002\nTOTAL AMOUNT 10₸\n",
+      "msg": "Operation is Successful""",
+      "result": 0
+    }
+  }
+  ``
+}
