@@ -222,9 +222,6 @@ var CONFIRM_CODE_ERROR_MESSAGE =
 var CONFIRM_CODE_INCORRECT_MESSAGE = 'Неверный код подтверждения';
 var SELECT_AVAILABLE_DISCOUNTS_MESSAGE = 'Выберите доступные скидки';
 
-var HTTP_STATE_MESSAGE = 'Статус HTTP-запроса->';
-var HTTP_CODE_MESSAGE = 'HTTP-код->';
-
 var RX_LOYALTY_DIRECTORY = '';
 var RX_LOYALTY_DIRECTORY_FRONTOL = '';
 var RX_LOYALTY_DIRECTORY_FRONTOL_DEV = '';
@@ -242,9 +239,9 @@ var FTP_REGEXP = /^ftp:\/\/(.+):(.+)@([^\/]+)\/(.+)$/;
 // USER PARAMETERS \ + ===========================================================
 // Названия переменных которые хранятся в фронтол
 
-VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
-VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
-VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
+var VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
+var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
+var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
 
 // USER PARAMTERS \ - ==============================================================
 
@@ -565,9 +562,7 @@ FunctionsOfEventListeners: {
 		}
 
 		//Технология групп +
-		getJson2();
 		StatusKKM();
-		var doc = frontol.currentDocument;
 		if (isVnesenieDocument(doc)) {
 			var FRadress = frontol.userValues.get('fiscalipadres');
 			var options = {
@@ -1057,8 +1052,6 @@ FunctionsOfEventListeners: {
         }*/
 
 		//Технология Групп +
-		getJson2();
-		//Технология Групп +
 		if (IsFRfromTG()) {
 			if (IsSessionOpen_FR()) {
 				showMessage('Смена уже открыта в ККМ', Icon.Exclamation);
@@ -1125,7 +1118,6 @@ FunctionsOfEventListeners: {
 		SetSessionClose_KASSA();
 		SendDelayed(true);
 		//Технология групп +
-		getJson2();
 
 		if (IsFRfromTG()) {
 			if (IsSessionOpen_FR()) {
@@ -1151,7 +1143,7 @@ FunctionsOfEventListeners: {
 				SetSessionClose_FR();
 				OpenDraw();
 			} else {
-				showMessage('Статус смены в ФР = неактивен/закрыт. Пропускаем закрытие.', Icon.Exclamation);
+				showMessage('Статус смены в ФР = неактивена/закрыта. Пропускаем закрытие.', Icon.Exclamation);
 			}
 		}
 		// Технология групп -
@@ -7170,7 +7162,10 @@ ManualFunctions: {
 
 		var currentDocument = frontol.currentDocument;
 
-		getJson2();
+		if (!isJsonInitiated()) {
+			getJson2();
+		}
+		
 
 		// добавить значение в пользовательскую переменную документа
 		var addDocumentValue = function (valueName, value, checkUnique) {
@@ -10795,17 +10790,12 @@ Extra: {
 		}
 		
 		function _waitResponse(request, timeOut) {
-			var result; 
-
 			var count = timeOut;
 			while (request.readyState != 4) {
 				if (count <= 0) {
 					// Opps... timeout
 					request.abort();
-					result.message =
-						'Превышено время ожидания ответа от сервера';
-					return result;
-					
+					return;
 				}
 				count --;
 				frontol.actions.wait('Ждем еще ' + count, 1)
@@ -12398,6 +12388,11 @@ function useFrontolDiscountOnly() {
 	return false;
 }
 
+function isJsonInitiated() {
+	return (typeof JSON == "object" || typeof JSON.parse == "function")
+}
+
+
 function isDebugMode() {
 	if (isGlobalValueSet('RxLoyaltyDebugging')) return true;
 
@@ -13820,8 +13815,11 @@ function $ManualButton() {
 }
 
 function sendtofiscal(ipdevice, comand, stringToSend) {
-	//подключаем методы для работы с JSON
-	getJson2();
+	if (!isJsonInitiated()) {
+		//подключаем методы для работы с JSON
+		getJson2();
+	}
+	
 	var request;
 
 	request = new ActiveXObject('Microsoft.XMLHTTP');
@@ -13985,7 +13983,6 @@ function _getRRNForCheck(doc) {
 
 // Формируем документ типом строки для запроса
 function GiveDocumentToString(doc, PrintOption) {
-	getJson2();
 	var products = '';
 	for (
 		doc.position.index = 1;
