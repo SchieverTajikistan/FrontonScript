@@ -20,6 +20,7 @@
 /* jshint -W018 */ // confusing use of '!'
 
 var LOG_DIR = 'D:/logs';
+var CHECK_EXCHANGE_FOLDER = 'D:\\CheckExchange';
 
 // MESSAGES \ +
 var CR = '\n';  // new line
@@ -12609,8 +12610,7 @@ function getPaymentOfType(doc, qrPaymentType) {
 }
 
 function get4ekExchangeFileName() {
-	var folder = 'D:\\CheckExchange';
-	return folder + '\\' + 'check.txt';
+	return CHECK_EXCHANGE_FOLDER + '\\' + 'check.txt';
 }
 //ПРОЦЕССИНГ END
 //==========================================================================================================================================================================================
@@ -13729,7 +13729,7 @@ function $Export4ek() {
 	var fso = new ActiveXObject('Scripting.FileSystemObject');
 
 	try {
-		var isCreated = createFullPath(fso, filePath);
+		var isCreated = createFullPath(fso, CHECK_EXCHANGE_FOLDER);
 		if (!isCreated) {
 			showMessage("Не удалось создать папку для трансфера чеков: " + filePath, Icon.Error);
 			return;
