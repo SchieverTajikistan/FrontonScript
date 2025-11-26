@@ -13714,6 +13714,47 @@ function $ManualButton() {
 	}
 }
 
+function $ExportCheck() {
+	if (!isSysAdmin()) {
+		showMessage('У вас нет доступа к данной функции.', Icon.Exclamation);
+		return;
+	}
+
+	var filePath = "D:\\CheckTransfers\\";
+	var fileName = "export.txt"
+	var fullPath = filePath + fileName;
+
+	var fso = new ActiveXObject('Scripting.FileSystemObject');
+
+	try {
+		createFullPath(filePath);
+	} catch (e) {
+		showMessage("Не удалось создать папку для трансфера чеков: " + e.message, Icon.Error);
+		return;
+	}
+
+	var file = fso.CreateTextFile(fullPath, true);
+
+	var doc = frontol.currentDocument;
+
+	for (
+		doc.pisition.index = 1;
+		doc.position.index <= doc.position.count;
+		doc.position.index++
+	) {
+		if (doc.position.storno == 1) continue;
+
+		var line = [
+			doc.posiiton.ware.mark,
+			doc.position.price,
+			doc.position.quantity,
+		].join(';');
+		file.writeline(line);
+	}
+	file.close();
+	showMessage('Чек экспортирован в файл: ' + fullPath, Icon.Information);
+}
+
 function sendtofiscal(ipdevice, comand, stringToSend) {
 	if (!isJsonInitiated()) {
 		//подключаем методы для работы с JSON
@@ -14291,7 +14332,6 @@ function SetSessionOpen_KASSA() {
 function SetSessionClose_KASSA() {
 	frontol.userValues.set(VAR_SESSION_STATUS_KASSA, '0');
 }
-
 
 function IsSessionOpen_FR() {
 	return frontol.userValues.get(VAR_SESSION_STATUS_FR) == '1';
@@ -15068,7 +15108,7 @@ function FreedomBankAfterSessionClose() {
 }
 
 
-// MISC
+// MISC \ +
 
 function $TestFreedomConnection() {
 	var dataToSend = {
@@ -15113,6 +15153,8 @@ function $TestFreedomConnection() {
 		return;
 	}
 }
+
+// MISC \ -
 
 // FREEDOM BANK \ END ======================================================
 
