@@ -389,8 +389,11 @@ function init() {
 		copyShelfLifeDiscountsFile();
 	}
 
+    if (isPromoKassa()) {
+		initPromo()
+    }
+
 	JetQrPayInit();
-	EMVCo_JetQrPayInit();
 	dcinit();
 	FreedomBankInit()
 }
@@ -559,6 +562,13 @@ FunctionsOfEventListeners: {
 				}
 			}
 			//GetFooter(doc);
+		}
+
+		if (isSaleDocument(doc) && isPromoKassa() &&
+            Number(frontol.userValues.get("promoShopCode")) > 0 &&
+			!doc.userValues.get("isPromoAdded") //debug
+		) {
+			beforeCloseDocumentPromo();
 		}
 
 		//Технология групп +
@@ -12427,6 +12437,13 @@ function findRegisteredAccountType(doc, accType) {
 	return false;
 }
 
+function isPromoKassa() {
+    return (getClientUUID() == "A527335D-BE7A-4D52-AAE0-DAC465A0BB5C" ||
+			getClientUUID() == "72AF8681-AA9D-4FDB-B41F-D9E6C4025C92") &&
+			frontol.userValues.get("promoParticipation") == "1"
+}
+
+
 function forbidAlco(pos) {
 	var now = new Date();
 	var hour = now.getHours();
@@ -15098,3 +15115,731 @@ function $TestFreedomConnection() {
 }
 
 // FREEDOM BANK \ END ======================================================
+
+
+
+// PROMO \ +
+
+var IS_DEBUG = false;
+
+function initPromo() {
+	var dbRx = new RxDB();
+	logg("db started");
+	var connected = dbRx.connect();
+
+	if (!connected) {
+		showMessage("Соединение с базой настроек промо-акции не установлено!", Icon.Warning);
+	} else {
+		logg("db connected");
+		var promoRx = new RxPromo(dbRx);
+
+		promoRx.init(false);
+	}
+}
+
+function RxDB() {
+    var connectionObject = {
+        Driver: "Firebird/InterBase(r) driver",
+        Host: frontol.userValues.get("promoServer"),
+        DbName: frontol.userValues.get("promoDatabase"),
+        User: "SYSDBA",
+        Password: "masterkey",
+        CharSet: "WIN1251"
+    };
+
+    var connection = null;
+    var connectionString = "";
+    var isConnected = false;
+    var adStateClosed = 0; // The object is closed
+    // соединение с базой данных
+    this.connect = function connect() {
+        connection = new ActiveXObject("ADODB.Connection");
+
+        connectionString =
+            "driver=" +
+            connectionObject.Driver +
+            ";" +
+            "dbname=" +
+            connectionObject.Host +
+            ":" +
+            connectionObject.DbName +
+            ";" +
+            "uid=" +
+            connectionObject.User +
+            ";" +
+            "pwd=" +
+            connectionObject.Password +
+            ";" +
+            "charset=" +
+            connectionObject.CharSet +
+            ";" +
+            "auto_commit=true;auto_commit_level=0x1000;";
+
+        connection.ConnectionString = connectionString;
+        connection.CommandTimeout = 60;
+        connection.ConnectionTimeout = 30;
+
+        try {
+            connection.Open(connection.ConnectionString);
+            isConnected = true;
+        } catch (e) {
+            showMessage(
+                "Database connection error: [" +
+                    e.number +
+                    "], " +
+                    e.message +
+                    "\n" +
+                    "Connection string: " +
+                    connectionString,
+                Icon.Warning
+            );
+            isConnected = false;
+        }
+
+        return isConnected;
+    };
+    // выполнить запрос кроме select
+    this.execute = function execute(queryString, silent) {
+        if (!isConnected) return false;
+
+        if (typeof silent == "undefined" || typeof silent != "boolean") {
+            silent = false;
+        }
+
+        try {
+            connection.Execute(queryString);
+
+            var errCount = connection.Errors.Count;
+
+            if (errCount !== 0) {
+                //write the errors
+                for (var i = 0; i < errCount; i++) {
+                    var err = connection.Errors.Item(i);
+
+                    if (!silent) showMessage(err, Icon.Warning);
+                }
+                // clean out any existing errors
+                connection.Errors.Clear();
+
+                return false;
+            }
+
+            return true;
+        } catch (e) {
+            if (!silent) {
+                showMessage(
+                    "Execution error of query '" + queryString + "': [" + e.number + "], " + e.message,
+                    Icon.Error
+                );
+            }
+
+            return false;
+        }
+    };
+    //----------------------------------------------------------------------------------------------------------
+    // выполнить запрос
+    this.query = function query(queryString, silent) {
+        var recordSet = null;
+        var result = [];
+
+        if (!isConnected) return false;
+
+        if (typeof silent == "undefined" || typeof silent != "boolean") {
+            silent = false;
+        }
+
+        try {
+            recordSet = new ActiveXObject("ADODB.Recordset");
+            recordSet.Open(queryString, connection); // 3 - adOpenStatic, 1 - adLockReadOnly
+        } catch (e) {
+            if (!silent) {
+                showMessage(
+                    "Query execution error: [" + e.number + "],\n" + e.message + ",\nquery: " + queryString,
+                    Icon.Warning
+                );
+            }
+            return false;
+        }
+
+        var errCount = connection.Errors.Count;
+
+        if (errCount !== 0) {
+            //write the errors
+            for (var i = 0; i < errCount; i++) {
+                var err = connection.Errors.Item(i);
+
+                if (!silent) showMessage(err, Icon.Warning);
+            }
+            // clean out any existing errors
+            connection.Errors.Clear();
+            return false;
+        }
+        // запрос выполнился успешно, но ничеге не вернул
+        if (recordSet.State == 0) return true;
+
+        if (recordSet.EOF && recordSet.BOF) return false;
+
+        try {
+            while (!recordSet.EOF) {
+                var fieldString = "";
+
+                for (var i = 0; i < recordSet.Fields.Count; i++) {
+                    var fieldName = recordSet.Fields.Item(i).Name.toString();
+                    var fieldValue = recordSet.Fields.Item(i).Value.toString();
+
+                    i > 0
+                        ? (fieldString += "&" + fieldName + ":" + fieldValue)
+                        : (fieldString += fieldName + ":" + fieldValue);
+                }
+
+                result.push(fieldString);
+                recordSet.MoveNext();
+            }
+            return result;
+        } catch (e) {
+            if (!silent) {
+                showMessage("Getting query '" + queryString + "' result error : [" + e.number + "], " + e.message);
+            }
+            return false;
+        }
+    };
+    //----------------------------------------------------------------------------------------------------------
+    // выполнить запрос select
+    this.select = function select(queryString, silent) {
+        var recordSet = null;
+        var result = [];
+
+        if (typeof silent == "undefined" || typeof silent != "boolean") {
+            silent = false;
+        }
+
+        if (!isConnected) return false;
+
+        try {
+            recordSet = new ActiveXObject("ADODB.Recordset");
+
+            recordSet.Open(queryString, connection);
+        } catch (e) {
+            if (!silent) {
+                showMessage(
+                    "Execution error of query '" + queryString + "': [" + e.number + "], " + e.message,
+                    Icon.Warning
+                );
+            }
+            return false;
+        }
+
+        if (recordSet.EOF && recordSet.BOF) return false;
+
+        try {
+            recordSet.MoveFirst();
+
+            while (!recordSet.EOF) {
+                var fieldString = "";
+
+                for (var i = 0; i < recordSet.Fields.Count; i++) {
+                    var fieldName = recordSet.Fields.Item(i).Name;
+                    var fieldValue = recordSet.Fields.Item(i).Value;
+
+                    i > 0
+                        ? (fieldString += "&" + fieldName + ":" + fieldValue)
+                        : (fieldString += fieldName + ":" + fieldValue);
+                }
+
+                result.push(fieldString);
+                recordSet.MoveNext();
+            }
+            return result;
+        } catch (e) {
+            if (!silent) {
+                showMessage(
+                    "Getting query '" + queryString + "' result error : [" + e.number + "], " + e.message,
+                    Icon.Warning
+                );
+            }
+            return false;
+        }
+    };
+}
+
+function RxPromo(db) {
+    this.COUNTER_TEMPLATE = "PROMO_COUNTER_";
+
+    this.reset = function reset() {
+        frontol.userValues.remove("promoCounters");
+        frontol.userValues.remove("promoParticipation");
+    };
+
+    this.init = function init(silent) {
+        logg("init started");
+        if (typeof silent == "undefined" || typeof silent != "boolean") {
+            silent = false;
+        }
+
+        var cashBoxCode = frontol.codeWorkplace.toString();
+        logg("cashBoxCode = " + cashBoxCode);
+        var foundCashBox = this.findCashBox(cashBoxCode);
+        logg("foundCashBox = " + foundCashBox);
+
+        if (foundCashBox) {
+            frontol.userValues.set("promoParticipation", "1"); // флаг участия кассы в промоакции
+
+            var counters = this.getParams(); // получем параметры промоакции
+            var currentDate = getDateToString();
+
+            this.deleteOldCounters(currentDate); // удаляем старые счётчики
+
+            var promoInfoString = "";
+            var countersString = "";
+
+            if (counters.length > 0) {
+                promoInfoString = "Эта касса с номером " + cashBoxCode + " участвует в промо-акциях!\n";
+            }
+
+            for (var i = 0; i < counters.length; i++) {
+                var counter = counters[i];
+
+                if (counter) {
+                    if (countersString) countersString += ";";
+
+                    var counterName = this.COUNTER_TEMPLATE + currentDate + "_" + counter.code;
+                    var existingCounter = this.checkCounter(counterName, true);
+
+                    if (!existingCounter) {
+                        this.createCounter(counterName); // создаем счётчик для сегодняшней даты если его нет
+                    }
+
+                    countersString +=
+                        counter.code + "&" + counterName + "&" + counter.value + "&" + counter.minChequeSum;
+
+                    promoInfoString += "- Каждый " + counter.value + "-й чек - победитель!\n";
+
+                    if (counter.minChequeSum > 0) {
+                        promoInfoString +=
+                            "Минимальная сумма чека для участия в акции - " + promoParams.MinChequeSum + "\n";
+                    }
+                } else {
+                    this.reset();
+                }
+            }
+
+            if (promoInfoString && !silent) showMessage(promoInfoString);
+
+            frontol.userValues.set("promoCounters", countersString);
+        } else {
+            this.reset();
+        }
+    };
+    // возвращает массив счетчиков с параметрами
+    this.getCounters = function getCounters() {
+        var countersString = frontol.userValues.get("promoCounters");
+
+        if (countersString) {
+            var countersArray = countersString.split(";");
+            var counters = [];
+
+            for (var i = 0; i < countersArray.length; i++) {
+                var counterString = countersArray[i];
+
+                if (counterString) {
+                    var counterArray = counterString.split("&");
+
+                    if (counterArray.length >= 4) {
+                        var counter = {
+                            code: counterArray[0],
+                            name: counterArray[1],
+                            value: counterArray[2],
+                            minChequeSum: counterArray[3]
+                        };
+                        counters.push(counter);
+                    }
+                }
+            }
+            if (counters.length > 0) return counters;
+        }
+
+        return false;
+    };
+    // учавствует ли касса в промоакции
+    this.findCashBox = function foundCashBox(cashBoxCode) {
+        var result = db.query(
+            "select * from cashboxes where cashbox_code=" +
+                cashBoxCode +
+                " and shop_code=" +
+                frontol.userValues.get("promoShopCode")
+        );
+
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    // получить параметры промоакции
+    this.getParams = function getParams() {
+        logg("getParams started");
+        var counters = [];
+        var result = db.query("select * from counters where shop_code=" + frontol.userValues.get("promoShopCode"));
+
+        logg("getParams result = {}", result);
+
+        if (result) {
+            for (var i = 0; i < result.length; i++) {
+                var record = [];
+                var fields = result[i].split("&");
+
+                for (var j = 0; j < fields.length; j++) {
+                    var field = fields[j].split(":");
+
+                    record[field[0]] = field[1];
+                }
+
+                if (
+                    "CODE" in record &&
+                    "SHOP_CODE" in record &&
+                    "COUNTER_VALUE" in record &&
+                    "MIN_CHEQUE_SUM" in record
+                ) {
+                    var counterParams = {
+                        code: record.CODE,
+                        shopCode: record.SHOP_CODE,
+                        value: record.COUNTER_VALUE,
+                        minChequeSum: record.MIN_CHEQUE_SUM
+                    };
+
+                    counters.push(counterParams);
+                }
+            }
+            return counters;
+        } else {
+            return false;
+        }
+    };
+    // получить следующее значение счётчика
+    this.getCounterNextValue = function getCounterNextValue(counterName) {
+        var result = db.query("select next value for " + counterName + " from rdb$database");
+
+        if (result) {
+            for (var i = 0; i < result.length; i++) {
+                var record = [];
+                var fields = result[i].split("&");
+
+                for (var j = 0; j < fields.length; j++) {
+                    var field = fields[j].split(":");
+
+                    record[field[0]] = field[1];
+                }
+                if ("GEN_ID" in record) return record.GEN_ID;
+            }
+        } else {
+            return false;
+        }
+    };
+    // получить текущее значение счётчика
+    this.getCounterValue = function getCounterValue(counterName) {
+        var result = db.query("select gen_id(" + counterName + ", 0) from rdb$database");
+
+        if (result) {
+            for (var i = 0; i < result.length; i++) {
+                var record = [];
+                var fields = result[i].split("&");
+
+                for (var j = 0; j < fields.length; j++) {
+                    var field = fields[j].split(":");
+
+                    record[field[0]] = field[1];
+                }
+                if ("GEN_ID" in record) return record.GEN_ID;
+            }
+        } else {
+            return false;
+        }
+    };
+    // записать чековую транзакцию
+    this.saveTransaction = function saveTransaction(cheque, shopCode, cashBoxCode, counter) {
+        //showMessage("Данные сохраняются")//debug
+        var queryString =
+            "insert into transactions values (" +
+            shopCode +
+            ", " +
+            cashBoxCode +
+            ", " +
+            "'" +
+            cheque.Date +
+            "', " +
+            "'" +
+            cheque.Time +
+            "', " +
+            cheque.Number +
+            ", " +
+            cheque.Sum +
+            ", " +
+            counter.code +
+            ", " +
+            "next value for " +
+            counter.name +
+            ") returning counter_value";
+        var result = db.query(queryString);
+
+        if (result) {
+            for (var i = 0; i < result.length; i++) {
+                var record = [];
+                var fields = result[i].split("&");
+
+                for (var j = 0; j < fields.length; j++) {
+                    var field = fields[j].split(":");
+
+                    record[field[0]] = field[1];
+                }
+
+                if ("COUNTER_VALUE" in record) return record.COUNTER_VALUE;
+            }
+        } else {
+            return false;
+        }
+    };
+    // создать счетчик
+    this.createCounter = function createCounter(counterName) {
+        var result = db.query("create generator " + counterName);
+
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    // проверка существования счётчика
+    this.checkCounter = function checkCounter(counterName) {
+        var queryString = "select gen_id(" + counterName + ", 0) from rdb$database";
+        var result = db.query(queryString, true);
+
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    // удалить старые счётчики
+    this.deleteOldCounters = function deleteOldCounters(currentDate) {
+        var queryString =
+            "SELECT rdb$generator_name FROM rdb$generators " +
+            "WHERE rdb$generator_name LIKE '" +
+            this.COUNTER_TEMPLATE +
+            "%' AND " +
+            "NOT rdb$generator_name LIKE '" +
+            this.COUNTER_TEMPLATE +
+            currentDate +
+            "%'";
+
+        var generators = db.query(queryString);
+
+        if (generators) {
+            for (var i = 0; i < generators.length; i++) {
+                var record = [];
+                var fields = generators[i].split("&");
+
+                for (var j = 0; j < fields.length; j++) {
+                    var field = fields[j].split(":");
+
+                    record[field[0]] = field[1];
+                }
+
+                if ("RDB$GENERATOR_NAME" in record) {
+                    var result = this.deleteCounter(record.RDB$GENERATOR_NAME);
+
+                    if (!result) return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    this.deleteCounter = function deleteCounter(counterName) {
+        var result = db.query("drop generator " + counterName);
+
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+}
+
+
+/// Helpers \ +
+function logg(a, b, c, d) {
+    if (!IS_DEBUG) return;
+    try {
+        var inserts = [];
+        !b ? (b = "") : typeof b != "string" ? (b = JSON.stringify(b)) : (b = b);
+        inserts.push(b);
+        !c ? (c = "") : typeof c != "string" ? (c = JSON.stringify(c)) : (c = c);
+        inserts.push(c);
+        !d ? (d = "") : typeof d != "string" ? (d = JSON.stringify(d)) : (d = d);
+        inserts.push(d);
+        var borderString =
+            "\n------------------------------------------------------------------------------------------------------\n";
+        var sringForInserts = a.split("{}");
+        var date = new Date().toISOString();
+        var stringForLog = date + " ";
+        if (sringForInserts.length == 1) {
+            stringForLog = stringForLog + a + " " + b + " " + c + " " + d;
+        } else {
+            //stringForLog = sringForInserts[0];
+            for (var i = 0; i < sringForInserts.length; i++) {
+                stringForLog += sringForInserts[i] + " {" + inserts[i] + " }";
+            }
+        }
+        stringForLog += borderString;
+
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+
+        var fileName = "RxLoy_" + date.slice(0, date.indexOf("T")) + ".txt";
+        //showMessage(LOG_DIR + "/" + fileName);
+        createDirectory(LOG_DIR);
+        var file = fso.OpenTextFile(LOG_DIR + "/" + fileName, 8, true);
+        file.Write(stringForLog);
+        file.Close();
+    } catch (e) {
+        showMessage(e.message);
+    }
+}
+function manualSetPromoActionParams() {
+    var choice;
+
+    do {
+        var promoServer = frontol.userValues.get("promoServer");
+        var promoDatabase = frontol.userValues.get("promoDatabase");
+        var promoShopCode = frontol.userValues.get("promoShopCode");
+        var promoParticipation = frontol.userValues.get("promoParticipation");
+
+        var server = {
+            title: "Сервер" + (promoServer ? "->" + promoServer : ""),
+            value: "promoServer"
+        };
+
+        var database = {
+            title: "База данных" + (promoDatabase ? "->" + promoDatabase : ""),
+            value: "promoDatabase"
+        };
+
+        var shopCode = {
+            title: "Номер магазина" + (promoShopCode ? "->" + promoShopCode : ""),
+            value: "promoShopCode"
+        };
+
+        var participation = {
+            title: "Касса участвует в акциях->" + (promoParticipation == "1" ? "Да " : "Нет"),
+            value: "promoParticipation"
+        };
+
+        choice = frontol.actions.selectString(
+            "Параметры промоакций",
+            server.title + "\n" + database.title + "\n" + shopCode.title + "\n" + participation.title,
+            server.value + "\n" + database.value + "\n" + shopCode.value + "\n" + participation.value
+        );
+
+        switch (choice) {
+            case "promoServer":
+                var result = frontol.actions.inputString(server.title, promoServer);
+                if (result) frontol.userValues.set("promoServer", result.trim());
+                break;
+            case "promoDatabase":
+                var result = frontol.actions.inputString(database.title, promoDatabase);
+                if (result) frontol.userValues.set("promoDatabase", result.trim());
+                break;
+            case "promoShopCode":
+                var result = frontol.actions.inputString(shopCode.title, promoShopCode);
+                if (result) frontol.userValues.set("promoShopCode", result.trim());
+                break;
+            case "promoParticipation":
+                if (promoParticipation == "1") {
+                    frontol.userValues.set("promoParticipation", "0");
+                } else {
+                    frontol.userValues.set("promoParticipation", "1");
+                }
+                break;
+        }
+    } while (choice != null);
+}
+/// Helpers \ -
+
+/// Actions \ +
+
+function beforeCloseDocumentPromo() {
+	var dbRx = new RxDB();
+	var connected = dbRx.connect();
+	if (!connected) {
+		showMessage("Соединение с базой настроек промо-акции не установлено!", Icon.Warning);
+		return;
+	}
+	
+	var doc = frontol.currentDocument;
+	var promoRx = new RxPromo(dbRx);
+	promoRx.init(true);
+
+	if (frontol.userValues.get("promoCounters") != "") {
+		// непустая переменная счётчиков промоакции
+		var arrChequeDate = doc.dateOpen.split(".");
+		//showMessage(doc.dateOpen)
+		var srtChequeDate = "20" + arrChequeDate[2] + "-" + arrChequeDate[1] + "-" + arrChequeDate[0];
+		var strChequeSum = doc.totalSum.toString();
+
+		strChequeSum = strChequeSum.replace(",", ".");
+
+		var cheque = {
+			Number: doc.number,
+			Date: srtChequeDate,
+			Time: doc.timeOpen,
+			Sum: strChequeSum
+		};
+
+		var promoCounters = promoRx.getCounters();
+
+		if (promoCounters) {
+			for (var i = 0; i < promoCounters.length; i++) {
+				var promoCounter = promoCounters[i];
+
+				if (promoCounter.minChequeSum <= doc.totalSum) {
+					// сумма чека хватает для участия в промоакции
+					var cashBoxCode = frontol.codeWorkplace.toString();
+					var shopCode = frontol.userValues.get("promoShopCode");
+					var counter = promoRx.saveTransaction(cheque, shopCode, cashBoxCode, promoCounter);
+
+					if (counter === false || isNaN(counter)) {
+						showMessage(
+							"Невозможно записать данные о чеке в базу данных промоакции!",
+							Icon.Warning
+						);
+						return;
+					}
+					// else if (!isNaN(counter) && counter % promoCounter.value == 0) {
+					//     showMessage("На вашей кассе " + cashBoxCode + " - победитель, номер чека " + cheque.Number);
+					//     doc.userValues.set(PROMO_TEXT_KEY, PROMO_TEXT_VALUE)
+					// }
+					if (!isNaN(counter)) {
+						//debug
+						doc.userValues.set("isPromoAdded", "1");
+						if (counter % promoCounter.value == 0) {
+							showMessage(
+								"На вашей кассе " +
+									cashBoxCode +
+									" - победитель, номер чека " +
+									cheque.Number
+							);
+							doc.userValues.set(PROMO_TEXT_KEY, PROMO_TEXT_VALUE);
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+}
+
+/// Actions \ -
+
+// PROMO \ -
