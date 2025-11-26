@@ -13727,7 +13727,11 @@ function $ExportCheck() {
 	var fso = new ActiveXObject('Scripting.FileSystemObject');
 
 	try {
-		createFullPath(fso, filePath);
+		var isCreated = createFullPath(fso, filePath);
+		if (!isCreated) {
+			showMessage("Не удалось создать папку для трансфера чеков: " + filePath, Icon.Error);
+			return;
+		}
 	} catch (e) {
 		showMessage("Не удалось создать папку для трансфера чеков: " + e.message, Icon.Error);
 		return;
@@ -13745,7 +13749,7 @@ function $ExportCheck() {
 		if (doc.position.storno == 1) continue;
 
 		var line = new Array(
-			doc.posiiton.ware.mark,
+			doc.position.ware.mark,  // 1C код
 			doc.position.price,
 			doc.position.quantity,
 		).join(';');
