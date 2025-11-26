@@ -12443,7 +12443,6 @@ function isPromoKassa() {
 			frontol.userValues.get("promoParticipation") == "1"
 }
 
-
 function forbidAlco(pos) {
 	var now = new Date();
 	var hour = now.getHours();
@@ -12607,6 +12606,11 @@ function getPaymentOfType(doc, qrPaymentType) {
 		if (doc.payment.type.code === qrPaymentType) return doc.payment;
 	}
 	return null;
+}
+
+function get4ekExchangeFileName() {
+	var folder = 'D:\\CheckExchange';
+	return folder + '\\' + 'check.txt';
 }
 //ПРОЦЕССИНГ END
 //==========================================================================================================================================================================================
@@ -13714,15 +13718,13 @@ function $ManualButton() {
 	}
 }
 
-function $ExportCheck() {
+function $Export4ek() {
 	if (!isSysAdmin()) {
 		showMessage('У вас нет доступа к данной функции.', Icon.Exclamation);
 		return;
 	}
 
-	var filePath = "D:\\CheckTransfers\\";
-	var fileName = "export.txt"
-	var fullPath = filePath + fileName;
+	var fullPath = get4ekExchangeFileName();
 
 	var fso = new ActiveXObject('Scripting.FileSystemObject');
 
@@ -13748,15 +13750,54 @@ function $ExportCheck() {
 	) {
 		if (doc.position.storno == 1) continue;
 
-		var line = new Array(
+		var line = [
 			doc.position.ware.mark,  // 1C код
-			doc.position.price,
+			doc.position.sum,
 			doc.position.quantity,
-		).join(';');
+		].join(';');
 		file.writeline(line);
 	}
 	file.close();
 	showMessage('Чек экспортирован в файл: ' + fullPath, Icon.Information);
+}
+
+function $Import4ek() {
+	if (!isSysAdmin()) {
+		showMessage('У вас нет доступа к данной функции.', Icon.Exclamation);
+		return;
+	}
+
+	var fullPath = get4ekExchangeFileName();
+	var fso = new ActiveXObject('Scripting.FileSystemObject');
+	if (!fso.FileExists(fullPath)) {
+		showMessage('Файл для импорта чеков не найден: ' + fullPath, Icon.Error);
+		return;
+	}
+	var file = fso.OpenTextFile(fullPath, 1);
+	while (!file.AtEndOfStream) {
+		var line = file.ReadLine();
+		var params = line.split(';');
+		var code = params[0];
+		var sum = parseFloat(params[1]);
+		var quantity = parseFloat(params[2]);
+		try {
+			frontol.currentDocument.addPosition(
+				'Mark',
+				code,
+				null,
+				quantity,
+				sum,
+				false
+			);
+		} catch (e) {
+			showMessage(
+				'Не удалось добавить позицию в чек ' + code + '\nОписание ошибки: ' + e.name + ': ' + e.message,
+				Icon.Error
+			);
+		}
+	}
+	file.close();
+	showMessage('Чек импортирован из файла: ' + fullPath, Icon.Information);
 }
 
 function sendtofiscal(ipdevice, comand, stringToSend) {
