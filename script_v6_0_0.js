@@ -12661,51 +12661,62 @@ function JetQrBeforeAddPayment(frontolPayment) {
 	var amount = frontolPayment.sumInBaseCurrency;
 	var paymentTime = frontol.currentDocument.timeOpen;
 
-	var frontolPaymentData =
-		"{FrontolPaymentId:'" +
-		paymentNumber +
-		"', FrontolPaymentDocumentId:'" +
-		documentNumber +
-		"', FrontolPaymentSessionId:'" +
-		sessionNumber +
-		"', FrontolPaymentTerminalId:'" +
-		terminalId +
-		"', FrontolPaymentAmount:" +
-		amount +
-		", FrontolPaymentTime:'" +
-		paymentTime +
-		"'},";
+	// var frontolPaymentData =
+	// 	"{FrontolPaymentId:'" +
+	// 	paymentNumber +
+	// 	"', FrontolPaymentDocumentId:'" +
+	// 	documentNumber +
+	// 	"', FrontolPaymentSessionId:'" +
+	// 	sessionNumber +
+	// 	"', FrontolPaymentTerminalId:'" +
+	// 	terminalId +
+	// 	"', FrontolPaymentAmount:" +
+	// 	amount +
+	// 	", FrontolPaymentTime:'" +
+	// 	paymentTime +
+	// 	"'},";
 
-	var frontolPaymentProducts = '';
-	for (
-		frontol.currentDocument.position.index = 1;
-		frontol.currentDocument.position.index <=
-		frontol.currentDocument.position.count;
-		frontol.currentDocument.position.index++
-	) {
-		var ware = frontol.currentDocument.position.ware;
-		var barcode = frontol.currentDocument.position.barcode;
-		var price = frontol.currentDocument.position.price;
-		var quantity = frontol.currentDocument.position.quantity;
-		var totalSum = frontol.currentDocument.position.totalSum;
+	var frontolPaymentData = JSON.stringify({
+		FrontolPaymentId: paymentNumber,
+		FrontolPaymentDocumentId: documentNumber,
+		FrontolPaymentSessionId: sessionNumber,
+		FrontolPaymentTerminalId: terminalId,
+		FrontolPaymentAmount: amount,
+		FrontolPaymentTime: paymentTime
+	});
 
-		var product =
-			"{name:'" +
-			ware +
-			"', barcode: '" +
-			barcode +
-			"', price: " +
-			price +
-			', quantity: ' +
-			quantity +
-			', totalSum: ' +
-			totalSum +
-			'},';
-		frontolPaymentProducts += product;
-	}
+	var frontolPaymentProducts = JSON.stringify({});
+
+	// var frontolPaymentProducts = '';
+	// for (
+	// 	frontol.currentDocument.position.index = 1;
+	// 	frontol.currentDocument.position.index <=
+	// 	frontol.currentDocument.position.count;
+	// 	frontol.currentDocument.position.index++
+	// ) {
+	// 	var ware = frontol.currentDocument.position.ware;
+	// 	var barcode = frontol.currentDocument.position.barcode;
+	// 	var price = frontol.currentDocument.position.price;
+	// 	var quantity = frontol.currentDocument.position.quantity;
+	// 	var totalSum = frontol.currentDocument.position.totalSum;
+
+	// 	var product =
+	// 		"{name:'" +
+	// 		ware +
+	// 		"', barcode: '" +
+	// 		barcode +
+	// 		"', price: " +
+	// 		price +
+	// 		', quantity: ' +
+	// 		quantity +
+	// 		', totalSum: ' +
+	// 		totalSum +
+	// 		'},';
+	// 	frontolPaymentProducts += product;
+	// }
 
 	//DocumentType = 1(Продажа)
-	if (frontol.currentDocument.type.code === 1) {
+	if (isSaleDocument(frontol.currentDocument)) {
 		if (JetQrPay == null)
 			JetQrPay = new ActiveXObject(
 				'AlifJetQr.FrontolDriver.IntegrationData.JetQrDriver'
