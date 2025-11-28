@@ -573,7 +573,7 @@ FunctionsOfEventListeners: {
 		}
 
 		//Технология групп +
-		StatusKKM();
+		// StatusKKM();
 		if (isVnesenieDocument(doc)) {
 			var FRadress = frontol.userValues.get('fiscalipadres');
 			var options = {
