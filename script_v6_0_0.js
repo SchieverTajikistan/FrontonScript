@@ -243,6 +243,7 @@ var FTP_REGEXP = /^ftp:\/\/(.+):(.+)@([^\/]+)\/(.+)$/;
 var VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
 var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
 var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
+var VAR_4EK_TRANSFER_FOLDER_PATH = 'ExchangeFolderPath';
 
 // USER PARAMTERS \ - ==============================================================
 
@@ -13368,9 +13369,14 @@ function $ManualButton() {
 		var freedomBnkTerminalIpAddTitle =
 			'1. Установить ip адресс для терминала FreedomBank';
 		var freedomBankTerminalIpAdd = getUserParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS)
-
 		if (isEmptyValue(freedomBankTerminalIpAdd)) {
 			freedomBnkTerminalIpAddTitle += ' (Не указан)';
+		}
+
+		var exchangeFolderPathTitle = '2. Установить путь обмена чеками';
+		var exchangeFolderPath = getUserParam(VAR_CHECK_EXCHANGE_FOLDER);
+		if (isEmptyValue(exchangeFolderPath)) {
+			exchangeFolderPathTitle += ' (Не указан)';
 		}
 
 		// Окно меню
@@ -13405,10 +13411,36 @@ function $ManualButton() {
 				+
 				'\n' +
 				'---------- Прочее ---------------\n' +
+				exchangeFolderPathTitle + '\n'
+				+
 				freedomBnkTerminalIpAddTitle + '\n'
 				+
 				SessionValString + '\n',
+				/*
+				-- Ввод данных
+				каждый "\n" - новая строка в меню
+				каждый параметр после "\n" - значение для выбора в меню
+				каждый заголовок должен соответствовать параметру с таким же отступом
+				Например:
+					'Просто текст' + '\n'
+					'Заголовок 1' + '\n',
+				-- Далее идут параметры для выбора в меню
+				 + '\n' +
+				'param1' + '\n'
+				
+				Здесь чтобы при нажатии на 'Заголовок 1' открылся ввод параметра 'Заголовок 1'
+				Нужно соблюдать отступы и порядок. В этом примере нужно сначала отступить на строку вниз '\n',
+				а потом уже писать 'param1' + '\n'
+				Иначе при нажатии на 'Заголовок 1' ничего не произойдет
+				Если хотим чтобы при нажатии на "Просто текст" так же открылся ввод параметра "Просто текст"
+				Нужно написать так:
 
+				'Просто текст' + '\n'
+				'Заголовок 1' + '\n',
+				-- Далее идут параметры для выбора в меню
+				'paramText' + '\n' +
+				'param1' + '\n'
+				*/
 				'\n' +
 				'fiscalipadres' + '\n'
 				+
@@ -13436,6 +13468,7 @@ function $ManualButton() {
 				'FRnewStatus' + '\n' +
 				'\n' +
 				'\n' +
+				'checkExchangeFolderPath' + '\n' +
 				'freedomBankTerminalIpAdd' + '\n'
 		);
 
