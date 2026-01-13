@@ -189,14 +189,6 @@ var HeadCashier = 3;
 //Технология Групп -
 var FTP_REGEXP = /^ftp:\/\/(.+):(.+)@([^\/]+)\/(.+)$/;
 
-
-// USER PARAMETERS \ START ===========================================================
-
-VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = "FreedomBankTerminalIpAddress";
-
-// USER PARAMTERS \ END ==============================================================
-
-
 // sboboev+
 // Уведомление о закрытии смены
 function checkShiftReminder() {
@@ -14299,14 +14291,34 @@ function GiveDocumentToString(doc, PrintOption) {
             //Налог Позиция-
 
             //Заполняем переменные
-            var code = "" + doc.position.ware.code + ""; // код товара
+			// var code = '' + doc.position.ware.code + ''; // код товара
+			var code = base64_encode(doc.position.barcode); // ШК товара
             var name = doc.position.ware.text; // Название товара
             var price = Number(doc.position.price * 100).round(0); // цена товара
             var quantity = parseFloat(doc.position.quantity.toFixed(3)); // Number(doc.position.quantity);
             var sum = Number(doc.position.sum * 100).round(0); // Сумма товара
 
+            var vatFiscalValue = getFiscalVatValue(vatValue);
+            if (isEmptyValue(vatFiscalValue)) {
+                cancelAct();
+                return;
+            }
+
+            var productNameFormatted = escapeSpecialChars(name);
+
+            var payload = {
+                code: code,
+                name: productNameFormatted,
+                price: price,
+                quantity: quantity,
+                commodity: 'GOODS',
+                sum: sum,
+                marker: '',
+                vatCode: vatFiscalValue
+            }
+
             //Получаем массив товаров в строчном виде
-            var product = JSONStringify(createProductForFiscal(code, name, price, quantity, sum, vatValue));
+            var product = JSONStringify(payload);
 
             //присвоим запятую
             products = products + product + ",";
@@ -14509,12 +14521,13 @@ function getErrorOFD(errorCode) {
     }
 }
 
+function isEmptyValue(value) {
+    return (value === null || value === undefined || value === "" || isNaN(value));
+}
+
 // Массив товаров
 //sboboev+
-function createProductForFiscal(prcode, prname, prprice, prquantity, prsum, vat, vatCode) {
-    var prname = escapeSpecialChars(prname);
-    var vatValue;
-
+function getFiscalVatValue(productName, vat) {
     // Карта соответствия ставок и кодов
     var vatMap = {
         "0": 1,
@@ -14527,45 +14540,43 @@ function createProductForFiscal(prcode, prname, prprice, prquantity, prsum, vat,
     };
 
     // Проверка: ставка не указана
-    if (vat === null || vat === undefined || vat === "" || vat === "-" || isNaN(vat)) {
-        frontol.actions.showMessage("Ошибка: У товара '" + prname + "' ставка НДС не указана.", Icon.Error);
-        cancelAct();
+    if (isEmptyValue(vat) || vat === "-") {
+        frontol.actions.showMessage("Ошибка: У товара '" + productName + "' ставка НДС не указана.", Icon.Error);
         return null;
     }
 
      // Проверка: есть ли такая ставка в карте
     if (!(vat in vatMap)) {
-        frontol.actions.showMessage("Ошибка: Неверная ставка НДС у товара '" + prname + "'. Указано: " + vat + "%", Icon.Error);
-        cancelAct();
+        frontol.actions.showMessage("Ошибка: Неверная ставка НДС у товара '" + productName + "'. Указано: " + vat + "%", Icon.Error);
         return null;
     }
 
-
-    // Преобразование в формат Фронтола
-    if (vat == 7) {
-        vatValue = "REDUCED1";
-    } else if (vat == 5) {
-        vatValue = "REDUCED2";
-    } else if (vat == 2.5) {
-        vatValue = "REDUCED3";
-    } else if (vat == 14) {
-        vatValue = "STANDARD";
-    } else if (vat == 0) {
-        vatValue = "ZERO_TAX";
-    } else {
-        vatValue = "STANDARD"; // на всякий случай
+    var vatValue;
+    switch (vat) {
+        case 7:
+            vatValue = 'REDUCED1';
+            break;
+        case 5:
+            vatValue = 'REDUCED2';
+            break;
+        case 2.5:
+            vatValue = 'REDUCED3';
+            break;
+        case 10:
+            vatValue = 'REDUCED4';
+            break;
+        case 14:
+            vatValue = 'STANDARD';
+            break;
+        case 0:
+            vatValue = 'ZERO_TAX';
+            break;
+        default:
+            vatValue = 'STANDARD'; // на всякий случай
+            break;
     }
 
-    return {
-        code: null,
-        name: prname,
-        price: prprice,
-        quantity: prquantity,
-        commodity: "GOODS",
-        vatCode: vatValue,
-        sum: prsum,
-        marker: ""
-    };
+    return vatValue;
 }
 //sboboev-
 
@@ -15036,6 +15047,3 @@ function ReadXml(data,value){
 function cancelAct() {
 	frontol.actions.cancel();
 }
-
-
-
