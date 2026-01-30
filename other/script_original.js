@@ -14522,7 +14522,7 @@ function getErrorOFD(errorCode) {
 }
 
 function isEmptyValue(value) {
-    return (value === null || value === undefined || value === "" || isNaN(value));
+    return (value === null || value === undefined || value === "");
 }
 
 // Массив товаров
@@ -14530,28 +14530,28 @@ function isEmptyValue(value) {
 function getFiscalVatValue(productName, vat) {
     // Карта соответствия ставок и кодов
     var vatMap = {
-        "0": 1,
-        "2.5": 3,
-        "5": 6,
-        "7": 8,
-        "14": 15,
-        "15": 16,
-        "18": 19
+        0: 1,
+        2.5: 3,
+        5: 6,
+        7: 8,
+        14: 15,
+        15: 16,
+        18: 19
     };
 
     // Проверка: ставка не указана
     if (isEmptyValue(vat) || vat === "-") {
-        frontol.actions.showMessage("Ошибка: У товара '" + productName + "' ставка НДС не указана.", Icon.Error);
+        showMessage("Ошибка: У товара '" + productName + "' ставка НДС не указана.", Icon.Error);
         return null;
     }
 
      // Проверка: есть ли такая ставка в карте
     if (!(vat in vatMap)) {
-        frontol.actions.showMessage("Ошибка: Неверная ставка НДС у товара '" + productName + "'. Указано: " + vat + "%", Icon.Error);
+        showMessage("Ошибка: Неверная ставка НДС у товара '" + productName + "'. Указано: " + vat + "%", Icon.Error);
         return null;
     }
 
-    var vatValue;
+    var vatValue = null;
     switch (vat) {
         case 7:
             vatValue = 'REDUCED1';
@@ -14994,7 +14994,7 @@ function dcpay(payment){
 				}catch (error) {
 					frontol.actions.showMessage("Произошла ошибка: Сервер ДС недоступен, попробуйте позже!" , Icon.Error);
 					cancelAct();
-					return;ы
+					return;
 				}
 				var code = ReadXml(response,"code")
 				//writeLog("Пришел запрос");
