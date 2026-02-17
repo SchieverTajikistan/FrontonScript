@@ -1,13 +1,13 @@
 $Output = "frontolScript.js"
 $SrcDir = "src"
-$PartnersDir = "src/partners"
-$Separator = "// *****************************************************************
+$PartnersDir = "src\partners"
+$Separator = "// *****************************************************************"
 
 # Clear or create the output file
 "" | Set-Content -NoNewline $Output
 
 # Main file first
-Get-Content "$SrcDir/main.js" | Add-Content $Output
+Get-Content "$SrcDir\main.js" | Add-Content $Output
 
 # Then all partner files
 $files = Get-ChildItem -Path $PartnersDir -Filter "*.js" | Sort-Object Name
