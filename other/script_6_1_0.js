@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6                         //
+//      Version : 6_1_0                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -382,9 +382,9 @@ FunctionsOfEventListeners: {
             inputReceiptDocumentInformation(doc);
         }
 
-        if (frontol.userValues.get("IsShiftClosed") == "1") {
-            afterOpenSession();
-        }
+        // if (frontol.userValues.get("IsShiftClosed") == "1") {
+        //     afterOpenSession();
+        // }
 
         if (frontol.userValues.get("ForbidReturnWithPayments") != "") {
             forbidReturnDocWithProcPayments();
@@ -1182,6 +1182,8 @@ FunctionsOfEventListeners: {
 
     //ОТКРЫТИЕ СМЕНЫ - ПОСЛЕ
     function afterOpenSession() {
+        showMessage('SAM OTKRILSYA!!!!');
+
         frontol.userValues.set("IsShiftClosed", "0");
         getCashParams(true);
 
