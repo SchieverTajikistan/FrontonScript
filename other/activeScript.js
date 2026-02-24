@@ -205,6 +205,47 @@ function checkShiftReminder() {
 }
 // sboboev-
 
+
+var POS_SETTING_PATH = 'D://POS_SETTINGS.json'
+var POS_SETTINGS;
+
+function getPosSettings() {
+    var fs = new ActiveXObject("Scripting.FileSystemObject");
+
+    var settings;
+    if (!fs.FileExists(POS_SETTING_PATH)) {
+        showError('Не найден файл параметры кассы. Срочно обратитесь к ИТ отделу!', Icon.Error);
+        return settings;
+    };
+    
+    try {
+        var objStream = new ActiveXObject("ADODB.Stream");
+
+        objStream.CharSet = "utf-8";
+        objStream.Type = 2;
+        objStream.Open();
+        objStream.LoadFromFile(POS_SETTING_PATH);
+
+        var posSettingRaw = objStream.ReadText();
+        settings = JSON.parse(posSettingRaw);
+    } catch (e) {
+        showMessage('Не удалось прочитать файл с параметрами кассы. ' + 
+            CR_MESSAGE + e.message +
+            CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
+            Icon.Error
+        )
+    } finally {
+        try {
+            objStream.Close();
+            objStream = null;
+        } catch (e) {
+            showMessage("Не удалось закрыть файл с параметрами кассы. " + e.message, Icon.Exclamation);
+        }
+    }
+
+    return settings;
+}
+
 function init() {
     var wScriptShell = new ActiveXObject("WScript.Shell");
 
@@ -216,6 +257,18 @@ function init() {
     //подключаем методы для работы с JSON
     getJson2();
     toISOProto();
+    
+    // Данный файл хранит важный настройки кассы
+    POS_SETTINGS = getPosSettings(); 
+    if (isEmptyValue(POS_SETTINGS)) {
+
+        showMessage('Параметры кассы не могут быть пустыми. ' + 
+            CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
+            Icon.Error
+        )
+        cancelAct();
+        return;
+    }
 
     // добавляем для типа String метод trim
     if (!String.prototype.trim) {
@@ -14983,13 +15036,25 @@ Fiscat: {
 
 
 //Опеределения
-var adres = "http://109.74.70.49:96/ashan";
-var pan = "5058270385062681"; //Установите актуальный Qr код
-var sign = "f3c945d00836c34c78340f2504f5cc7f";
+// var adres = "http://109.74.70.49:96/ashan";
+// var pan = "5058270385062681"; //Установите актуальный Qr код
+// var sign = "f3c945d00836c34c78340f2504f5cc7f";
 
 
 function dcinit(){
     frontol.addEventListener("addPayment", "dcpay",true);
+}
+
+function _getDCSettings() {
+    var posSettings = POS_SETTINGS;
+
+    if (isEmptyValue(posSettings)) {
+        posSettings = getPosSettings();
+    }
+
+    var dcSettings = posSettings['Dushanbe-City'];
+
+    return dcSettings;
 }
 
 function dcpay(payment){
@@ -14997,10 +15062,27 @@ function dcpay(payment){
         //var summapay = Number(frontol.currentDocument.totalSum);
         var summapay = payment.sumInBaseCurrency;
         //Проверяем на тип платежа с ашана
+
+        
         if ( payment.type.code == DC_QR ) {
 		       //writeLog("Выбран тип платежа Qr");
            //Если тип продажа
             if (frontol.currentDocument.type.code === 1){
+
+                var dcSettings = _getDCSettings();
+                if (isEmptyValue(dcSettings)) {
+                    showMessage('Настройки Душанбе-Сити пустые.' + 
+                        CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
+                        Icon.Error
+                    )
+                    cancelAct();
+                    return;
+                }
+
+                var pan = dcSettings['PAN'];
+                var sign = dcSettings['SIGN'];
+                var url = dcSettings['URL'];
+
 			    //writeLog("Выбран тип продажа");
 				var stringToSend = "<action>getpaystatus</action><docNumber>"+tranid+"</docNumber><pan>"+pan+"</pan><summa>"+summapay+"</summa><sign>"+sign+"</sign>";
 			    //writeLog("Запрос на сервер IP"+adres);
@@ -15013,7 +15095,7 @@ function dcpay(payment){
 				loadingScreen.Show();
 
 				try {
-					var response = httpClient.PostSync(adres, stringToSend);
+					var response = httpClient.PostSync(url, stringToSend);
 				}catch (error) {
 					frontol.actions.showMessage("Произошла ошибка: Сервер ДС недоступен, попробуйте позже!" , Icon.Error);
 					cancelAct();
