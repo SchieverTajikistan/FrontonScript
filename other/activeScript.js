@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_3                     //
+//      Version : 6_1_4                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -13881,14 +13881,14 @@ function $ManualButton() {
         var comPortEnabled = "2." + (frontol.userValues.get(COM_PORT_ENABLED) == 1 ? "Отключить" : "Включить") + " ФР-TP809 по COM порту";
 
 		// FreedomBank +
-		// var freedomBankTerminalIpAddTitle =
-		// 	'1. Установить ip адресс для терминала FreedomBank';
-		// var freedomBankTerminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS)
-		// if (isEmptyValue(freedomBankTerminalIpAdd)) {
-		// 	freedomBankTerminalIpAddTitle += ' (Не указан)';
-		// } else {
-		// 	freedomBankTerminalIpAddTitle += freedomBankTerminalIpAdd;
-		// }
+		var freedomBankTerminalIpAddTitle =
+			'1. Установить ip адресс для терминала FreedomBank';
+		var freedomBankTerminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS)
+		if (isEmptyValue(freedomBankTerminalIpAdd)) {
+			freedomBankTerminalIpAddTitle += ' (Не указан)';
+		} else {
+			freedomBankTerminalIpAddTitle += freedomBankTerminalIpAdd;
+		}
 		// -
 
         // Окно меню
@@ -13920,7 +13920,7 @@ function $ManualButton() {
                 "\n" +
                 SessionValString +
                 "\n" +
-                // freedomBankTerminalIpAddTitle +
+                freedomBankTerminalIpAddTitle +
                 "\n",
 
                 "\n" +
@@ -13939,7 +13939,7 @@ function $ManualButton() {
                 "printLastDocByFDNum\n"+
                 "\n" +
                 "IsSessionOn\n" +
-                // "freedomBankTerminalIpAdd\n" +
+                "freedomBankTerminalIpAdd\n" +
                 "\n"
         );
 
@@ -14027,14 +14027,14 @@ function $ManualButton() {
                 break;
             }
 
-			// case 'freedomBankTerminalIpAdd': {
-			// 	EnterParameter(
-			// 		VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS,
-			// 		' ip:port для терминала FreedomBank',
-			// 		true
-			// 	);
-			// 	break;
-			// }
+			case 'freedomBankTerminalIpAdd': {
+				EnterParameter(
+					VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS,
+					' ip:port для терминала FreedomBank',
+					true
+				);
+				break;
+			}
         }
     }
     //Для СтарКассир
