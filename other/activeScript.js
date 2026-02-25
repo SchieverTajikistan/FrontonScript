@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_12                     //
+//      Version : 6_1_13                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -15209,20 +15209,20 @@ function getCorrectServerAddress(serverAddress) {
 	return serverAddress;
 }
 
-function _waitResponse(request, timeOut) {
-	var count = timeOut;
-	while (request.readyState != 4) {
-		if (count <= 0) {
-			// Opps... timeout
-			request.abort();
-			return;
-		}
-		count --;
-		frontol.actions.wait('Ждем еще ' + count, 1)
-	}
+// function _waitResponse(request, timeOut) {
+// 	var count = timeOut;
+// 	while (request.readyState != 4) {
+// 		if (count <= 0) {
+// 			// Opps... timeout
+// 			request.abort();
+// 			return;
+// 		}
+// 		count --;
+// 		frontol.actions.wait('Ждем еще ' + count, 1)
+// 	}
 
-	return request;
-}
+// 	return request;
+// }
 
 // function _validateResult(result) {
 // 	var isOk = false;
