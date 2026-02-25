@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_1                     //
+//      Version : 6_1_2                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -15586,6 +15586,38 @@ function FreedomBankBeforeAddPayment(payment) {
 	cancelAct();
 }
 
+function FreedomBankBeforeCancelDocument() {
+	var currDoc = frontol.currentDocument;
+	if (!Doc_HasPaymentType(FREEDOM_BANK_PAYMENT_CODE)) {
+		return;
+	}
+
+	if (!Doc_IsSale(currDoc)) {
+		// Отмена возможна для документа продажи
+		// Можно внедрить логику и для возвратов, но пока раз уже добавили
+		// оплату в возврат, то нужно провести документ
+		showMessage(
+			'Документ не является продажей. Отмена невозможна.',
+			Icon.Error
+		);
+		cancelAct();
+		return;
+	}
+
+	var terminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
+	if (isEmptyValue(terminalIpAdd)) {
+        // Есть тип оплаты фридом банка и это продажа, но НЕ задан ИП адес терминала ?
+        // Стопэ-стопэ
+		showMessage(
+			'Не задан IP адрес терминала Freedom Bank' +
+				CR_MESSAGE +
+				CONTACT_YOUR_TECHNICIAN_MESSAGE,
+			Icon.Error
+		);
+		cancelAct();
+		return;
+	}
+}
 
 function FreedomBankAfterCancelDocument() {
 	var currDoc = frontol.currentDocument;
@@ -15613,7 +15645,6 @@ function FreedomBankAfterCancelDocument() {
 	_freedomBankCancelDoc(currDoc, terminalIpAdd);
 
 }
-
 
 function FreedomBankAfterSessionClose() {
 	var terminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
