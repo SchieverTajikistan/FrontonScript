@@ -15202,11 +15202,11 @@ function getCorrectServerAddress(serverAddress) {
 		serverAddress = serverAddress.slice(0, -1);
 	}
 
-	var arr = serverAddress.split('://');
+	// var arr = serverAddress.split('://');
 
-	if (arr.length == 1) serverAddress = 'http://' + serverAddress;
+	// if (arr.length == 1) serverAddress = 'http://' + serverAddress;
 
-	return serverAddress;
+	// return serverAddress;
 }
 
 // function _waitResponse(request, timeOut) {
