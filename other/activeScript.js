@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_4                     //
+//      Version : 6_1_5                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -15156,12 +15156,12 @@ function cancelAct() {
 
 // ==============================================================
 // FreedomBank BEGIN
-// var VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
-// var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
-// var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
-// var VAR_BANK_RRN_KEY = 'BANK_RRN';
+var VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
+var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
+var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
+var VAR_BANK_RRN_KEY = 'BANK_RRN';
 
-// var FREEDOM_BANK_PAYMENT_CODE = 101;
+var FREEDOM_BANK_PAYMENT_CODE = 101;
 
 
 // function init_FreedomBank() {
