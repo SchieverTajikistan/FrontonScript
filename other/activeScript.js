@@ -261,6 +261,7 @@ function init() {
     
     // Данный файл хранит важный настройки кассы
     var posSettings = getPosSettings(); 
+    showMessage(posSettings);
     if (isEmptyValue(posSettings)) {
         showMessage('Параметры кассы не могут быть пустыми. ' + 
             CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
