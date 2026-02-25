@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_11                     //
+//      Version : 6_1_12                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -15195,34 +15195,34 @@ function isAppIsNotLaunched(err) {
 	return false;
 }
 
-// // // HTTP +
+// HTTP +
 
-// function getCorrectServerAddress(serverAddress) {
-// 	while (serverAddress.slice(-1) == '/') {
-// 		serverAddress = serverAddress.slice(0, -1);
-// 	}
+function getCorrectServerAddress(serverAddress) {
+	while (serverAddress.slice(-1) == '/') {
+		serverAddress = serverAddress.slice(0, -1);
+	}
 
-// 	var arr = serverAddress.split('://');
+	var arr = serverAddress.split('://');
 
-// 	if (arr.length == 1) serverAddress = 'http://' + serverAddress;
+	if (arr.length == 1) serverAddress = 'http://' + serverAddress;
 
-// 	return serverAddress;
-// }
+	return serverAddress;
+}
 
-// function _waitResponse(request, timeOut) {
-// 	var count = timeOut;
-// 	while (request.readyState != 4) {
-// 		if (count <= 0) {
-// 			// Opps... timeout
-// 			request.abort();
-// 			return;
-// 		}
-// 		count --;
-// 		frontol.actions.wait('Ждем еще ' + count, 1)
-// 	}
+function _waitResponse(request, timeOut) {
+	var count = timeOut;
+	while (request.readyState != 4) {
+		if (count <= 0) {
+			// Opps... timeout
+			request.abort();
+			return;
+		}
+		count --;
+		frontol.actions.wait('Ждем еще ' + count, 1)
+	}
 
-// 	return request;
-// }
+	return request;
+}
 
 // function _validateResult(result) {
 // 	var isOk = false;
