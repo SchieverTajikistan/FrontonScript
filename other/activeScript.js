@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_16                     //
+//      Version : 6_1_1                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -228,7 +228,6 @@ function getPosSettings() {
 
         var posSettingRaw = objStream.ReadText();
         settings = JSON.parse(posSettingRaw);
-        return settings;
     } catch (e) {
         showMessage('Не удалось прочитать файл с параметрами кассы. ' + 
             CR_MESSAGE + e.message +
@@ -261,8 +260,8 @@ function init() {
     
     // Данный файл хранит важный настройки кассы
     POS_SETTINGS = getPosSettings(); 
-    showMessage(POS_SETTINGS);
     if (isEmptyValue(POS_SETTINGS)) {
+
         showMessage('Параметры кассы не могут быть пустыми. ' + 
             CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
             Icon.Error
@@ -413,7 +412,7 @@ function init() {
     JetQrPayInit();
     EMVCo_JetQrPayInit();
 	dcinit();
-    // init_FreedomBank();
+    init_FreedomBank();
 
     // sboboev+
     frontol.addEventListener("addPosition", "checkShiftReminder", false);
@@ -13973,7 +13972,6 @@ function $ManualButton() {
             case "comPortEnabled": {
                 break;
             }
-
             case "comPort": {
                 break;
             }
@@ -15048,10 +15046,13 @@ function dcinit(){
 }
 
 function _getDCSettings() {
-    // var posSettingsRaw = getGlobalParam('POS_SETTINGS');
-    // var posSettings = JSON.parse(posSettingsRaw);
+    var posSettings = POS_SETTINGS;
 
-    var dcSettings = POS_SETTINGS['Dushanbe-City'];
+    if (isEmptyValue(posSettings)) {
+        posSettings = getPosSettings();
+    }
+
+    var dcSettings = posSettings['Dushanbe-City'];
 
     return dcSettings;
 }
@@ -15244,6 +15245,7 @@ function _validateResult(result) {
 	}
 	return isOk;
 }
+
 
 function sendHttpRequestSimple(url, method, data, timeout) {
 	var result = {
