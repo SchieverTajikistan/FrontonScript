@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_3                     //
+//      Version : 6_1_4                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -244,6 +244,19 @@ function getPosSettings() {
     }
 
     return settings;
+}
+
+function getPartnerSettings(partner) {
+    showMessage('POS SETTINGS ' + JSON.stringify(POS_SETTINGS, null, 4))
+    var posSettings = POS_SETTINGS;
+
+    if (isEmptyValue(posSettings)) {
+        posSettings = getPosSettings();
+    }
+
+    var partnerSetting = posSettings['partners'][partner];
+
+    return partnerSetting;
 }
 
 function init() {
@@ -15045,18 +15058,6 @@ function dcinit(){
     frontol.addEventListener("addPayment", "dcpay",true);
 }
 
-function _getDCSettings() {
-    showMessage('POS SETTINGS ' + JSON.stringify(POS_SETTINGS, null, 4))
-    var posSettings = POS_SETTINGS;
-
-    if (isEmptyValue(posSettings)) {
-        posSettings = getPosSettings();
-    }
-
-    var dcSettings = posSettings['partners']['Dushanbe-City'];
-
-    return dcSettings;
-}
 
 function dcpay(payment){
         var tranid = (frontol.currentDocument.number+frontol.sessionNumber+payment.sumInBaseCurrency+frontol.codeWorkplace)+Math.floor(Math.random() * 900);
@@ -15070,7 +15071,7 @@ function dcpay(payment){
            //Если тип продажа
             if (frontol.currentDocument.type.code === 1){
 
-                var dcSettings = _getDCSettings();
+                var dcSettings = getPartnerSettings('Dushanbe-City');
                 if (isEmptyValue(dcSettings)) {
                     showMessage('Настройки Душанбе-Сити пустые.' + 
                         CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
@@ -15166,7 +15167,17 @@ var VAR_BANK_RRN_KEY = 'BANK_RRN';
 var FREEDOM_BANK_PAYMENT_CODE = 101;
 
 
+function _setFreedomBankTerminalNetworkSettings() {
+    var settings = getPartnerSettings('FreedomBank');
+
+    var terminalIpAdress = settings['TERMINAL_IP_ADDRESS'];
+    setGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS, terminalIpAdress);
+}
+
 function init_FreedomBank() {
+ 
+    _setFreedomBankTerminalNetworkSettings();
+
 	frontol.addEventListener('addPayment', 'FreedomBankBeforeAddPayment', true);
 	frontol.addEventListener(
 		'cancelDocument',
@@ -15402,6 +15413,12 @@ function _freedomBankSale(payment, terminalIpAdd) {
 		Doc_SetBankRRN(currDoc, RRN);
 		currDoc.addPayment(payment.type.code, amount, null);
 	}
+}
+
+function setGlobalParam(param, value) {
+	value = value.trim();
+
+	frontol.userValues.set(param, value);
 }
 
 function _freedomBankReturn(payment, terminalIpAdd) {
