@@ -247,7 +247,6 @@ function getPosSettings() {
 }
 
 function getPartnerSettings(partner) {
-    showMessage('POS SETTINGS ' + JSON.stringify(POS_SETTINGS, null, 4))
     var posSettings = POS_SETTINGS;
 
     if (isEmptyValue(posSettings)) {
