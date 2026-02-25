@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_2                     //
+//      Version : 6_1_3                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -15046,13 +15046,14 @@ function dcinit(){
 }
 
 function _getDCSettings() {
+    showMessage('POS SETTINGS ' + JSON.stringify(POS_SETTINGS, null, 4))
     var posSettings = POS_SETTINGS;
 
     if (isEmptyValue(posSettings)) {
         posSettings = getPosSettings();
     }
 
-    var dcSettings = posSettings['Dushanbe-City'];
+    var dcSettings = posSettings['partners']['Dushanbe-City'];
 
     return dcSettings;
 }
