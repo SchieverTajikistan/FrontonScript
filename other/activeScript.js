@@ -415,7 +415,7 @@ function init() {
     JetQrPayInit();
     EMVCo_JetQrPayInit();
 	dcinit();
-    init_FreedomBank();
+    // init_FreedomBank();
 
     // sboboev+
     frontol.addEventListener("addPosition", "checkShiftReminder", false);
@@ -15158,483 +15158,483 @@ function cancelAct() {
 
 // ==============================================================
 // FreedomBank BEGIN
-var VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
-var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
-var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
-var VAR_BANK_RRN_KEY = 'BANK_RRN';
+// var VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
+// var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
+// var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
+// var VAR_BANK_RRN_KEY = 'BANK_RRN';
 
-var FREEDOM_BANK_PAYMENT_CODE = 101;
-
-
-function init_FreedomBank() {
-	frontol.addEventListener('addPayment', 'FreedomBankBeforeAddPayment', true);
-	frontol.addEventListener(
-		'cancelDocument',
-		'FreedomBankBeforeCancelDocument',
-		true
-	);
-
-	frontol.addEventListener(
-		'cancelDocument',
-		'FreedomBankAfterCancelDocument',
-		false
-	);
-
-	frontol.addEventListener('closeSession', 'FreedomBankAfterSessionClose', false);
-}
-
-function _getTerminalHttpAddress(terminalIpAddress) {
-	return ['http://' + terminalIpAddress].join('/');
-}
-
-function isAppIsNotLaunched(err) {
-    var errCode = -2146697211 // код когда приложение фридом не запущено
-
-	if (err.number) {
-		return err.number == errCode;
-	}
-
-	return false;
-}
-
-// HTTP +
-
-function getCorrectServerAddress(serverAddress) {
-	while (serverAddress.slice(-1) == '/') {
-		serverAddress = serverAddress.slice(0, -1);
-	}
-
-	var arr = serverAddress.split('://');
-
-	if (arr.length == 1) serverAddress = 'http://' + serverAddress;
-
-	return serverAddress;
-}
-
-function _waitResponse(request, timeOut) {
-	var count = timeOut;
-	while (request.readyState != 4) {
-		if (count <= 0) {
-			// Opps... timeout
-			request.abort();
-			return;
-		}
-		count --;
-		frontol.actions.wait('Ждем еще ' + count, 1)
-	}
-
-	return request;
-}
-
-function _validateResult(result) {
-	var isOk = false;
-	if (result.success) {
-		var responseData = result.data.data;
-		// Обработка успешного ответа
-		if (responseData.result == 0) {
-			isOk = true;
-		} else {
-			// result хранит код. Даже если мы могли выпонить операцию
-			// проблема может быть с банком или картой клиента. В таком случае
-			// success == true, но result != 0.
-			var msg = result.message || responseData.msg;
-			showMessage(
-				'Ошибка при выполнении операции на терминале.' +
-					CR_MESSAGE +
-					msg,
-				Icon.Exclamation
-			);
-		}
-	} else {
-		// Обработка ошибки запроса
-		showMessage(
-			'Не удалось выполнить запрос к терминалу Freedom Bank' +
-				CR_MESSAGE +
-				result.message +
-				CR_MESSAGE +
-				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error
-		);
-	}
-	return isOk;
-}
+// var FREEDOM_BANK_PAYMENT_CODE = 101;
 
 
-function sendHttpRequestSimple(url, method, data, timeout) {
-	var result = {
-		success: false,
-		message: '',
-		data: ''
-	};
+// function init_FreedomBank() {
+// 	frontol.addEventListener('addPayment', 'FreedomBankBeforeAddPayment', true);
+// 	frontol.addEventListener(
+// 		'cancelDocument',
+// 		'FreedomBankBeforeCancelDocument',
+// 		true
+// 	);
 
-	timeout = timeout || 30
+// 	frontol.addEventListener(
+// 		'cancelDocument',
+// 		'FreedomBankAfterCancelDocument',
+// 		false
+// 	);
 
-	if (isEmptyValue(url)) {
-		result.message = 'Не указан адрес запроса';
-		return result;
-	}
+// 	frontol.addEventListener('closeSession', 'FreedomBankAfterSessionClose', false);
+// }
 
-	if (isEmptyValue(method) || (method != 'POST' && method != 'GET')) {
-		result.message = 'Некорректный метод запроса';
-		return result;
-	}
+// function _getTerminalHttpAddress(terminalIpAddress) {
+// 	return ['http://' + terminalIpAddress].join('/');
+// }
 
-	if (typeof data != 'string') {
-		data = JSON.stringify(data)
-	}
+// function isAppIsNotLaunched(err) {
+//     var errCode = -2146697211 // код когда приложение фридом не запущено
 
-	url = getCorrectServerAddress(url);
+// 	if (err.number) {
+// 		return err.number == errCode;
+// 	}
 
-	var request = new ActiveXObject('Microsoft.XMLHTTP');
+// 	return false;
+// }
 
-	request.open(method, url, true);
-	request.setRequestHeader('Content-Type', 'application/json');
+// // HTTP +
 
-	request.send(data);
+// function getCorrectServerAddress(serverAddress) {
+// 	while (serverAddress.slice(-1) == '/') {
+// 		serverAddress = serverAddress.slice(0, -1);
+// 	}
 
-	var response = _waitResponse(request, timeout);
-	if (!response) {
-		result.message = 'Превышено время ожидания ответа от сервера';
-		return result;
-	}
+// 	var arr = serverAddress.split('://');
 
-	if (response.status == 200) {
-		try {
-			if ('responseText' in response && response.responseText) {
-				result.data = JSON.parse(response.responseText);
-			}
-			result.success = true;
-		} catch (e) {
-			result.message = e.message;
-		}
-	} else {
-		result.message = response.responseText;
-	}
-	return result;
-}
+// 	if (arr.length == 1) serverAddress = 'http://' + serverAddress;
 
-// HTTP -
+// 	return serverAddress;
+// }
 
-// Комбинированных банковских оплат у Ашана нет;
-// Так что можем менять значение общего РРН.
-function Doc_SetBankRRN(doc, RRN) {
-	doc.userValues.set(VAR_BANK_RRN_KEY, RRN);
-}
+// function _waitResponse(request, timeOut) {
+// 	var count = timeOut;
+// 	while (request.readyState != 4) {
+// 		if (count <= 0) {
+// 			// Opps... timeout
+// 			request.abort();
+// 			return;
+// 		}
+// 		count --;
+// 		frontol.actions.wait('Ждем еще ' + count, 1)
+// 	}
 
-function Doc_GetBankRRN(doc) {
-	var RRN = doc.userValues.get(VAR_BANK_RRN_KEY);
+// 	return request;
+// }
 
-	return RRN;
-}
-
-function _askRRNFromUser() {
-	var RRN = frontol.actions.inputString(
-		'Введите RRN для возврата на терминале Freedom Bank',
-		''
-	);
-
-	return RRN;
-}
-
-function Doc_IsReceipt(doc) {
-	return doc.type.operation === 14
-}
-
-// документ-продажа
-function Doc_IsSale(doc) {
-	return doc.type.operation == 0
-}
-
-// документ-возврат 
-function Doc_IsReturn(doc) {
-	return doc.type.operation == 1
-}
-
-// Проверяет если в документе платеж с кодом
-function Doc_HasPaymentType(paymentTypeCode) {
-	for (
-		frontol.currentDocument.payment.index = 1;
-		frontol.currentDocument.payment.index <=
-		frontol.currentDocument.payment.count;
-		frontol.currentDocument.payment.index++
-	) {
-		if (frontol.currentDocument.payment.type.code === paymentTypeCode)
-			return true;
-	}
-	return false;
-}
-
-function getGlobalParam(paramName, defaultValue) {
-	var paramValue = frontol.userValues.get(paramName);
-
-	if (!isEmptyValue(paramValue)) {
-		return paramValue;
-	}
-
-	return defaultValue;
-}
+// function _validateResult(result) {
+// 	var isOk = false;
+// 	if (result.success) {
+// 		var responseData = result.data.data;
+// 		// Обработка успешного ответа
+// 		if (responseData.result == 0) {
+// 			isOk = true;
+// 		} else {
+// 			// result хранит код. Даже если мы могли выпонить операцию
+// 			// проблема может быть с банком или картой клиента. В таком случае
+// 			// success == true, но result != 0.
+// 			var msg = result.message || responseData.msg;
+// 			showMessage(
+// 				'Ошибка при выполнении операции на терминале.' +
+// 					CR_MESSAGE +
+// 					msg,
+// 				Icon.Exclamation
+// 			);
+// 		}
+// 	} else {
+// 		// Обработка ошибки запроса
+// 		showMessage(
+// 			'Не удалось выполнить запрос к терминалу Freedom Bank' +
+// 				CR_MESSAGE +
+// 				result.message +
+// 				CR_MESSAGE +
+// 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
+// 			Icon.Error
+// 		);
+// 	}
+// 	return isOk;
+// }
 
 
-// ACTIONS
-function _freedomBankSale(payment, terminalIpAdd) {
-	var amount = payment.sumInBaseCurrency;
-	var dataToSend = {
-		task: 'purchase',
-		data: {
-			amount: amount.toString()
-		}
-	};
+// function sendHttpRequestSimple(url, method, data, timeout) {
+// 	var result = {
+// 		success: false,
+// 		message: '',
+// 		data: ''
+// 	};
 
-	var url = _getTerminalHttpAddress(terminalIpAdd);
-	try {
-		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
-	} catch (e) {
-		if (isAppIsNotLaunched(e)) {
-			e.message = 'Не удалось отправить запрос на терминал. Убедитесь, что терминал включен' +
-			' и приложение банка запущено.'
-		}
-		showMessage(
-			'Ошибка при отправке запроса к терминалу Freedom Bank' +
-				CR_MESSAGE +
-				e.message +
-				CR_MESSAGE +
-				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error
-		);
-		return;
-	}
+// 	timeout = timeout || 30
 
-	var isSuccess = _validateResult(result);
+// 	if (isEmptyValue(url)) {
+// 		result.message = 'Не указан адрес запроса';
+// 		return result;
+// 	}
+
+// 	if (isEmptyValue(method) || (method != 'POST' && method != 'GET')) {
+// 		result.message = 'Некорректный метод запроса';
+// 		return result;
+// 	}
+
+// 	if (typeof data != 'string') {
+// 		data = JSON.stringify(data)
+// 	}
+
+// 	url = getCorrectServerAddress(url);
+
+// 	var request = new ActiveXObject('Microsoft.XMLHTTP');
+
+// 	request.open(method, url, true);
+// 	request.setRequestHeader('Content-Type', 'application/json');
+
+// 	request.send(data);
+
+// 	var response = _waitResponse(request, timeout);
+// 	if (!response) {
+// 		result.message = 'Превышено время ожидания ответа от сервера';
+// 		return result;
+// 	}
+
+// 	if (response.status == 200) {
+// 		try {
+// 			if ('responseText' in response && response.responseText) {
+// 				result.data = JSON.parse(response.responseText);
+// 			}
+// 			result.success = true;
+// 		} catch (e) {
+// 			result.message = e.message;
+// 		}
+// 	} else {
+// 		result.message = response.responseText;
+// 	}
+// 	return result;
+// }
+
+// // HTTP -
+
+// // Комбинированных банковских оплат у Ашана нет;
+// // Так что можем менять значение общего РРН.
+// function Doc_SetBankRRN(doc, RRN) {
+// 	doc.userValues.set(VAR_BANK_RRN_KEY, RRN);
+// }
+
+// function Doc_GetBankRRN(doc) {
+// 	var RRN = doc.userValues.get(VAR_BANK_RRN_KEY);
+
+// 	return RRN;
+// }
+
+// function _askRRNFromUser() {
+// 	var RRN = frontol.actions.inputString(
+// 		'Введите RRN для возврата на терминале Freedom Bank',
+// 		''
+// 	);
+
+// 	return RRN;
+// }
+
+// function Doc_IsReceipt(doc) {
+// 	return doc.type.operation === 14
+// }
+
+// // документ-продажа
+// function Doc_IsSale(doc) {
+// 	return doc.type.operation == 0
+// }
+
+// // документ-возврат 
+// function Doc_IsReturn(doc) {
+// 	return doc.type.operation == 1
+// }
+
+// // Проверяет если в документе платеж с кодом
+// function Doc_HasPaymentType(paymentTypeCode) {
+// 	for (
+// 		frontol.currentDocument.payment.index = 1;
+// 		frontol.currentDocument.payment.index <=
+// 		frontol.currentDocument.payment.count;
+// 		frontol.currentDocument.payment.index++
+// 	) {
+// 		if (frontol.currentDocument.payment.type.code === paymentTypeCode)
+// 			return true;
+// 	}
+// 	return false;
+// }
+
+// function getGlobalParam(paramName, defaultValue) {
+// 	var paramValue = frontol.userValues.get(paramName);
+
+// 	if (!isEmptyValue(paramValue)) {
+// 		return paramValue;
+// 	}
+
+// 	return defaultValue;
+// }
+
+
+// // ACTIONS
+// function _freedomBankSale(payment, terminalIpAdd) {
+// 	var amount = payment.sumInBaseCurrency;
+// 	var dataToSend = {
+// 		task: 'purchase',
+// 		data: {
+// 			amount: amount.toString()
+// 		}
+// 	};
+
+// 	var url = _getTerminalHttpAddress(terminalIpAdd);
+// 	try {
+// 		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
+// 	} catch (e) {
+// 		if (isAppIsNotLaunched(e)) {
+// 			e.message = 'Не удалось отправить запрос на терминал. Убедитесь, что терминал включен' +
+// 			' и приложение банка запущено.'
+// 		}
+// 		showMessage(
+// 			'Ошибка при отправке запроса к терминалу Freedom Bank' +
+// 				CR_MESSAGE +
+// 				e.message +
+// 				CR_MESSAGE +
+// 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
+// 			Icon.Error
+// 		);
+// 		return;
+// 	}
+
+// 	var isSuccess = _validateResult(result);
 	
-	var currDoc = frontol.currentDocument;
-	if (isSuccess) {
-		var responseData = result.data.data;
-		// Обработка успешного ответа
-		var RRN = responseData.tagRRN;
-		Doc_SetBankRRN(currDoc, RRN);
-		currDoc.addPayment(payment.type.code, amount, null);
-	}
-}
+// 	var currDoc = frontol.currentDocument;
+// 	if (isSuccess) {
+// 		var responseData = result.data.data;
+// 		// Обработка успешного ответа
+// 		var RRN = responseData.tagRRN;
+// 		Doc_SetBankRRN(currDoc, RRN);
+// 		currDoc.addPayment(payment.type.code, amount, null);
+// 	}
+// }
 
-function _freedomBankReturn(payment, terminalIpAdd) {
-	var currDoc = frontol.currentDocument;
-	var baseDocument = currDoc.baseDocument;
+// function _freedomBankReturn(payment, terminalIpAdd) {
+// 	var currDoc = frontol.currentDocument;
+// 	var baseDocument = currDoc.baseDocument;
 
-	var amount = payment.sumInBaseCurrency;
+// 	var amount = payment.sumInBaseCurrency;
 
-	var RRN;
-	if (baseDocument) {
-		// Если вводится на основании, то RRN должен быть у документа основания
-		RRN = Doc_GetBankRRN(baseDocument);
-	} else {
-		// Возврат без основания
-		RRN = _askRRNFromUser();
-	}
+// 	var RRN;
+// 	if (baseDocument) {
+// 		// Если вводится на основании, то RRN должен быть у документа основания
+// 		RRN = Doc_GetBankRRN(baseDocument);
+// 	} else {
+// 		// Возврат без основания
+// 		RRN = _askRRNFromUser();
+// 	}
 
-	if (!RRN) {
-		showMessage(
-			'RRN не введен для возврата.' + CR_MESSAGE + 'Возврат невозможен.',
-			Icon.Exclamation
-		);
-		cancelAct();
-		return;
-	}
+// 	if (!RRN) {
+// 		showMessage(
+// 			'RRN не введен для возврата.' + CR_MESSAGE + 'Возврат невозможен.',
+// 			Icon.Exclamation
+// 		);
+// 		cancelAct();
+// 		return;
+// 	}
 
-	var dataToSend = {
-		task: 'refund',
-		data: {
-			amount: amount,
-			tagRRN: RRN
-		}
-	};
-	var url = _getTerminalHttpAddress(terminalIpAdd);
-	try {
-		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
-	} catch (e) {
-		if (isAppIsNotLaunched(e)) {
-			e.message = 'Не удалось отправить запрос на терминал. Убедитесь, что терминал включен' +
-			' и приложение банка запущено.'
-		}
-		showMessage(
-			'Ошибка при отправке запроса к терминалу Freedom Bank' +
-				CR_MESSAGE +
-				e.message +
-				CR_MESSAGE +
-				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error
-		);
-		return;
-	}
+// 	var dataToSend = {
+// 		task: 'refund',
+// 		data: {
+// 			amount: amount,
+// 			tagRRN: RRN
+// 		}
+// 	};
+// 	var url = _getTerminalHttpAddress(terminalIpAdd);
+// 	try {
+// 		var result = sendHttpRequestSimple(url, 'POST', dataToSend);
+// 	} catch (e) {
+// 		if (isAppIsNotLaunched(e)) {
+// 			e.message = 'Не удалось отправить запрос на терминал. Убедитесь, что терминал включен' +
+// 			' и приложение банка запущено.'
+// 		}
+// 		showMessage(
+// 			'Ошибка при отправке запроса к терминалу Freedom Bank' +
+// 				CR_MESSAGE +
+// 				e.message +
+// 				CR_MESSAGE +
+// 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
+// 			Icon.Error
+// 		);
+// 		return;
+// 	}
 
-	var isSuccess = _validateResult(result);
-	var currDoc = frontol.currentDocument;
+// 	var isSuccess = _validateResult(result);
+// 	var currDoc = frontol.currentDocument;
 
-	if (isSuccess) {
-		currDoc.addPayment(payment.type.code, amount, null);
-	}
-}
+// 	if (isSuccess) {
+// 		currDoc.addPayment(payment.type.code, amount, null);
+// 	}
+// }
 
-function _freedomBankCancelDoc(doc, terminalIpAdd) {
-	if (!Doc_IsSale(doc)) {
-		// Отмена возможна для документа продажи
-		// Можно внедрить логику и для возвратов, но пока раз уже добавили
-		// оплату в возврат, то нужно провести документ
-		showMessage(
-			'Документ не является продажей. Отмена невозможна.',
-			Icon.Error
-		);
-		cancelAct();
-		return;
-	}
+// function _freedomBankCancelDoc(doc, terminalIpAdd) {
+// 	if (!Doc_IsSale(doc)) {
+// 		// Отмена возможна для документа продажи
+// 		// Можно внедрить логику и для возвратов, но пока раз уже добавили
+// 		// оплату в возврат, то нужно провести документ
+// 		showMessage(
+// 			'Документ не является продажей. Отмена невозможна.',
+// 			Icon.Error
+// 		);
+// 		cancelAct();
+// 		return;
+// 	}
 
-	// Проведенный документ нельзя отменить, значит документ еще не закрыт
-	// Если документ продажи отменяется, значит до этого был вызвана функция
-	// FreedomBankBeforeAddPayment, который обработал и добавил платеж,
-	// а так же добавил RRN в пользовательские поля документа
-	var RRN = Doc_GetBankRRN(doc);
-	if (isEmptyValue(RRN)) {
-		// АПИ требует RRN для отмены
-		showMessage(
-			'RRN не найден в документе. Отмена невозможна.' +
-            CR_MESSAGE +
-            CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error
-		);
-		cancelAct();
-		return;
-	}
+// 	// Проведенный документ нельзя отменить, значит документ еще не закрыт
+// 	// Если документ продажи отменяется, значит до этого был вызвана функция
+// 	// FreedomBankBeforeAddPayment, который обработал и добавил платеж,
+// 	// а так же добавил RRN в пользовательские поля документа
+// 	var RRN = Doc_GetBankRRN(doc);
+// 	if (isEmptyValue(RRN)) {
+// 		// АПИ требует RRN для отмены
+// 		showMessage(
+// 			'RRN не найден в документе. Отмена невозможна.' +
+//             CR_MESSAGE +
+//             CONTACT_YOUR_TECHNICIAN_MESSAGE,
+// 			Icon.Error
+// 		);
+// 		cancelAct();
+// 		return;
+// 	}
 
-	var docPayment = Doc_GetPaymentType(doc, FREEDOM_BANK_PAYMENT_CODE);
-	if (!docPayment) {
-		// Платеж Freedom Bank не найден. Такого не должно быть, т.к RRN есть
-		// и платеж был найден в вызывающей функции (AfterCancelDocument)
-		showMessage(
-			'Платеж типа Freedom Bank не найден в документе. Отмена невозможна.' +
-            CR_MESSAGE +
-            CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error
-		);
-		cancelAct();
-		return;
-	}
+// 	var docPayment = Doc_GetPaymentType(doc, FREEDOM_BANK_PAYMENT_CODE);
+// 	if (!docPayment) {
+// 		// Платеж Freedom Bank не найден. Такого не должно быть, т.к RRN есть
+// 		// и платеж был найден в вызывающей функции (AfterCancelDocument)
+// 		showMessage(
+// 			'Платеж типа Freedom Bank не найден в документе. Отмена невозможна.' +
+//             CR_MESSAGE +
+//             CONTACT_YOUR_TECHNICIAN_MESSAGE,
+// 			Icon.Error
+// 		);
+// 		cancelAct();
+// 		return;
+// 	}
 
-	var dataToSend = {
-		task: 'reversal',
-		data: {
-			amount: docPayment.sumInBaseCurrency,
-			tagRRN: RRN
-		}
-	}
-	var url = _getTerminalHttpAddress(terminalIpAdd);
-	var result = sendHttpRequestSimple(url, 'POST', dataToSend);
-	var isSuccess = _validateResult(result);
+// 	var dataToSend = {
+// 		task: 'reversal',
+// 		data: {
+// 			amount: docPayment.sumInBaseCurrency,
+// 			tagRRN: RRN
+// 		}
+// 	}
+// 	var url = _getTerminalHttpAddress(terminalIpAdd);
+// 	var result = sendHttpRequestSimple(url, 'POST', dataToSend);
+// 	var isSuccess = _validateResult(result);
 
-	if (!isSuccess) {
-		cancelAct();
-		return;
-	}
-}
+// 	if (!isSuccess) {
+// 		cancelAct();
+// 		return;
+// 	}
+// }
 
-function _freedomBankCloseSession(terminalIpAdd) {
-	var url = _getTerminalHttpAddress(terminalIpAdd)
+// function _freedomBankCloseSession(terminalIpAdd) {
+// 	var url = _getTerminalHttpAddress(terminalIpAdd)
 
-	var dataToSend = {
-		task: 'settle'
-	};
+// 	var dataToSend = {
+// 		task: 'settle'
+// 	};
 
-	var result = sendHttpRequestSimple(url, 'POST', dataToSend);
-	if (result.success === false || result.data.data.result !== 0) {
-		var responseData = result.data.data;
-		var msg = responseData.message || responseData.msg;
-		showMessage(
-			'Ошибка при обработке запроса. Попробуйте закрыть смену вручную на терминале!' +
-				CR_MESSAGE +
-				CONTACT_YOUR_TECHNICIAN_MESSAGE +
-				CR_MESSAGE +
-				msg,
-			Icon.Warning
-		);
-	}
-}
+// 	var result = sendHttpRequestSimple(url, 'POST', dataToSend);
+// 	if (result.success === false || result.data.data.result !== 0) {
+// 		var responseData = result.data.data;
+// 		var msg = responseData.message || responseData.msg;
+// 		showMessage(
+// 			'Ошибка при обработке запроса. Попробуйте закрыть смену вручную на терминале!' +
+// 				CR_MESSAGE +
+// 				CONTACT_YOUR_TECHNICIAN_MESSAGE +
+// 				CR_MESSAGE +
+// 				msg,
+// 			Icon.Warning
+// 		);
+// 	}
+// }
 
 
-// +
+// // +
 
-function FreedomBankBeforeAddPayment(payment) {
-	if (payment.type.code !== FREEDOM_BANK_PAYMENT_CODE) {
-		return;
-	}
+// function FreedomBankBeforeAddPayment(payment) {
+// 	if (payment.type.code !== FREEDOM_BANK_PAYMENT_CODE) {
+// 		return;
+// 	}
 
-	var terminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
-	if (isEmptyValue(terminalIpAdd)) {
-		showMessage(
-			'Не задан IP адрес терминала Freedom Bank' +
-				CR_MESSAGE +
-				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error
-		);
-		cancelAct();
-		return;
-	}
+// 	var terminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
+// 	if (isEmptyValue(terminalIpAdd)) {
+// 		showMessage(
+// 			'Не задан IP адрес терминала Freedom Bank' +
+// 				CR_MESSAGE +
+// 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
+// 			Icon.Error
+// 		);
+// 		cancelAct();
+// 		return;
+// 	}
 
-	// Платеж добавляется в:
-	if (Doc_IsSale(frontol.currentDocument)) {
-		// Продажа
-		_freedomBankSale(payment, terminalIpAdd);
-	} else if (Doc_IsReturn(frontol.currentDocument)) {
-		// Возврат
-		_freedomBankReturn(payment, terminalIpAdd);
-	} else {
-		showMessage(
-			'Операция не поддерживается терминалом Freedom Bank' +
-				CR_MESSAGE +
-				CONTACT_YOUR_TECHNICIAN_MESSAGE,
-			Icon.Error
-		);
-	}
+// 	// Платеж добавляется в:
+// 	if (Doc_IsSale(frontol.currentDocument)) {
+// 		// Продажа
+// 		_freedomBankSale(payment, terminalIpAdd);
+// 	} else if (Doc_IsReturn(frontol.currentDocument)) {
+// 		// Возврат
+// 		_freedomBankReturn(payment, terminalIpAdd);
+// 	} else {
+// 		showMessage(
+// 			'Операция не поддерживается терминалом Freedom Bank' +
+// 				CR_MESSAGE +
+// 				CONTACT_YOUR_TECHNICIAN_MESSAGE,
+// 			Icon.Error
+// 		);
+// 	}
 	
-	// every action handler MUST add/not add the payment
-	// here we MUST cancel the action. Otherwise we can end up
-	// adding one more payment in any case.
-	cancelAct();
-}
+// 	// every action handler MUST add/not add the payment
+// 	// here we MUST cancel the action. Otherwise we can end up
+// 	// adding one more payment in any case.
+// 	cancelAct();
+// }
 
 
-function FreedomBankAfterCancelDocument() {
-	var currDoc = frontol.currentDocument;
+// function FreedomBankAfterCancelDocument() {
+// 	var currDoc = frontol.currentDocument;
 	
-	// Все проверки должны быть осуществлены в функции ДО (FreedomBankBeforeCancel).
-	// Чтобы в случае чего можно было отменить процесс отмены чека
-	// Здесь мы делаем проверки на всякий случай.
-	// Главным элементом является, то что здесь мы проверяем есть ли
-	// тип оплаты Фридом банка в документе
-	if (!Doc_HasPaymentType(FREEDOM_BANK_PAYMENT_CODE)) {
-		return;
-	}
+// 	// Все проверки должны быть осуществлены в функции ДО (FreedomBankBeforeCancel).
+// 	// Чтобы в случае чего можно было отменить процесс отмены чека
+// 	// Здесь мы делаем проверки на всякий случай.
+// 	// Главным элементом является, то что здесь мы проверяем есть ли
+// 	// тип оплаты Фридом банка в документе
+// 	if (!Doc_HasPaymentType(FREEDOM_BANK_PAYMENT_CODE)) {
+// 		return;
+// 	}
 
-	if (!Doc_IsSale(currDoc)) {
-		showMessage(
-			'Документ не является продажей. Отмена невозможна.',
-			Icon.Error
-		);
-		cancelAct();
-		return;
-	}
+// 	if (!Doc_IsSale(currDoc)) {
+// 		showMessage(
+// 			'Документ не является продажей. Отмена невозможна.',
+// 			Icon.Error
+// 		);
+// 		cancelAct();
+// 		return;
+// 	}
 
-	var terminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
-	//
-	_freedomBankCancelDoc(currDoc, terminalIpAdd);
+// 	var terminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
+// 	//
+// 	_freedomBankCancelDoc(currDoc, terminalIpAdd);
 
-}
+// }
 
 
-function FreedomBankAfterSessionClose() {
-	var terminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
-	if (!terminalIpAdd) {
-        // Видимо терминал не подключен.
-		return;
-	}
-	_freedomBankCloseSession(terminalIpAdd)
-}
+// function FreedomBankAfterSessionClose() {
+// 	var terminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS);
+// 	if (!terminalIpAdd) {
+//         // Видимо терминал не подключен.
+// 		return;
+// 	}
+// 	_freedomBankCloseSession(terminalIpAdd)
+// }
 
 // -
