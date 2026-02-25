@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_5                     //
+//      Version : 6_1_6                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -15362,15 +15362,15 @@ var FREEDOM_BANK_PAYMENT_CODE = 101;
 // 	return false;
 // }
 
-// function getGlobalParam(paramName, defaultValue) {
-// 	var paramValue = frontol.userValues.get(paramName);
+function getGlobalParam(paramName, defaultValue) {
+	var paramValue = frontol.userValues.get(paramName);
 
-// 	if (!isEmptyValue(paramValue)) {
-// 		return paramValue;
-// 	}
+	if (!isEmptyValue(paramValue)) {
+		return paramValue;
+	}
 
-// 	return defaultValue;
-// }
+	return defaultValue;
+}
 
 
 // // ACTIONS
