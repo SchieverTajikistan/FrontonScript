@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_2                     //
+//      Version : 6_1_3                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -207,7 +207,7 @@ function checkShiftReminder() {
 
 
 var POS_SETTING_PATH = 'D://POS_SETTINGS.json'
-// var POS_SETTINGS;
+var POS_SETTINGS;
 
 function getPosSettings() {
     var fs = new ActiveXObject("Scripting.FileSystemObject");
@@ -227,8 +227,8 @@ function getPosSettings() {
         objStream.LoadFromFile(POS_SETTING_PATH);
 
         var posSettingRaw = objStream.ReadText();
-        // settings = JSON.parse(posSettingRaw);
-        return posSettingRaw;
+        settings = JSON.parse(posSettingRaw);
+        return settings;
     } catch (e) {
         showMessage('Не удалось прочитать файл с параметрами кассы. ' + 
             CR_MESSAGE + e.message +
@@ -260,9 +260,9 @@ function init() {
     toISOProto();
     
     // Данный файл хранит важный настройки кассы
-    var posSettings = getPosSettings(); 
-    showMessage(posSettings);
-    if (isEmptyValue(posSettings)) {
+    POS_SETTINGS = getPosSettings(); 
+    showMessage(POS_SETTINGS);
+    if (isEmptyValue(POS_SETTINGS)) {
         showMessage('Параметры кассы не могут быть пустыми. ' + 
             CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
             Icon.Error
@@ -270,8 +270,6 @@ function init() {
         cancelAct();
         return;
     }
-
-    setGlobalParam('POS_SETTINGS', posSettings);
 
     // добавляем для типа String метод trim
     if (!String.prototype.trim) {
@@ -15050,10 +15048,10 @@ function dcinit(){
 }
 
 function _getDCSettings() {
-    var posSettingsRaw = getGlobalParam('POS_SETTINGS');
-    var posSettings = JSON.parse(posSettingsRaw);
+    // var posSettingsRaw = getGlobalParam('POS_SETTINGS');
+    // var posSettings = JSON.parse(posSettingsRaw);
 
-    var dcSettings = posSettings['Dushanbe-City'];
+    var dcSettings = POS_SETTINGS['Dushanbe-City'];
 
     return dcSettings;
 }
