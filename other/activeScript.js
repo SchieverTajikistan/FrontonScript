@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_8                     //
+//      Version : 6_1_9                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -15259,108 +15259,108 @@ function _validateResult(result) {
 
 
 function sendHttpRequestSimple(url, method, data, timeout) {
-// 	var result = {
-// 		success: false,
-// 		message: '',
-// 		data: ''
-// 	};
+	var result = {
+		success: false,
+		message: '',
+		data: ''
+	};
 
-// 	timeout = timeout || 30
+	timeout = timeout || 30
 
-// 	if (isEmptyValue(url)) {
-// 		result.message = 'Не указан адрес запроса';
-// 		return result;
-// 	}
+	if (isEmptyValue(url)) {
+		result.message = 'Не указан адрес запроса';
+		return result;
+	}
 
-// 	if (isEmptyValue(method) || (method != 'POST' && method != 'GET')) {
-// 		result.message = 'Некорректный метод запроса';
-// 		return result;
-// 	}
+	if (isEmptyValue(method) || (method != 'POST' && method != 'GET')) {
+		result.message = 'Некорректный метод запроса';
+		return result;
+	}
 
-// 	if (typeof data != 'string') {
-// 		data = JSON.stringify(data)
-// 	}
+	if (typeof data != 'string') {
+		data = JSON.stringify(data)
+	}
 
-// 	url = getCorrectServerAddress(url);
+	url = getCorrectServerAddress(url);
 
-// 	var request = new ActiveXObject('Microsoft.XMLHTTP');
+	var request = new ActiveXObject('Microsoft.XMLHTTP');
 
-// 	request.open(method, url, true);
-// 	request.setRequestHeader('Content-Type', 'application/json');
+	request.open(method, url, true);
+	request.setRequestHeader('Content-Type', 'application/json');
 
-// 	request.send(data);
+	request.send(data);
 
-// 	var response = _waitResponse(request, timeout);
-// 	if (!response) {
-// 		result.message = 'Превышено время ожидания ответа от сервера';
-// 		return result;
-// 	}
+	var response = _waitResponse(request, timeout);
+	if (!response) {
+		result.message = 'Превышено время ожидания ответа от сервера';
+		return result;
+	}
 
-// 	if (response.status == 200) {
-// 		try {
-// 			if ('responseText' in response && response.responseText) {
-// 				result.data = JSON.parse(response.responseText);
-// 			}
-// 			result.success = true;
-// 		} catch (e) {
-// 			result.message = e.message;
-// 		}
-// 	} else {
-// 		result.message = response.responseText;
-// 	}
-// 	return result;
-// }
+	if (response.status == 200) {
+		try {
+			if ('responseText' in response && response.responseText) {
+				result.data = JSON.parse(response.responseText);
+			}
+			result.success = true;
+		} catch (e) {
+			result.message = e.message;
+		}
+	} else {
+		result.message = response.responseText;
+	}
+	return result;
+}
 
-// // HTTP -
+// HTTP -
 
-// // Комбинированных банковских оплат у Ашана нет;
-// // Так что можем менять значение общего РРН.
-// function Doc_SetBankRRN(doc, RRN) {
-// 	doc.userValues.set(VAR_BANK_RRN_KEY, RRN);
-// }
+// Комбинированных банковских оплат у Ашана нет;
+// Так что можем менять значение общего РРН.
+function Doc_SetBankRRN(doc, RRN) {
+	doc.userValues.set(VAR_BANK_RRN_KEY, RRN);
+}
 
-// function Doc_GetBankRRN(doc) {
-// 	var RRN = doc.userValues.get(VAR_BANK_RRN_KEY);
+function Doc_GetBankRRN(doc) {
+	var RRN = doc.userValues.get(VAR_BANK_RRN_KEY);
 
-// 	return RRN;
-// }
+	return RRN;
+}
 
-// function _askRRNFromUser() {
-// 	var RRN = frontol.actions.inputString(
-// 		'Введите RRN для возврата на терминале Freedom Bank',
-// 		''
-// 	);
+function _askRRNFromUser() {
+	var RRN = frontol.actions.inputString(
+		'Введите RRN для возврата на терминале Freedom Bank',
+		''
+	);
 
-// 	return RRN;
-// }
+	return RRN;
+}
 
-// function Doc_IsReceipt(doc) {
-// 	return doc.type.operation === 14
-// }
+function Doc_IsReceipt(doc) {
+	return doc.type.operation === 14
+}
 
-// // документ-продажа
-// function Doc_IsSale(doc) {
-// 	return doc.type.operation == 0
-// }
+// документ-продажа
+function Doc_IsSale(doc) {
+	return doc.type.operation == 0
+}
 
-// // документ-возврат 
-// function Doc_IsReturn(doc) {
-// 	return doc.type.operation == 1
-// }
+// документ-возврат 
+function Doc_IsReturn(doc) {
+	return doc.type.operation == 1
+}
 
-// // Проверяет если в документе платеж с кодом
-// function Doc_HasPaymentType(paymentTypeCode) {
-// 	for (
-// 		frontol.currentDocument.payment.index = 1;
-// 		frontol.currentDocument.payment.index <=
-// 		frontol.currentDocument.payment.count;
-// 		frontol.currentDocument.payment.index++
-// 	) {
-// 		if (frontol.currentDocument.payment.type.code === paymentTypeCode)
-// 			return true;
-// 	}
-// 	return false;
-// }
+// Проверяет если в документе платеж с кодом
+function Doc_HasPaymentType(paymentTypeCode) {
+	for (
+		frontol.currentDocument.payment.index = 1;
+		frontol.currentDocument.payment.index <=
+		frontol.currentDocument.payment.count;
+		frontol.currentDocument.payment.index++
+	) {
+		if (frontol.currentDocument.payment.type.code === paymentTypeCode)
+			return true;
+	}
+	return false;
+}
 
 function getGlobalParam(paramName, defaultValue) {
 	var paramValue = frontol.userValues.get(paramName);
