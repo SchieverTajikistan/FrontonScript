@@ -688,17 +688,6 @@ function _waitResponse(request, timeOut) {
 	return request;
 }
 
-function getCorrectServerAddress(serverAddress) {
-	while (serverAddress.slice(-1) == '/') {
-		serverAddress = serverAddress.slice(0, -1);
-	}
-
-	var arr = serverAddress.split('://');
-
-	if (arr.length == 1) serverAddress = 'http://' + serverAddress;
-
-	return serverAddress;
-}
 
 function sendHttpRequestSimple(url, method, data, timeout) {
 	var result = {
@@ -723,7 +712,7 @@ function sendHttpRequestSimple(url, method, data, timeout) {
 		data = JSON.stringify(data)
 	}
 
-	url = getCorrectServerAddress(url);
+	url = GetCorrectServerAddress(url);
 
 	var request = new ActiveXObject('Microsoft.XMLHTTP');
 
