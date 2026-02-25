@@ -207,7 +207,7 @@ function checkShiftReminder() {
 
 
 var POS_SETTING_PATH = 'D://POS_SETTINGS.json'
-var POS_SETTINGS;
+// var POS_SETTINGS;
 
 function getPosSettings() {
     var fs = new ActiveXObject("Scripting.FileSystemObject");
@@ -227,7 +227,8 @@ function getPosSettings() {
         objStream.LoadFromFile(POS_SETTING_PATH);
 
         var posSettingRaw = objStream.ReadText();
-        settings = JSON.parse(posSettingRaw);
+        // settings = JSON.parse(posSettingRaw);
+        return posSettingRaw;
     } catch (e) {
         showMessage('Не удалось прочитать файл с параметрами кассы. ' + 
             CR_MESSAGE + e.message +
@@ -259,9 +260,8 @@ function init() {
     toISOProto();
     
     // Данный файл хранит важный настройки кассы
-    POS_SETTINGS = getPosSettings(); 
-    if (isEmptyValue(POS_SETTINGS)) {
-
+    var posSettings = getPosSettings(); 
+    if (isEmptyValue(posSettings)) {
         showMessage('Параметры кассы не могут быть пустыми. ' + 
             CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
             Icon.Error
@@ -269,6 +269,8 @@ function init() {
         cancelAct();
         return;
     }
+
+    setGlobalParam('POS_SETTINGS', posSettings);
 
     // добавляем для типа String метод trim
     if (!String.prototype.trim) {
@@ -15046,11 +15048,8 @@ function dcinit(){
 }
 
 function _getDCSettings() {
-    var posSettings = POS_SETTINGS;
-
-    if (isEmptyValue(posSettings)) {
-        posSettings = getPosSettings();
-    }
+    var posSettingsRaw = getGlobalParam('POS_SETTINGS');
+    var posSettings = JSON.parse(posSettingsRaw);
 
     var dcSettings = posSettings['Dushanbe-City'];
 
