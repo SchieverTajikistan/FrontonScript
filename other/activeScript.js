@@ -13894,7 +13894,7 @@ function $ManualButton() {
 
 		// FreedomBank +
 		var freedomBankTerminalIpAddTitle =
-			'1. Установить ip адресс для терминала FreedomBank';
+			'1. Установить ip адресс для терминала FreedomBank ';
 		var freedomBankTerminalIpAdd = getGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS)
 		if (isEmptyValue(freedomBankTerminalIpAdd)) {
 			freedomBankTerminalIpAddTitle += ' (Не указан)';
@@ -15164,7 +15164,7 @@ var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
 var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
 var VAR_BANK_RRN_KEY = 'BANK_RRN';
 
-var FREEDOM_BANK_PAYMENT_CODE = 101;
+var FREEDOM_BANK_PAYMENT_CODE = 116;
 
 
 function _setFreedomBankTerminalNetworkSettings() {
