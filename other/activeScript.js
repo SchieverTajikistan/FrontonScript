@@ -2,7 +2,7 @@
 //                                          //
 //     Modified : 2025-06-23 14:25 2025v6   //
 //                                          //
-//      Version : 6_1_10                     //
+//      Version : 6_1_11                     //
 //                                          //
 //       Author : RobotX, Kaliningrad, RU   //
 //                                          //
@@ -15181,19 +15181,19 @@ function init_FreedomBank() {
 	frontol.addEventListener('closeSession', 'FreedomBankAfterSessionClose', false);
 }
 
-// function _getTerminalHttpAddress(terminalIpAddress) {
-// 	return ['http://' + terminalIpAddress].join('/');
-// }
+function _getTerminalHttpAddress(terminalIpAddress) {
+	return ['http://' + terminalIpAddress].join('/');
+}
 
-// function isAppIsNotLaunched(err) {
-//     var errCode = -2146697211 // код когда приложение фридом не запущено
+function isAppIsNotLaunched(err) {
+    var errCode = -2146697211 // код когда приложение фридом не запущено
 
-// 	if (err.number) {
-// 		return err.number == errCode;
-// 	}
+	if (err.number) {
+		return err.number == errCode;
+	}
 
-// 	return false;
-// }
+	return false;
+}
 
 // // // HTTP +
 
