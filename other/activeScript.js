@@ -15376,10 +15376,12 @@ function getGlobalParam(paramName, defaultValue) {
 // ACTIONS
 function _freedomBankSale(payment, terminalIpAdd) {
 	var amount = payment.sumInBaseCurrency;
+    // Округлим значение до двух десятичных знаков
+    var amountRounded = Math.round(amount * 100) / 100;
 	var dataToSend = {
 		task: 'purchase',
 		data: {
-			amount: amount.toString()
+			amount: amountRounded.toString()
 		}
 	};
     //TODO
