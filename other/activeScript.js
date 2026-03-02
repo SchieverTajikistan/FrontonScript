@@ -15384,8 +15384,6 @@ function _freedomBankSale(payment, terminalIpAdd) {
 			amount: amountRounded.toString()
 		}
 	};
-    //TODO
-    showMessage('dataToSend: ' + JSON.stringify(dataToSend));
 
 	var url = _getTerminalHttpAddress(terminalIpAdd);
 	try {
@@ -15448,10 +15446,11 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 		return;
 	}
 
+    var amountRounded = Math.round(amount * 100) / 100;
 	var dataToSend = {
 		task: 'refund',
 		data: {
-			amount: amount,
+			amount: amountRounded.toString(),
 			tagRRN: RRN
 		}
 	};
