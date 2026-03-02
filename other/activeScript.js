@@ -15382,6 +15382,8 @@ function _freedomBankSale(payment, terminalIpAdd) {
 			amount: amount.toString()
 		}
 	};
+    //TODO
+    showMessage('dataToSend: ' + JSON.stringify(dataToSend));
 
 	var url = _getTerminalHttpAddress(terminalIpAdd);
 	try {
