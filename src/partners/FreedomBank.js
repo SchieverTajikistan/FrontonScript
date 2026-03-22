@@ -137,10 +137,11 @@ function _freedomBankReturn(payment, terminalIpAdd) {
 		return;
 	}
 
+	var amountRounded = Math.round(amount * 100) / 100;
 	var dataToSend = {
 		task: 'refund',
 		data: {
-			amount: amount,
+			amount: amountRounded.toString(),
 			tagRRN: RRN
 		}
 	};
