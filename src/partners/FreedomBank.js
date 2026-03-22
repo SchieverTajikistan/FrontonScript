@@ -8,6 +8,113 @@ var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
 
 var FREEDOM_BANK_PAYMENT_CODE = 116;
 
+function getISODateToString(separator) {
+	if (!separator) separator = "_";
+
+
+	var dateTime = new Date();
+	var dateTimeYear = dateTime.getFullYear();
+	var dateTimeMonth =
+		dateTime.getMonth() + 1 <= 9
+			? "0" + (dateTime.getMonth() + 1).toString()
+			: (dateTime.getMonth() + 1).toString();
+	var dateTimeDate =
+		dateTime.getDate() <= 9 ? "0" + dateTime.getDate().toString() : dateTime.getDate().toString();
+
+	return (
+		dateTimeYear +
+		separator +
+		dateTimeMonth +
+		separator +
+		dateTimeDate
+	);
+}
+
+function _initFreedomBankLog() {
+	var config = getPartnerSettings('FreedomBank')
+	var baseFolder = config['LOG_FOLDER']
+
+	if (isEmptyValue(baseFolder)) {
+		showError('Не указана папка для логов для FreedomBank.', Icon.Error)
+		return;
+	}
+
+	try {
+		createDirectory(baseFolder)
+	} catch (err) {
+		showMessage(
+			'Не удалось создать папку для FreedomBank' +
+			CR_MESSAGE +
+			err.message +
+			CR_MESSAGE +
+			CONTACT_YOUR_TECHNICIAN_MESSAGE,
+			Icon.Error
+		);
+		return;
+	}
+
+	var dateNow = getISODateToString();
+	var logFileName = baseFolder + '\\' + 'terminal_' + dateNow + '.log';
+
+	return logFileName;
+}
+
+function _generateLogMessage(message) {
+	var logDateTime = getISODateTimeToString();
+	var logDatePart = '[ ' + logDateTime + ' ]';
+
+	var posPart = frontol.codeWorkplace + ' ' + frontol.currentDocument.number + ' ' + frontol.sessionNumber;
+
+	var logMessage = [logDatePart, posPart, message].join(' ');
+
+	return logMessage;
+}
+
+function freedomWriteLog(message) {
+	var logFullPath = _initFreedomBankLog();
+
+	if (isEmptyValue(logFullPath)) {
+		return;
+	}
+
+	var fso = new ActiveXObject("Scripting.FileSystemObject");
+	var logFile;
+
+	try {
+		logFile = fso.OpenTextFile(logFullPath, 8, 0); //открыть файл
+	} catch (err) {
+		// Файл должен уже существовать (созданный шагом выше)
+		// Значит ошибка не в существовании файла ...
+		showMessage(
+			'Не удалось открыть FreedomBank лог файл' + logFullPath +
+			CR_MESSAGE +
+			err.message +
+			CR_MESSAGE +
+			CONTACT_YOUR_TECHNICIAN_MESSAGE,
+			Icon.Error
+		);
+		return;
+	}
+
+	var logMessage = _generateLogMessage(message);
+
+	try {
+		logFile.WriteLine(logMessage);
+		logFile.Close();
+	} catch (err) {
+		showMessage(
+			'Не удалось записать лог FreedomBank' +
+			CR_MESSAGE +
+			err.message +
+			CR_MESSAGE +
+			CONTACT_YOUR_TECHNICIAN_MESSAGE,
+			Icon.Error
+		);
+		return;
+	}
+}
+
+
 function _setFreedomBankTerminalNetworkSettings() {
     var settings = getPartnerSettings('FreedomBank');
 
@@ -17,6 +124,7 @@ function _setFreedomBankTerminalNetworkSettings() {
 
 function init_FreedomBank() {
     _setFreedomBankTerminalNetworkSettings();
+	_initFreedomBankLog();
 
 	frontol.addEventListener('addPayment', 'FreedomBankBeforeAddPayment', true);
 	frontol.addEventListener(
