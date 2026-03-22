@@ -1,10 +1,6 @@
 // ==============================================================
 // DushanbeCity  BEGIN
 
-
-var DC_URL = 'http://109.74.70.49:96/ashan';
-var DC_PAN = '5058270385062681'; //Установите актуальный Qr код
-var DC_SIGN = 'f3c945d00836c34c78340f2504f5cc7f';
 var DC_QR = 206;
 
 function init_DC() {
@@ -28,16 +24,30 @@ function DC_AddPaymentBefore(payment) {
 		//writeLog("Выбран тип платежа Qr");
 		//Если тип продажа
 		if (Doc_IsSale(frontol.currentDocument)) {
+			var dcSettings = getPartnerSettings('Dushanbe-City');
+			if (isEmptyValue(dcSettings)) {
+				showMessage('Настройки Душанбе-Сити пустые.' + 
+					CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
+					Icon.Error
+				)
+				cancelAct();
+				return;
+			}
+
+			var pan = dcSettings['PAN'];
+			var sign = dcSettings['SIGN'];
+			var url = dcSettings['URL'];
+
 			//writeLog("Выбран тип продажа");
 			var stringToSend =
 				'<action>getpaystatus</action><docNumber>' +
 				tranid +
 				'</docNumber><pan>' +
-				DC_PAN +
+				pan +
 				'</pan><summa>' +
 				summapay +
 				'</summa><sign>' +
-				DC_SIGN +
+				sign +
 				'</sign>';
 			//writeLog("Запрос на сервер IP"+adres);
 			//writeLog("Запрос на сервер Тело"+stringToSend);
@@ -53,7 +63,7 @@ function DC_AddPaymentBefore(payment) {
 			loadingScreen.Show();
 
 			try {
-				var response = httpClient.PostSync(DC_URL, stringToSend);
+				var response = httpClient.PostSync(url, stringToSend);
 			} catch (error) {
 				frontol.actions.showMessage(
 					'Произошла ошибка: Сервер ДС недоступен, попробуйте позже!',

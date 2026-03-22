@@ -2164,7 +2164,6 @@ function _isCommonQRPayment(frontolPayment) {
 	);
 }
 
-
 function JetQrBeforeAddPayment(frontolPayment) {
 	if (!_isCommonQRPayment(frontolPayment)) {
 		return;
@@ -2271,7 +2270,6 @@ function JetQrBeforeAddPayment(frontolPayment) {
 
     cancelAct();
 }
-
 
 function JetQrAfterCancelDocument() {
     //В данном событии вызываем отмену платежей Алиф только для документов типа "Продажа".

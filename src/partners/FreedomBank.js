@@ -6,9 +6,18 @@ var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA'
 var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR'
 
 
-var FREEDOM_BANK_PAYMENT_CODE = 101;
+var FREEDOM_BANK_PAYMENT_CODE = 116;
+
+function _setFreedomBankTerminalNetworkSettings() {
+    var settings = getPartnerSettings('FreedomBank');
+
+    var terminalIpAdress = settings['TERMINAL_IP_ADDRESS'];
+    setGlobalParam(VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS, terminalIpAdress);
+}
 
 function init_FreedomBank() {
+    _setFreedomBankTerminalNetworkSettings();
+
 	frontol.addEventListener('addPayment', 'FreedomBankBeforeAddPayment', true);
 	frontol.addEventListener(
 		'cancelDocument',
@@ -75,10 +84,13 @@ function _validateResult(result) {
 // ACTIONS
 function _freedomBankSale(payment, terminalIpAdd) {
 	var amount = payment.sumInBaseCurrency;
+
+	// Округлим значение до двух десятичных знаков
+	var amountRounded = Math.round(amount * 100) / 100;
 	var dataToSend = {
 		task: 'purchase',
 		data: {
-			amount: amount.toString()
+			amount: amountRounded.toString()
 		}
 	};
 
