@@ -1174,11 +1174,62 @@ function $ManualButton() {
 	}
 }
 // -
-// -
 
 // ==============================================================
 // Вспомогательные функции END
 // ==============================================================
+
+var POS_SETTING_PATH = 'D://POS_SETTINGS.json'
+var POS_SETTINGS;
+
+function getPosSettings() {
+    var fs = new ActiveXObject("Scripting.FileSystemObject");
+
+    var settings;
+    if (!fs.FileExists(POS_SETTING_PATH)) {
+        showError('Не найден файл параметры кассы. Срочно обратитесь к ИТ отделу!', Icon.Error);
+        return settings;
+    };
+    
+    try {
+        var objStream = new ActiveXObject("ADODB.Stream");
+
+        objStream.CharSet = "utf-8";
+        objStream.Type = 2;
+        objStream.Open();
+        objStream.LoadFromFile(POS_SETTING_PATH);
+
+        var posSettingRaw = objStream.ReadText();
+        settings = JSON.parse(posSettingRaw);
+    } catch (e) {
+        showMessage('Не удалось прочитать файл с параметрами кассы. ' + 
+            CR_MESSAGE + e.message +
+            CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
+            Icon.Error
+        )
+    } finally {
+        try {
+            objStream.Close();
+            objStream = null;
+        } catch (e) {
+            showMessage("Не удалось закрыть файл с параметрами кассы. " + e.message, Icon.Exclamation);
+        }
+    }
+
+    return settings;
+}
+
+function getPartnerSettings(partner) {
+    var posSettings = POS_SETTINGS;
+
+    if (isEmptyValue(posSettings)) {
+        posSettings = getPosSettings();
+    }
+
+    var partnerSetting = posSettings['partners'][partner];
+
+    return partnerSetting;
+}
 
 function init() {
     // init partners
@@ -1193,6 +1244,18 @@ function init() {
     // libraries
     getJson2();
     toISOProto();
+
+	// Данный файл хранит важный настройки кассы
+	POS_SETTINGS = getPosSettings(); 
+	if (isEmptyValue(POS_SETTINGS)) {
+
+		showMessage('Параметры кассы не могут быть пустыми. ' + 
+			CR_MESSAGE + CONTACT_SUPPORT_MESSAGE,
+			Icon.Error
+		)
+		cancelAct();
+		return;
+	}
 
     addMisingProtoFunctions_Number();
     addMisingProtoFunctions_String();
