@@ -1,11 +1,5 @@
 // ==============================================================
 // Tekhnologiya grup BEGIN
-var VAR_FISCAL_IP_ADDRESS = 'fiscalipadres';
-var VAR_IS_TG_FISCAL = 'isfiscalTG';
-var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA';
-var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR';
-var VAR_MUST_LOG = 'isWriteLog';
-
 var VAR_PRINT_WITHOUT_SENDING = "PrintWithoutSending";
 var VAR_PRINT_WITH_SENDING_PHONE = 'PrintWithSendingToPhone';
 var VAR_PRINT_WITH_SENDING_EMAIL = 'PrintWithSendingToMail';
@@ -199,12 +193,6 @@ function TG_afterCloseSession() {
 // -
 
 Fiscat: {
-	var FISCAT_PORT = 'fiscatPort';
-	var COM_PORT_ENABLED = 'comPortEnabled';
-
-	function isMenuAccessAvailable() {
-		return isSysAdmin() || isServiceUser();
-	}
 
 	function FR_printLastDoc() {
 		var dataString = JSON.stringify(
