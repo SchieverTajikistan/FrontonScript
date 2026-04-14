@@ -1,0 +1,23 @@
+{
+  "version": "1",
+  "name": "Freedom_POS",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "size": 0.007879257202148438,
+  "filesCount": 9,
+  "proxy": {
+    "bypassProxy": "",
+    "enabled": "global",
+    "auth": {
+      "enabled": false,
+      "username": "",
+      "password": ""
+    },
+    "port": null,
+    "hostname": "",
+    "protocol": "http"
+  }
+}

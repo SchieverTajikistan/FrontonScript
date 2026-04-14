@@ -1,0 +1,25 @@
+meta {
+  name: POKUPKA (PURCHASE)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "task": "purchase",
+    "data": {
+      "amount": 0.2
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

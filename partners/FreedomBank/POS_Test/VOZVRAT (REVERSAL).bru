@@ -1,0 +1,89 @@
+meta {
+  name: VOZVRAT (REVERSAL)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{url}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "task": "reversal",
+    "data": {
+      "amount": 0.5,
+      "tagRRN": "123"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  The task field must fill with value.
+  The value of the amount field is an option. If the value did not fill with any number,
+  represents a whole reversal transaction. If the value has been filled with specific
+  numbers, represent part reversal. The POS terminal controls whether support part
+  reversal transaction or not. There is a switch within PSP
+  (Settings->Admin->Common->Partial Cancellation Support), enable this switch to
+  support partial reversal, otherwise no support.
+  ```
+  {
+    “task”:”reversal”,
+    “data”:{
+      “amount”:String(option)
+      “tagRRN”:String(got from the RRN of original transactions, Mandatory)
+    }
+  }
+  
+  4.5.2 Response
+  {
+    "data": {
+      "cardNo": String, //card PAN,the format example: "100007******8909
+      "issuerName": String, //card type
+      "tagRRN": String,
+      "msg":String,
+      "result": int, // 0 indicates success or failure
+      "receiptInfo":String,
+      “channel”:int //0:other bank card 1:jusan bank card
+    }
+  }
+  ```
+  PAX Technology 13
+  Example:
+  ```
+  request:
+  {
+    "task":"reversal",
+    "data":{
+      "tagRRN":"311887318045",
+      "amount":"113"
+    }
+  }
+  
+  response:
+  {
+    "data": {
+      "cardNo": "100006******5200",
+      "channel": 0,
+      "issuerName": "VISA",
+      "receiptInfo": "ТОО \"Cullinan\"\nг
+      . Алматы, ул. Мака
+      т а е в а , 127/1\n И И Н 201240002166\n т е л : +7 777 77
+      77\n------------------------------------------------\nCustomer Check 0002\nRRN:
+      311887318045\n------------------------------------------------\nUniReversal\n(Purchase)
+      17:36 28/04/2023\nTerminal ID: 05899991\nCard NO.: 1000********5200\nExpiry:
+      12/44\nType: VISA\nAmount: -113₸\n00:Successfully completed\n",
+      "tagRRN": "311887318045",
+      "msg": "Operation is Successful",
+      "result": 0
+    }
+  }
+  ```
+}

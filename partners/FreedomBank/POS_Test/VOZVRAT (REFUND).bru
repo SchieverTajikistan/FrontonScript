@@ -1,0 +1,149 @@
+meta {
+  name: VOZVRAT (REFUND)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{url}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "task": "refund",
+    "data": {
+      "amount": 0.5
+      //"tagRRN": "763148028440"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  Cancel the original consumer transaction or return transaction.
+  1. If POS did not log in to the Jusan QR server, refund transaction process default
+  with the check card process.
+  2. If POS has logged in to Jusan QR server, refund request message has filled with
+  RRN refund transaction process will with check card process. POS will map one
+  unique purchase transaction by RRN. If this purchase has been settle, refund
+  request initiates refund transaction, otherwise initiates reversal transaction
+  3. POS has logged in, refund request does not have RRN value, POS receive refund
+  request will execute refund QR process.
+  4.4.1Request
+  The task field must fill with value.
+  ```
+  {
+    “task”: “refund”,
+    “data”: {
+      “amount”: String(Mandatory)
+      “tagRRN”: String(got from the RRN of original transactions,length ==12,option)
+    “transactionId”: String(got from the transactionId of QR sale, like TR123456, option)
+    }
+  }
+  ```
+  PAX Technology 11
+  4.4.2Response
+  The response message that transacts by card.
+  ```
+  {
+    "data": {
+      "cardNo": String, //card PAN,the format example: "100007******8909
+      "issuerName": String, //card type
+      "tagRRN": String,
+      "msg":String,
+      "result": int, // 0 indicates success or failure
+      "receiptInfo":String,
+      “channel”:int //0:other bank card 1:jusan bank card
+    }
+  }
+  ```
+  The response message that transacts by scanning the QR code.
+  ```
+  {
+    "data": {
+      "msg": String,
+      "paymentId": String,
+      "result": int,
+      "receiptInfo":String,
+      “channel”:int //2:jusan QR
+    }
+  }
+  ```
+  Example:
+  Card：
+  ```
+  request:
+  {
+    "task":"refund",
+    "data": {
+      "tagRRN":"312581054648",
+      "amount":"113"
+    }
+  }
+  ```
+  ```
+  response:
+    {
+      "data": {
+        "cardNo": "555910******0016",
+        "channel": 0,
+        "issuerName": "MASTER",
+        "receiptInfo": "ТОО \"Cullinan\"\nг
+        . Алматы, ул. Мака
+        т а е в а , 127/1\n И И Н 201240002166\n т е л : +7 777 77
+        77\n------------------------------------------------\nCustomer Check 0001\nRRN:
+        312581054648\n------------------------------------------------\nRefund 15:04
+        05/05/2023\nTerminal ID: 61021804\nCard NO.: 5559********0016\nExpiry:
+        12/24\nType: MASTER\nAmount: -113₸\n00:Successfully completed\n",
+        "tagRRN": "312581054648",
+        "msg": "Operation is Successful",
+        "result": 0
+      }
+    }
+  ```
+  QR:
+  ```
+  Request
+  PAX Technology 12
+  
+  {
+    "task": "refund",
+    "data":{
+      "amount": "113"
+    }
+  }
+  ```
+  OR
+  ```
+  {
+    "task": "refund",
+    "data": {
+      "amount":"113",
+      ”transactionId”:” TR166490”
+    }
+  }
+  ```
+  Response
+  ```
+  {
+    "data": {
+      "channel": 2,
+      "paymentId": "65268713-8227-43a0-b096-767f80132e5c",
+      "msg": "Operation is Successful",
+      "result": 0,
+      "receiptInfo": "ТОО \"Cullinan\"\nг \
+      . Алматы, ул. Макат а е в а , \
+      127/1\n И И Н 201240002166\n т е л : +7 777 77 \
+  77\n------------------------------------------------\nCustomer Check 0009\nTransaction\
+  ID\n------------------------------------------------\nJusan QR Refund 18: 20 \
+  28/04/2023\nTerminal ID: 05899991\nAmount: -113₸\n------------------------------------------------\nQR Refund issued\n",
+    }
+  }
+  ```
+}
