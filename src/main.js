@@ -65,6 +65,27 @@ var VAR_BANK_RRN_KEY = 'BANK_RRN';
 
 var VAR_GLOBAL_EXCHANGE_PATH = 'GLOBAL_EXCHANGE_PATH';
 
+// SHARED PARTNER VARS +
+// Это переменные который используется партнером, но так же и в основном файле
+// Это нужно для того, чтобы мы могли воссоеденить файлы и без файла партнера
+
+// --- TG + 
+var VAR_FISCAL_IP_ADDRESS = 'fiscalipadres';
+var VAR_IS_TG_FISCAL = 'isfiscalTG';
+var VAR_MUST_LOG = 'isWriteLog';  // используется ФР
+var VAR_SESSION_STATUS_KASSA = 'SESSION_STATUS_KASSA';
+var VAR_SESSION_STATUS_FR = 'SESSION_STATUS_FR';
+var FISCAT_PORT = 'fiscatPort';
+var COM_PORT_ENABLED = 'comPortEnabled';
+// --- TG -
+
+// --- FreedomBank + 
+var VAR_FREEDOM_BANK_TERMINAL_IP_ADDRESS = 'FreedomBankTerminalIpAddress';
+// --- FreedomBank -
+
+
+// SHARED PARTNER VARS -
+
 // Общие Переменные END
 // ==============================================================
 
@@ -822,6 +843,10 @@ function SetSessionClose_FR() {
 	setGlobalParam(VAR_SESSION_STATUS_FR, '0');
 }
 
+function isMenuAccessAvailable() {
+	return isSysAdmin() || isServiceUser();
+}
+
 // Buttons functions +
 function $ManualButton() {
 	if (!isMenuAccessAvailable()) {
@@ -1232,15 +1257,6 @@ function getPartnerSettings(partner) {
 }
 
 function init() {
-    // init partners
-    init_RxLoyalty();
-	init_JetQrPay(); // Alif
-	init_FreedomBank();
-	init_DC();  // Dushanbe City
-	init_TG();  // Tekhonologiya grup
-	init_Schiever();
-
-
     // libraries
     getJson2();
     toISOProto();
@@ -1259,6 +1275,14 @@ function init() {
 
     addMisingProtoFunctions_Number();
     addMisingProtoFunctions_String();
+
+    // init partners
+    init_RxLoyalty();
+	init_JetQrPay(); // Alif
+	init_FreedomBank();
+	init_DC();  // Dushanbe City
+	init_TG();  // Tekhonologiya grup
+	init_Schiever();
 
     //ОТКРЫТИЕ ДОКУМЕНТА - ДО
     frontol.addEventListener("openDocument", "beforeOpenDocument", true);
